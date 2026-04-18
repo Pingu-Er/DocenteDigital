@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const modules = [
+  {
+    title: 'Módulo 0',
+    subtitle: 'Diagnóstico y nivelación digital',
+    description: 'Uso de periféricos, archivos, internet, correo y nube.',
+  },
+  {
+    title: 'Módulo 1',
+    subtitle: 'Competencias básicas de computadora',
+    description: 'Gestión de archivos, navegación web, correo y nube con enfoque docente.',
+  },
+  {
+    title: 'Módulo 2',
+    subtitle: 'Herramientas de productividad',
+    description: 'Word, Excel, PowerPoint, Forms y organización de materiales.',
+  },
+  {
+    title: 'Módulo 3',
+    subtitle: 'Fundamentos de IA para docencia',
+    description: 'Qué es la IA generativa, limitaciones, riesgos y criterios de uso.',
+  },
+  {
+    title: 'Módulo 4',
+    subtitle: 'Uso básico de IA generativa',
+    description: 'Prompts, refinamiento, verificación y corrección.',
+  },
+  {
+    title: 'Módulo 5',
+    subtitle: 'IA para tareas específicas',
+    description: 'Síntesis, creatividad, documentos, imágenes y automatización simple.',
+  },
+  {
+    title: 'Módulo 6',
+    subtitle: 'Herramientas de IA orientadas a docencia',
+    description: 'Planeaciones, material didáctico, evaluación y apoyo a la clase.',
+  },
+];
+---
+
+<BaseLayout title="DocenteDigital | Módulos">
+  <section>
+    <h1 class="text-4xl font-bold text-slate-900">Módulos</h1>
+    <p class="mt-4 max-w-3xl text-lg text-slate-600">
+      Una ruta estructurada para fortalecer habilidades digitales y aplicar IA de forma pedagógica.
+    </p>
+  </section>
+
+  <section class="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+    {modules.map((module) => (
+      <article class="rounded-2xl border bg-white p-6 shadow-sm">
+        <p class="text-sm font-semibold text-sky-700">{module.title}</p>
+        <h2 class="mt-2 text-xl font-bold text-slate-900">{module.subtitle}</h2>
+        <p class="mt-3 leading-7 text-slate-600">{module.description}</p>
+      </article>
+    ))}
+  </section>
+</BaseLayout>

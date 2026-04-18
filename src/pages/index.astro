@@ -1,14 +1,63 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const BASE = '/DocenteDigital';
 ---
 
-<html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>DocenteDigital</title>
-  </head>
-  <body>
-    <h1>DocenteDigital</h1>
-    <p>Centro de aprendizaje para docentes.</p>
-  </body>
-</html>
+<BaseLayout
+  title="DocenteDigital | Inicio"
+  description="Centro de aprendizaje digital para docentes"
+>
+  <section class="grid gap-10 md:grid-cols-2 md:items-center">
+    <div>
+      <p class="mb-3 inline-block rounded-full bg-sky-100 px-3 py-1 text-sm font-semibold text-sky-700">
+        Formación digital para docentes
+      </p>
+
+      <h1 class="text-4xl font-bold tracking-tight text-slate-900 md:text-5xl">
+        Aprende herramientas digitales e inteligencia artificial con claridad y práctica.
+      </h1>
+
+      <p class="mt-5 text-lg leading-8 text-slate-600">
+        Un espacio pensado para docentes que desean fortalecer sus competencias
+        digitales y aplicar herramientas de IA en planeación, materiales,
+        evaluación y comunicación.
+      </p>
+
+      <div class="mt-8 flex flex-wrap gap-4">
+        <a
+          href={`${BASE}/modulos/`}
+          class="rounded-xl bg-sky-700 px-5 py-3 font-semibold text-white hover:bg-sky-800"
+        >
+          Explorar módulos
+        </a>
+
+        <a
+          href="#proposito"
+          class="rounded-xl border border-slate-300 px-5 py-3 font-semibold text-slate-700 hover:bg-slate-100"
+        >
+          Ver propósito
+        </a>
+      </div>
+    </div>
+
+    <div class="rounded-3xl border bg-white p-8 shadow-sm">
+      <h2 class="text-xl font-bold text-slate-900">¿Qué encontrarás aquí?</h2>
+      <ul class="mt-5 space-y-4 text-slate-700">
+        <li>• Nivelación digital con enfoque práctico.</li>
+        <li>• Uso funcional de Word, Excel, PowerPoint, Forms y nube.</li>
+        <li>• Fundamentos claros de IA para docencia.</li>
+        <li>• Ejemplos, recursos y rutas de aprendizaje.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="proposito" class="mt-16 rounded-3xl bg-white p-8 shadow-sm">
+    <h2 class="text-2xl font-bold text-slate-900">Propósito del proyecto</h2>
+    <p class="mt-4 leading-8 text-slate-700">
+      Fortalecer las competencias digitales básicas del personal docente y desarrollar
+      habilidades prácticas para integrar herramientas de IA de manera eficiente,
+      segura y pedagógicamente pertinente.
+    </p>
+  </section>
+</BaseLayout>

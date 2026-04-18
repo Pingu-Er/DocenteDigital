@@ -1,0 +1,43 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'DocenteDigital',
+  description = 'Plataforma de apoyo digital para docentes',
+} = Astro.props;
+
+const BASE = '/DocenteDigital';
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+  <body class="min-h-screen bg-slate-50 text-slate-800">
+    <header class="border-b bg-white">
+      <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+        <a href={`${BASE}/`} class="text-2xl font-bold text-slate-900">
+          DocenteDigital
+        </a>
+
+        <nav class="flex gap-6 text-sm font-medium">
+          <a href={`${BASE}/`} class="hover:text-sky-700">Inicio</a>
+          <a href={`${BASE}/modulos/`} class="hover:text-sky-700">Módulos</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-6xl px-6 py-10">
+      <slot />
+    </main>
+  </body>
+</html>
