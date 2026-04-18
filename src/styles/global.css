@@ -27,3 +27,26 @@ body {
 .placeholder-box {
   @apply flex min-h-[220px] items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-100 text-center text-slate-500;
 }
+
+.carousel-btn {
+  @apply rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100;
+}
+
+.carousel-track {
+  display: flex;
+  overflow: hidden;
+  scroll-behavior: smooth;
+}
+
+.carousel-slide {
+  min-width: 100%;
+  flex: 0 0 100%;
+}
+
+.carousel-dot {
+  @apply h-3 w-3 rounded-full border border-slate-300 bg-white transition;
+}
+
+.carousel-dot.is-active {
+  @apply border-sky-700 bg-sky-700;
+}

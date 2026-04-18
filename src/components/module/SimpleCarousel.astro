@@ -1,0 +1,138 @@
+---
+interface Item {
+  image?: string;
+  alt?: string;
+  caption: string;
+}
+
+interface Props {
+  title: string;
+  items: Item[];
+}
+
+const { title, items } = Astro.props;
+const carouselId = `carousel-${title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '')}`;
+---
+
+<div class="content-card p-6">
+  <div class="mb-4 flex items-center justify-between gap-4">
+    <h3 class="text-lg font-bold text-slate-900">{title}</h3>
+
+    <div class="flex gap-2">
+      <button
+        class="carousel-btn"
+        type="button"
+        data-carousel-prev={carouselId}
+        aria-label={`Anterior en ${title}`}
+      >
+        ←
+      </button>
+      <button
+        class="carousel-btn"
+        type="button"
+        data-carousel-next={carouselId}
+        aria-label={`Siguiente en ${title}`}
+      >
+        →
+      </button>
+    </div>
+  </div>
+
+  <div class="relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
+    <div class="carousel-track" data-carousel-track={carouselId}>
+      {items.map((item, index) => (
+        <figure
+          class="carousel-slide"
+          data-carousel-slide={carouselId}
+          data-slide-index={index}
+        >
+          {item.image ? (
+            <img
+              src={item.image}
+              alt={item.alt || item.caption}
+              class="h-56 w-full object-cover"
+              loading="lazy"
+            />
+          ) : (
+            <div class="placeholder-box h-56 rounded-none border-0">
+              Placeholder de imagen
+              <br />
+              para: <strong>{item.caption}</strong>
+            </div>
+          )}
+
+          <figcaption class="border-t border-slate-200 bg-white px-4 py-4 text-sm leading-7 text-slate-700">
+            {item.caption}
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  </div>
+
+  <div class="mt-4 flex flex-wrap gap-2">
+    {items.map((_, index) => (
+      <button
+        type="button"
+        class="carousel-dot"
+        data-carousel-dot={carouselId}
+        data-target-index={index}
+        aria-label={`Ir a la imagen ${index + 1} de ${title}`}
+      />
+    ))}
+  </div>
+</div>
+
+<script define:vars={{ carouselId }}>
+  (() => {
+    const rootId = carouselId;
+    const track = document.querySelector(`[data-carousel-track="${rootId}"]`);
+    const slides = Array.from(document.querySelectorAll(`[data-carousel-slide="${rootId}"]`));
+    const prevBtn = document.querySelector(`[data-carousel-prev="${rootId}"]`);
+    const nextBtn = document.querySelector(`[data-carousel-next="${rootId}"]`);
+    const dots = Array.from(document.querySelectorAll(`[data-carousel-dot="${rootId}"]`));
+
+    if (!track || slides.length === 0) return;
+
+    let index = 0;
+
+    const update = () => {
+      const width = slides[0].clientWidth;
+
+      track.scrollTo({
+        left: width * index,
+        behavior: 'smooth',
+      });
+
+      dots.forEach((dot, i) => {
+        if (i === index) {
+          dot.classList.add('is-active');
+        } else {
+          dot.classList.remove('is-active');
+        }
+      });
+    };
+
+    prevBtn?.addEventListener('click', () => {
+      index = index === 0 ? slides.length - 1 : index - 1;
+      update();
+    });
+
+    nextBtn?.addEventListener('click', () => {
+      index = index === slides.length - 1 ? 0 : index + 1;
+      update();
+    });
+
+    dots.forEach((dot) => {
+      dot.addEventListener('click', () => {
+        const target = Number(dot.getAttribute('data-target-index'));
+        if (!Number.isNaN(target)) {
+          index = target;
+          update();
+        }
+      });
+    });
+
+    window.addEventListener('resize', update);
+    update();
+  })();
+</script>

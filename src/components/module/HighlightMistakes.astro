@@ -1,0 +1,25 @@
+---
+interface Props {
+  title: string;
+  mistakes: string[];
+}
+
+const { title, mistakes } = Astro.props;
+---
+
+<div class="content-card p-6">
+  <div class="mb-4 flex items-center gap-3">
+    <div class="flex h-10 w-10 items-center justify-center rounded-full bg-rose-100 text-xl text-rose-700">
+      !
+    </div>
+    <h3 class="text-lg font-bold text-slate-900">{title}</h3>
+  </div>
+
+  <div class="grid gap-3">
+    {mistakes.map((mistake) => (
+      <div class="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-4 text-slate-700 shadow-sm">
+        <p class="leading-7">{mistake}</p>
+      </div>
+    ))}
+  </div>
+</div>

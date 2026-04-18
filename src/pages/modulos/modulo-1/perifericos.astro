@@ -2,8 +2,11 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import SectionTitle from '../../../components/module/SectionTitle.astro';
 import InfoBox from '../../../components/module/InfoBox.astro';
+
 import ExampleCard from '../../../components/module/ExampleCard.astro';
-import CommonMistakes from '../../../components/module/CommonMistakes.astro';
+import VisualActionCard from '../../../components/module/VisualActionCard.astro';
+import HighlightMistakes from '../../../components/module/HighlightMistakes.astro';
+import SimpleCarousel from '../../../components/module/SimpleCarousel.astro';
 import { BASE_PATH } from '../../../consts';
 
 const mouseMistakes = [
@@ -20,6 +23,160 @@ const keyboardMistakes = [
   'Confundir la tecla Enter con retroceso o eliminar.',
   'Escribir todo en mayúsculas sin intención.',
   'Borrar texto accidentalmente por no distinguir Backspace y Delete.',
+];
+
+const mouseActions = [
+  {
+    title: 'Clic izquierdo',
+    image: `${BASE_PATH}/images/modulo-1/perifericos/Left_clic.png`,
+    imageAlt: 'Imagen ilustrativa de clic izquierdo',
+    text: 'Se usa para seleccionar opciones, botones, archivos o enlaces.',
+    example: 'Seleccionar un archivo antes de abrirlo o moverlo.',
+  },
+  {
+    title: 'Doble clic',
+    image: `${BASE_PATH}/images/modulo-1/perifericos/Double_clic.png`,
+    imageAlt: 'Imagen ilustrativa de doble clic',
+    text: 'Se usa principalmente para abrir archivos, carpetas o programas.',
+    example: 'Abrir una carpeta con materiales de clase.',
+  },
+  {
+    title: 'Clic derecho',
+    image: `${BASE_PATH}/images/modulo-1/perifericos/Right_clic_.png`,
+    imageAlt: 'Imagen ilustrativa de clic derecho',
+    text: 'Muestra opciones adicionales relacionadas con el elemento seleccionado.',
+    example: 'Renombrar un archivo o ver opciones para copiarlo.',
+  },
+  {
+    title: 'Rueda de desplazamiento',
+    image: `${BASE_PATH}/images/modulo-1/perifericos/Scroll.png`,
+    imageAlt: 'Imagen ilustrativa de rueda del mouse',
+    text: 'Permite avanzar o retroceder dentro de una página, documento o lista.',
+    example: 'Leer una planeación larga o revisar una presentación.',
+  },
+  {
+    title: 'Arrastrar y soltar',
+    image: `${BASE_PATH}/images/modulo-1/perifericos/Drag.png`,
+    imageAlt: 'Imagen ilustrativa de arrastrar y soltar',
+    text: 'Sirve para mover elementos de un lugar a otro.',
+    example: 'Mover un archivo a una carpeta o reubicar una imagen en una diapositiva.',
+  },
+];
+
+const keyboardKeys = [
+  {
+    title: 'Enter',
+    image: `${BASE_PATH}/images/modulo-1/perifericos/Enter.png`,
+    imageAlt: 'Imagen ilustrativa de la tecla Enter',
+    text: 'Confirma una acción o crea una nueva línea al escribir.',
+  },
+  {
+    title: 'Backspace',
+    image: `${BASE_PATH}/images/modulo-1/perifericos/Backspace.png`,
+    imageAlt: 'Imagen ilustrativa de la tecla Backspace',
+    text: 'Borra el carácter anterior al cursor.',
+  },
+  {
+    title: 'Delete',
+    image: `${BASE_PATH}/images/modulo-1/perifericos/Del.png`,
+    imageAlt: 'Imagen ilustrativa de la tecla Delete',
+    text: 'Borra el carácter siguiente o un elemento seleccionado.',
+  },
+  {
+    title: 'Shift',
+    image: `${BASE_PATH}/images/modulo-1/perifericos/Shift.png`,
+    imageAlt: 'Imagen ilustrativa de la tecla Shift',
+    text: 'Sirve para escribir mayúsculas temporales y algunos símbolos.',
+  },
+  {
+    title: 'Ctrl',
+    image: `${BASE_PATH}/images/modulo-1/perifericos/Ctrl.png`,
+    imageAlt: 'Imagen ilustrativa de la tecla Ctrl',
+    text: 'Se usa junto con otras teclas para atajos útiles.',
+  },
+  {
+    title: 'Tab',
+    image: `${BASE_PATH}/images/modulo-1/perifericos/Tab.png`,
+    imageAlt: 'Imagen ilustrativa de la tecla Tab',
+    text: 'Ayuda a avanzar entre campos o zonas de trabajo.',
+  },
+  {
+    title: 'Esc',
+    image: `${BASE_PATH}/images/modulo-1/perifericos/Esc.png`,
+    imageAlt: 'Imagen ilustrativa de la tecla Esc',
+    text: 'Permite cancelar o salir de ciertas acciones.',
+  },
+  {
+    title: 'Flechas',
+    image: `${BASE_PATH}/images/modulo-1/perifericos/Arrows.png`,
+    imageAlt: 'Imagen ilustrativa de las flechas del teclado',
+    text: 'Ayudan a desplazarse dentro de textos, listas o celdas.',
+  },
+  {
+    title: 'Barra espaciadora',
+    image: `${BASE_PATH}/images/modulo-1/perifericos/Spacebar.png`,
+    imageAlt: 'Imagen ilustrativa de la barra espaciadora',
+    text: 'Agrega espacios entre palabras al escribir.',
+  },
+];
+
+const editingShortcuts = [
+  {
+    image: `${BASE_PATH}/images/modulo-1/perifericos/1.png`,
+    alt: 'Imagen de ejemplo para copiar con Ctrl C',
+    caption: 'Ctrl + C: permite copiar texto, imágenes o archivos seleccionados para reutilizarlos en otro lugar.',
+  },
+  {
+    image: `${BASE_PATH}/images/modulo-1/perifericos/2.png`,
+    alt: 'Imagen de ejemplo para pegar con Ctrl V',
+    caption: 'Ctrl + V: permite pegar lo que se ha copiado previamente en documentos, carpetas o presentaciones.',
+  },
+  {
+    image: `${BASE_PATH}/images/modulo-1/perifericos/3.png`,
+    alt: 'Imagen de ejemplo para cortar con Ctrl X',
+    caption: 'Ctrl + X: sirve para mover contenido de un lugar a otro sin duplicarlo.',
+  },
+  {
+    image: `${BASE_PATH}/images/modulo-1/perifericos/4.png`,
+    alt: 'Imagen de ejemplo para deshacer con Ctrl Z',
+    caption: 'Ctrl + Z: ayuda a corregir errores recientes, por ejemplo al borrar o mover algo por accidente.',
+  },
+];
+
+const organizationShortcuts = [
+  {
+    image: `${BASE_PATH}/images/modulo-1/perifericos/5.png`,
+    alt: 'Imagen de ejemplo para seleccionar todo',
+    caption: 'Ctrl + A: selecciona todo el contenido de un documento o una lista.',
+  },
+  {
+    image: `${BASE_PATH}/images/modulo-1/perifericos/6.png`,
+    alt: 'Imagen de ejemplo para guardar',
+    caption: 'Ctrl + S: guarda cambios en documentos, presentaciones o archivos de trabajo.',
+  },
+  {
+    image: `${BASE_PATH}/images/modulo-1/perifericos/7.png`,
+    alt: 'Imagen de ejemplo para imprimir',
+    caption: 'Ctrl + P: abre la ventana de impresión en muchos programas.',
+  },
+  {
+    image: `${BASE_PATH}/images/modulo-1/perifericos/9.png`,
+    alt: 'Imagen de ejemplo para buscar',
+    caption: 'Ctrl + F: ayuda a localizar palabras o datos rápidamente dentro de una página o documento.',
+  },
+];
+
+const windowShortcuts = [
+  {
+    image: `${BASE_PATH}/images/modulo-1/perifericos/10.png`,
+    alt: 'Imagen de ejemplo para cambiar entre ventanas',
+    caption: 'Alt + Tab: permite cambiar entre programas abiertos sin necesidad de usar el mouse.',
+  },
+  {
+    image: `${BASE_PATH}/images/modulo-1/perifericos/11.png`,
+    alt: 'Imagen de ejemplo para abrir explorador',
+    caption: 'Win + E: abre directamente el explorador de archivos para acceder a carpetas y documentos.',
+  },
 ];
 ---
 
@@ -71,20 +228,22 @@ const keyboardMistakes = [
     <div class="grid gap-6 md:grid-cols-2">
       <div class="content-card p-6">
         <h3 class="text-lg font-bold text-slate-900">Mouse</h3>
-        <div class="placeholder-box mt-4">
-          Aquí puede colocar una imagen del mouse.
-          <br />
-          Ruta sugerida: <strong>/public/images/modulo-1/mouse-placeholder.jpg</strong>
-        </div>
+        <img
+          src={`${BASE_PATH}/images/modulo-1/perifericos/mouse.png`}
+          alt="Imagen general del mouse"
+          class="mt-4 h-56 w-full rounded-2xl object-contain bg-slate-50 p-3"
+          loading="lazy"
+        />
       </div>
 
       <div class="content-card p-6">
         <h3 class="text-lg font-bold text-slate-900">Teclado</h3>
-        <div class="placeholder-box mt-4">
-          Aquí puede colocar una imagen del teclado.
-          <br />
-          Ruta sugerida: <strong>/public/images/modulo-1/teclado-placeholder.jpg</strong>
-        </div>
+        <img
+          src={`${BASE_PATH}/images/modulo-1/perifericos/Teclado.png`}
+          alt="Imagen general del teclado"
+          class="mt-4 h-56 w-full rounded-2xl object-contain bg-slate-50 p-3"
+          loading="lazy"
+        />
       </div>
     </div>
   </section>
@@ -96,30 +255,16 @@ const keyboardMistakes = [
     />
 
     <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-      <ExampleCard title="Clic izquierdo">
-        <p>Se usa para seleccionar opciones, botones, archivos o enlaces.</p>
-        <p><strong>Ejemplo práctico:</strong> seleccionar un archivo antes de abrirlo o moverlo.</p>
-      </ExampleCard>
-
-      <ExampleCard title="Doble clic">
-        <p>Se usa principalmente para abrir archivos, carpetas o programas.</p>
-        <p><strong>Ejemplo práctico:</strong> abrir una carpeta con materiales de clase.</p>
-      </ExampleCard>
-
-      <ExampleCard title="Clic derecho">
-        <p>Muestra opciones adicionales relacionadas con el elemento seleccionado.</p>
-        <p><strong>Ejemplo práctico:</strong> renombrar un archivo o ver opciones para copiarlo.</p>
-      </ExampleCard>
-
-      <ExampleCard title="Rueda de desplazamiento">
-        <p>Permite avanzar o retroceder dentro de una página, documento o lista.</p>
-        <p><strong>Ejemplo práctico:</strong> leer una planeación larga o revisar una presentación.</p>
-      </ExampleCard>
-
-      <ExampleCard title="Arrastrar y soltar">
-        <p>Sirve para mover elementos de un lugar a otro.</p>
-        <p><strong>Ejemplo práctico:</strong> mover un archivo a una carpeta o reubicar una imagen en una diapositiva.</p>
-      </ExampleCard>
+      {mouseActions.map((action) => (
+        <VisualActionCard
+          title={action.title}
+          image={action.image}
+          imageAlt={action.imageAlt}
+        >
+          <p>{action.text}</p>
+          <p><strong>Ejemplo práctico:</strong> {action.example}</p>
+        </VisualActionCard>
+      ))}
     </div>
   </section>
 
@@ -130,41 +275,15 @@ const keyboardMistakes = [
     />
 
     <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-      <ExampleCard title="Enter">
-        <p>Confirma una acción o crea una nueva línea al escribir.</p>
-      </ExampleCard>
-
-      <ExampleCard title="Backspace">
-        <p>Borra el carácter anterior al cursor.</p>
-      </ExampleCard>
-
-      <ExampleCard title="Delete">
-        <p>Borra el carácter siguiente o un elemento seleccionado.</p>
-      </ExampleCard>
-
-      <ExampleCard title="Shift">
-        <p>Sirve para escribir mayúsculas temporales y algunos símbolos.</p>
-      </ExampleCard>
-
-      <ExampleCard title="Ctrl">
-        <p>Se usa junto con otras teclas para atajos útiles.</p>
-      </ExampleCard>
-
-      <ExampleCard title="Tab">
-        <p>Ayuda a avanzar entre campos o zonas de trabajo.</p>
-      </ExampleCard>
-
-      <ExampleCard title="Esc">
-        <p>Permite cancelar o salir de ciertas acciones.</p>
-      </ExampleCard>
-
-      <ExampleCard title="Flechas">
-        <p>Ayudan a desplazarse dentro de textos, listas o celdas.</p>
-      </ExampleCard>
-
-      <ExampleCard title="Barra espaciadora">
-        <p>Agrega espacios entre palabras al escribir.</p>
-      </ExampleCard>
+      {keyboardKeys.map((keyItem) => (
+        <VisualActionCard
+          title={keyItem.title}
+          image={keyItem.image}
+          imageAlt={keyItem.imageAlt}
+        >
+          <p>{keyItem.text}</p>
+        </VisualActionCard>
+      ))}
     </div>
   </section>
 
@@ -174,97 +293,59 @@ const keyboardMistakes = [
       description="Estos errores son comunes y forman parte del proceso de aprendizaje. Identificarlos ayuda a corregirlos con mayor rapidez."
     />
 
+    <div class="mb-6">
+      <InfoBox title="Importante" tone="warning">
+        <p>
+          Muchos problemas en el uso básico de la computadora no se deben a falta de capacidad,
+          sino a pequeños hábitos que pueden corregirse con práctica y atención.
+        </p>
+      </InfoBox>
+    </div>
+
     <div class="grid gap-6 lg:grid-cols-2">
-      <CommonMistakes title="Errores frecuentes con el mouse" mistakes={mouseMistakes} />
-      <CommonMistakes title="Errores frecuentes con el teclado" mistakes={keyboardMistakes} />
+      <HighlightMistakes title="Errores frecuentes con el mouse" mistakes={mouseMistakes} />
+      <HighlightMistakes title="Errores frecuentes con el teclado" mistakes={keyboardMistakes} />
     </div>
   </section>
 
   <section class="mt-14">
     <SectionTitle
       title="Atajos esenciales"
-      description="Los atajos permiten ahorrar tiempo en acciones que se repiten constantemente."
+      description="Los atajos permiten ahorrar tiempo en acciones que se repiten constantemente. A continuación se muestran ejemplos visuales organizados por tipo de uso."
     />
 
-    <div class="grid gap-6 lg:grid-cols-3">
-      <div class="content-card p-6">
-        <h3 class="text-lg font-bold text-slate-900">Edición básica</h3>
-        <ul class="mt-4 space-y-3 text-slate-700">
-          <li><strong>Ctrl + C</strong> → Copiar</li>
-          <li><strong>Ctrl + V</strong> → Pegar</li>
-          <li><strong>Ctrl + X</strong> → Cortar</li>
-          <li><strong>Ctrl + Z</strong> → Deshacer</li>
-          <li><strong>Ctrl + Y</strong> → Rehacer</li>
-        </ul>
-      </div>
-
-      <div class="content-card p-6">
-        <h3 class="text-lg font-bold text-slate-900">Organización y búsqueda</h3>
-        <ul class="mt-4 space-y-3 text-slate-700">
-          <li><strong>Ctrl + A</strong> → Seleccionar todo</li>
-          <li><strong>Ctrl + S</strong> → Guardar</li>
-          <li><strong>Ctrl + P</strong> → Imprimir</li>
-          <li><strong>Ctrl + F</strong> → Buscar</li>
-        </ul>
-      </div>
-
-      <div class="content-card p-6">
-        <h3 class="text-lg font-bold text-slate-900">Cambio entre ventanas</h3>
-        <ul class="mt-4 space-y-3 text-slate-700">
-          <li><strong>Alt + Tab</strong> → Cambiar entre ventanas</li>
-          <li><strong>Win + E</strong> → Abrir el explorador de archivos</li>
-        </ul>
-      </div>
+    <div class="grid gap-6 xl:grid-cols-3">
+      <SimpleCarousel title="Edición básica" items={editingShortcuts} />
+      <SimpleCarousel title="Organización y búsqueda" items={organizationShortcuts} />
+      <SimpleCarousel title="Cambio entre ventanas" items={windowShortcuts} />
     </div>
   </section>
 
-  <section class="mt-14">
-    <SectionTitle
-      title="Documento visual de atajos"
-      description="Aquí puede mostrarse un documento con los atajos esenciales para consulta rápida dentro de la misma página."
-    />
+    <section class="mt-14">
+      <SectionTitle
+        title="Documento visual de atajos"
+        description="Aquí puede mostrarse posteriormente un documento visual con atajos de Windows y otras combinaciones útiles de teclado para consulta dentro de la misma página."
+      />
 
-    <div class="content-card p-6">
-      <div class="placeholder-box min-h-[500px]">
-        Aquí se mostrará el PDF de atajos esenciales.
-        <br />
-        Ruta sugerida: <strong>/public/docs/atajos-esenciales.pdf</strong>
-        <br /><br />
-        Cuando el archivo exista, puede reemplazar este bloque por un iframe.
+      <div class="content-card p-6">
+        <div class="placeholder-box min-h-[380px]">
+          Aquí se mostrará un documento visual más completo
+          <br />
+          con atajos de Windows y otras combinaciones útiles.
+          <br /><br />
+          Ruta sugerida:
+          <strong>/public/docs/atajos-esenciales.pdf</strong>
+        </div>
+
+        <div class="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5 text-slate-700">
+          <p class="font-semibold text-slate-900">Cuando el documento ya exista:</p>
+          <p class="mt-2 leading-7">
+            puede incrustarse directamente en esta sección para que el docente lo consulte
+            sin necesidad de descargarlo primero.
+          </p>
+        </div>
       </div>
-
-      <div class="mt-6 rounded-2xl bg-slate-50 p-5 text-slate-700">
-        <p class="font-semibold text-slate-900">Código sugerido cuando el PDF ya exista:</p>
-        <pre class="mt-3 overflow-x-auto rounded-xl bg-slate-900 p-4 text-sm text-slate-100"><code>{`<iframe
-  src="/DocenteDigital/docs/atajos-esenciales.pdf"
-  width="100%"
-  height="600"
-  style="border: none; border-radius: 16px;"
-></iframe>`}</code></pre>
-      </div>
-    </div>
-  </section>
-
-  <section class="mt-14">
-    <SectionTitle
-      title="Ejemplos prácticos para docentes"
-      description="El uso de periféricos cobra más sentido cuando se relaciona con tareas reales del trabajo académico."
-    />
-
-    <div class="grid gap-6 lg:grid-cols-3">
-      <ExampleCard title="Caso 1">
-        <p>Abrir una carpeta con materiales de clase y localizar un documento de planeación.</p>
-      </ExampleCard>
-
-      <ExampleCard title="Caso 2">
-        <p>Corregir una palabra, copiar un párrafo y guardar nuevamente un archivo.</p>
-      </ExampleCard>
-
-      <ExampleCard title="Caso 3">
-        <p>Cambiar entre el navegador, una presentación y un documento mientras se prepara una clase.</p>
-      </ExampleCard>
-    </div>
-  </section>
+    </section>
 
   <section class="mt-14">
     <InfoBox title="Cierre del tema" tone="success">
