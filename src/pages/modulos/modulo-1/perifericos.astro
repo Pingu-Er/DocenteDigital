@@ -1,0 +1,278 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SectionTitle from '../../../components/module/SectionTitle.astro';
+import InfoBox from '../../../components/module/InfoBox.astro';
+import ExampleCard from '../../../components/module/ExampleCard.astro';
+import CommonMistakes from '../../../components/module/CommonMistakes.astro';
+import { BASE_PATH } from '../../../consts';
+
+const mouseMistakes = [
+  'Hacer varios clics seguidos cuando solo se necesita uno.',
+  'Usar doble clic en acciones que se realizan con un solo clic.',
+  'Soltar el mouse antes de terminar un arrastre.',
+  'Confundir el clic izquierdo con el clic derecho.',
+  'Mover el mouse demasiado rápido y perder precisión.',
+];
+
+const keyboardMistakes = [
+  'Escribir sin observar en qué parte está el cursor.',
+  'Mantener una tecla presionada más tiempo del necesario.',
+  'Confundir la tecla Enter con retroceso o eliminar.',
+  'Escribir todo en mayúsculas sin intención.',
+  'Borrar texto accidentalmente por no distinguir Backspace y Delete.',
+];
+---
+
+<BaseLayout
+  title="Módulo 1 | Uso de periféricos"
+  description="Teclado, mouse y atajos esenciales para un uso más seguro de la computadora."
+>
+  <div class="mb-8">
+    <a
+      href={`${BASE_PATH}/modulos/modulo-1/`}
+      class="text-sm font-semibold text-sky-700 hover:text-sky-800"
+    >
+      ← Volver al módulo 1
+    </a>
+  </div>
+
+  <SectionTitle
+    eyebrow="Tema 1"
+    title="Uso de periféricos"
+    description="Teclado, mouse y atajos esenciales para trabajar con mayor seguridad, claridad y confianza."
+  />
+
+  <section class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+    <div class="content-card p-8 prose-soft text-slate-700">
+      <p>
+        El uso correcto del teclado y del mouse facilita tareas cotidianas como abrir archivos,
+        escribir documentos, navegar por internet y organizar materiales de clase.
+      </p>
+      <p>
+        En este tema se explican las funciones más útiles de estos periféricos, así como errores frecuentes
+        que pueden evitarse con una mejor comprensión de su uso.
+      </p>
+    </div>
+
+    <InfoBox title="Propósito del tema" tone="info">
+      <p>
+        Reconocer las funciones básicas del mouse y del teclado para trabajar con mayor seguridad
+        en tareas digitales de uso cotidiano.
+      </p>
+    </InfoBox>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="¿Qué son los periféricos?"
+      description="Son los dispositivos que permiten interactuar con la computadora. En este tema nos enfocaremos en dos de los más importantes: el mouse y el teclado."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2">
+      <div class="content-card p-6">
+        <h3 class="text-lg font-bold text-slate-900">Mouse</h3>
+        <div class="placeholder-box mt-4">
+          Aquí puede colocar una imagen del mouse.
+          <br />
+          Ruta sugerida: <strong>/public/images/modulo-1/mouse-placeholder.jpg</strong>
+        </div>
+      </div>
+
+      <div class="content-card p-6">
+        <h3 class="text-lg font-bold text-slate-900">Teclado</h3>
+        <div class="placeholder-box mt-4">
+          Aquí puede colocar una imagen del teclado.
+          <br />
+          Ruta sugerida: <strong>/public/images/modulo-1/teclado-placeholder.jpg</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Uso del mouse"
+      description="El mouse permite seleccionar, abrir, mover y explorar elementos dentro de la computadora."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <ExampleCard title="Clic izquierdo">
+        <p>Se usa para seleccionar opciones, botones, archivos o enlaces.</p>
+        <p><strong>Ejemplo práctico:</strong> seleccionar un archivo antes de abrirlo o moverlo.</p>
+      </ExampleCard>
+
+      <ExampleCard title="Doble clic">
+        <p>Se usa principalmente para abrir archivos, carpetas o programas.</p>
+        <p><strong>Ejemplo práctico:</strong> abrir una carpeta con materiales de clase.</p>
+      </ExampleCard>
+
+      <ExampleCard title="Clic derecho">
+        <p>Muestra opciones adicionales relacionadas con el elemento seleccionado.</p>
+        <p><strong>Ejemplo práctico:</strong> renombrar un archivo o ver opciones para copiarlo.</p>
+      </ExampleCard>
+
+      <ExampleCard title="Rueda de desplazamiento">
+        <p>Permite avanzar o retroceder dentro de una página, documento o lista.</p>
+        <p><strong>Ejemplo práctico:</strong> leer una planeación larga o revisar una presentación.</p>
+      </ExampleCard>
+
+      <ExampleCard title="Arrastrar y soltar">
+        <p>Sirve para mover elementos de un lugar a otro.</p>
+        <p><strong>Ejemplo práctico:</strong> mover un archivo a una carpeta o reubicar una imagen en una diapositiva.</p>
+      </ExampleCard>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Uso del teclado"
+      description="El teclado permite escribir, corregir, desplazarse y ejecutar acciones rápidas mediante combinaciones sencillas."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <ExampleCard title="Enter">
+        <p>Confirma una acción o crea una nueva línea al escribir.</p>
+      </ExampleCard>
+
+      <ExampleCard title="Backspace">
+        <p>Borra el carácter anterior al cursor.</p>
+      </ExampleCard>
+
+      <ExampleCard title="Delete">
+        <p>Borra el carácter siguiente o un elemento seleccionado.</p>
+      </ExampleCard>
+
+      <ExampleCard title="Shift">
+        <p>Sirve para escribir mayúsculas temporales y algunos símbolos.</p>
+      </ExampleCard>
+
+      <ExampleCard title="Ctrl">
+        <p>Se usa junto con otras teclas para atajos útiles.</p>
+      </ExampleCard>
+
+      <ExampleCard title="Tab">
+        <p>Ayuda a avanzar entre campos o zonas de trabajo.</p>
+      </ExampleCard>
+
+      <ExampleCard title="Esc">
+        <p>Permite cancelar o salir de ciertas acciones.</p>
+      </ExampleCard>
+
+      <ExampleCard title="Flechas">
+        <p>Ayudan a desplazarse dentro de textos, listas o celdas.</p>
+      </ExampleCard>
+
+      <ExampleCard title="Barra espaciadora">
+        <p>Agrega espacios entre palabras al escribir.</p>
+      </ExampleCard>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Errores frecuentes"
+      description="Estos errores son comunes y forman parte del proceso de aprendizaje. Identificarlos ayuda a corregirlos con mayor rapidez."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <CommonMistakes title="Errores frecuentes con el mouse" mistakes={mouseMistakes} />
+      <CommonMistakes title="Errores frecuentes con el teclado" mistakes={keyboardMistakes} />
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Atajos esenciales"
+      description="Los atajos permiten ahorrar tiempo en acciones que se repiten constantemente."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-3">
+      <div class="content-card p-6">
+        <h3 class="text-lg font-bold text-slate-900">Edición básica</h3>
+        <ul class="mt-4 space-y-3 text-slate-700">
+          <li><strong>Ctrl + C</strong> → Copiar</li>
+          <li><strong>Ctrl + V</strong> → Pegar</li>
+          <li><strong>Ctrl + X</strong> → Cortar</li>
+          <li><strong>Ctrl + Z</strong> → Deshacer</li>
+          <li><strong>Ctrl + Y</strong> → Rehacer</li>
+        </ul>
+      </div>
+
+      <div class="content-card p-6">
+        <h3 class="text-lg font-bold text-slate-900">Organización y búsqueda</h3>
+        <ul class="mt-4 space-y-3 text-slate-700">
+          <li><strong>Ctrl + A</strong> → Seleccionar todo</li>
+          <li><strong>Ctrl + S</strong> → Guardar</li>
+          <li><strong>Ctrl + P</strong> → Imprimir</li>
+          <li><strong>Ctrl + F</strong> → Buscar</li>
+        </ul>
+      </div>
+
+      <div class="content-card p-6">
+        <h3 class="text-lg font-bold text-slate-900">Cambio entre ventanas</h3>
+        <ul class="mt-4 space-y-3 text-slate-700">
+          <li><strong>Alt + Tab</strong> → Cambiar entre ventanas</li>
+          <li><strong>Win + E</strong> → Abrir el explorador de archivos</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Documento visual de atajos"
+      description="Aquí puede mostrarse un documento con los atajos esenciales para consulta rápida dentro de la misma página."
+    />
+
+    <div class="content-card p-6">
+      <div class="placeholder-box min-h-[500px]">
+        Aquí se mostrará el PDF de atajos esenciales.
+        <br />
+        Ruta sugerida: <strong>/public/docs/atajos-esenciales.pdf</strong>
+        <br /><br />
+        Cuando el archivo exista, puede reemplazar este bloque por un iframe.
+      </div>
+
+      <div class="mt-6 rounded-2xl bg-slate-50 p-5 text-slate-700">
+        <p class="font-semibold text-slate-900">Código sugerido cuando el PDF ya exista:</p>
+        <pre class="mt-3 overflow-x-auto rounded-xl bg-slate-900 p-4 text-sm text-slate-100"><code>{`<iframe
+  src="/DocenteDigital/docs/atajos-esenciales.pdf"
+  width="100%"
+  height="600"
+  style="border: none; border-radius: 16px;"
+></iframe>`}</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Ejemplos prácticos para docentes"
+      description="El uso de periféricos cobra más sentido cuando se relaciona con tareas reales del trabajo académico."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-3">
+      <ExampleCard title="Caso 1">
+        <p>Abrir una carpeta con materiales de clase y localizar un documento de planeación.</p>
+      </ExampleCard>
+
+      <ExampleCard title="Caso 2">
+        <p>Corregir una palabra, copiar un párrafo y guardar nuevamente un archivo.</p>
+      </ExampleCard>
+
+      <ExampleCard title="Caso 3">
+        <p>Cambiar entre el navegador, una presentación y un documento mientras se prepara una clase.</p>
+      </ExampleCard>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <InfoBox title="Cierre del tema" tone="success">
+      <p>
+        Dominar el uso del mouse y del teclado facilita todas las tareas posteriores del módulo.
+        En el siguiente tema se trabajará la organización de archivos y carpetas, una habilidad
+        clave para mantener materiales y evidencias en orden.
+      </p>
+    </InfoBox>
+  </section>
+</BaseLayout>

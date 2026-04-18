@@ -1,0 +1,19 @@
+---
+interface Props {
+  title: string;
+  mistakes: string[];
+}
+
+const { title, mistakes } = Astro.props;
+---
+
+<div class="content-card p-6">
+  <h3 class="text-lg font-bold text-slate-900">{title}</h3>
+  <ul class="mt-4 space-y-3 text-slate-700">
+    {mistakes.map((mistake) => (
+      <li class="rounded-xl bg-slate-50 px-4 py-3 leading-7">
+        {mistake}
+      </li>
+    ))}
+  </ul>
+</div>

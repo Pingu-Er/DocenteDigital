@@ -1,0 +1,32 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  href: string;
+  status?: string;
+}
+
+const { title, description, href, status = 'Disponible' } = Astro.props;
+const isAvailable = status === 'Disponible';
+---
+
+<article class="content-card p-6">
+  <div class="flex items-start justify-between gap-4">
+    <h3 class="text-xl font-bold text-slate-900">{title}</h3>
+    <span class={`rounded-full px-3 py-1 text-xs font-semibold ${isAvailable ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+      {status}
+    </span>
+  </div>
+
+  <p class="mt-4 leading-7 text-slate-600">{description}</p>
+
+  <div class="mt-6">
+    <a
+      href={href}
+      class={`inline-flex rounded-xl px-4 py-2 font-semibold ${isAvailable ? 'bg-sky-700 text-white hover:bg-sky-800' : 'border border-slate-300 text-slate-500'}`}
+      aria-disabled={!isAvailable}
+    >
+      {isAvailable ? 'Ver tema' : 'Disponible próximamente'}
+    </a>
+  </div>
+</article>

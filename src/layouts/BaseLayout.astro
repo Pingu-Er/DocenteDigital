@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { BASE_PATH } from '../consts';
 
 interface Props {
   title?: string;
@@ -10,8 +11,6 @@ const {
   title = 'DocenteDigital',
   description = 'Plataforma de apoyo digital para docentes',
 } = Astro.props;
-
-const BASE = '/DocenteDigital';
 ---
 
 <!doctype html>
@@ -23,15 +22,16 @@ const BASE = '/DocenteDigital';
     <meta name="description" content={description} />
   </head>
   <body class="min-h-screen bg-slate-50 text-slate-800">
-    <header class="border-b bg-white">
+    <header class="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
       <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <a href={`${BASE}/`} class="text-2xl font-bold text-slate-900">
+        <a href={`${BASE_PATH}/`} class="text-2xl font-bold tracking-tight text-slate-900">
           DocenteDigital
         </a>
 
-        <nav class="flex gap-6 text-sm font-medium">
-          <a href={`${BASE}/`} class="hover:text-sky-700">Inicio</a>
-          <a href={`${BASE}/modulos/`} class="hover:text-sky-700">Módulos</a>
+        <nav class="hidden gap-6 text-sm font-medium md:flex">
+          <a href={`${BASE_PATH}/`} class="hover:text-sky-700">Inicio</a>
+          <a href={`${BASE_PATH}/modulos/`} class="hover:text-sky-700">Módulos</a>
+          <a href={`${BASE_PATH}/modulos/modulo-1/`} class="hover:text-sky-700">Módulo 1</a>
         </nav>
       </div>
     </header>
@@ -39,5 +39,15 @@ const BASE = '/DocenteDigital';
     <main class="mx-auto max-w-6xl px-6 py-10">
       <slot />
     </main>
+
+    <footer class="mt-16 border-t border-slate-200 bg-white">
+      <div class="mx-auto max-w-6xl px-6 py-8 text-sm text-slate-600">
+        <p class="font-semibold text-slate-800">DocenteDigital</p>
+        <p class="mt-2">
+          Espacio de apoyo para fortalecer habilidades digitales y el uso pedagógico
+          de herramientas tecnológicas e inteligencia artificial.
+        </p>
+      </div>
+    </footer>
   </body>
 </html>

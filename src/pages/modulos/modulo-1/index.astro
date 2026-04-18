@@ -1,0 +1,77 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import TopicCard from '../../../components/module/TopicCard.astro';
+import SectionTitle from '../../../components/module/SectionTitle.astro';
+import InfoBox from '../../../components/module/InfoBox.astro';
+import { module1Topics } from '../../../consts';
+---
+
+<BaseLayout
+  title="DocenteDigital | Módulo 1"
+  description="Competencias básicas de computadora orientadas a docencia"
+>
+  <SectionTitle
+    eyebrow="Módulo 1"
+    title="Competencias básicas de computadora orientadas a docencia"
+    description="Este módulo fortalece habilidades prácticas para trabajar con mayor seguridad en tareas digitales cotidianas dentro del entorno educativo."
+  />
+
+  <section class="grid gap-8 lg:grid-cols-[1.3fr_0.9fr]">
+    <div class="content-card p-8">
+      <h3 class="text-xl font-bold text-slate-900">¿Por qué es importante este módulo?</h3>
+      <div class="mt-4 prose-soft text-slate-700">
+        <p>
+          El uso adecuado de la computadora facilita la preparación de materiales,
+          la organización de evidencias, la comunicación académica y el acceso a recursos digitales.
+        </p>
+        <p>
+          Aunque muchas personas ya han usado herramientas digitales antes, es común
+          que todavía existan dudas sobre acciones básicas que, al dominarse, ahorran tiempo
+          y reducen errores.
+        </p>
+      </div>
+    </div>
+
+    <InfoBox title="Ruta sugerida" tone="info">
+      <p>
+        Se recomienda avanzar tema por tema, ya que cada apartado apoya al siguiente.
+      </p>
+      <ol class="mt-3 list-decimal pl-6">
+        <li>Uso de periféricos</li>
+        <li>Archivos y carpetas</li>
+        <li>Descarga y edición de archivos</li>
+        <li>Navegación web</li>
+        <li>Correo electrónico</li>
+        <li>Nube: Drive y OneDrive</li>
+      </ol>
+    </InfoBox>
+  </section>
+
+  <section class="mt-12">
+    <SectionTitle
+      title="Temas del módulo"
+      description="Seleccione un tema para comenzar. El primer tema ya está disponible y los demás se pueden ir construyendo después."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {module1Topics.map((topic) => (
+        <TopicCard
+          title={topic.title}
+          description={topic.description}
+          href={topic.href}
+          status={topic.status}
+        />
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-12">
+    <InfoBox title="Enfoque del módulo" tone="success">
+      <p>
+        El contenido está pensado para docentes que necesitan una explicación clara,
+        visual y útil, sin lenguaje técnico innecesario. La intención es comprender lo esencial
+        y aplicarlo de inmediato en actividades reales.
+      </p>
+    </InfoBox>
+  </section>
+</BaseLayout>

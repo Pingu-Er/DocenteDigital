@@ -1,1 +1,29 @@
 @import "tailwindcss";
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.prose-soft p {
+  line-height: 1.9;
+}
+
+.prose-soft li {
+  line-height: 1.8;
+}
+
+.content-card {
+  @apply rounded-2xl border border-slate-200 bg-white shadow-sm;
+}
+
+.placeholder-box {
+  @apply flex min-h-[220px] items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-100 text-center text-slate-500;
+}
