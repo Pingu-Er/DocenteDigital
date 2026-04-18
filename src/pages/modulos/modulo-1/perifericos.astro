@@ -178,6 +178,8 @@ const windowShortcuts = [
     caption: 'Win + E: abre directamente el explorador de archivos para acceder a carpetas y documentos.',
   },
 ];
+
+const shortcutsPdf = `${BASE_PATH}/docs/guia-atajos-windows-esencial.pdf`;
 ---
 
 <BaseLayout
@@ -321,31 +323,48 @@ const windowShortcuts = [
     </div>
   </section>
 
-    <section class="mt-14">
-      <SectionTitle
-        title="Documento visual de atajos"
-        description="Aquí puede mostrarse posteriormente un documento visual con atajos de Windows y otras combinaciones útiles de teclado para consulta dentro de la misma página."
-      />
+  <section class="mt-14">
+    <SectionTitle
+      title="Guía completa de atajos de teclado"
+      description="Este recurso reúne atajos de Windows organizados para consulta rápida."
+    />
 
-      <div class="content-card p-6">
-        <div class="placeholder-box min-h-[380px]">
-          Aquí se mostrará un documento visual más completo
-          <br />
-          con atajos de Windows y otras combinaciones útiles.
-          <br /><br />
-          Ruta sugerida:
-          <strong>/public/docs/atajos-esenciales.pdf</strong>
-        </div>
-
-        <div class="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5 text-slate-700">
-          <p class="font-semibold text-slate-900">Cuando el documento ya exista:</p>
-          <p class="mt-2 leading-7">
-            puede incrustarse directamente en esta sección para que el docente lo consulte
-            sin necesidad de descargarlo primero.
-          </p>
-        </div>
+    <div class="content-card p-6 md:p-8">
+      <div class="mb-6 rounded-2xl border border-sky-100 bg-sky-50/70 p-5 text-slate-700">
+        <p class="font-semibold text-slate-900">¿Qué encontrará en este documento?</p>
+        <p class="mt-2 leading-7">
+          Una guía breve y visual con combinaciones de teclado realmente útiles para tareas
+          cotidianas, agrupadas por categoría y explicadas de forma clara.
+        </p>
+        <p class="mt-2 leading-7">
+          Está pensada como material de consulta rápida para reforzar lo visto en esta sección,
+          sin necesidad de salir del sitio.
+        </p>
       </div>
-    </section>
+
+      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <iframe
+          src={`${shortcutsPdf}#view=FitH`}
+          title="Guía visual de atajos de teclado"
+          class="h-[720px] w-full"
+          loading="lazy"
+        ></iframe>
+      </div>
+
+      <div class="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-600">
+        Si el visor no aparece correctamente en algún navegador, el documento puede abrirse en una
+        pestaña aparte desde
+        <a
+          href={shortcutsPdf}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="font-semibold text-sky-700 hover:text-sky-800"
+        >
+          este enlace
+        </a>.
+      </div>
+    </div>
+  </section>
 
   <section class="mt-14">
     <InfoBox title="Cierre del tema" tone="success">
