@@ -1,17 +1,710 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SectionTitle from '../../../components/module/SectionTitle.astro';
+import InfoBox from '../../../components/module/InfoBox.astro';
+import ExampleCard from '../../../components/module/ExampleCard.astro';
+import HighlightMistakes from '../../../components/module/HighlightMistakes.astro';
+import CommonMistakes from '../../../components/module/CommonMistakes.astro';
+import VisualActionCard from '../../../components/module/VisualActionCard.astro';
+import VideoCarousel from '../../../components/module/VideoCarousel.astro';
 import { BASE_PATH } from '../../../consts';
+
+const browserLayoutImage = `${BASE_PATH}/images/modulo-1/navegacion-web/partes-navegador-general.png`;
+
+const browserParts = [
+  {
+    title: 'Botón de retroceder',
+    image: `${BASE_PATH}/images/modulo-1/navegacion-web/retroceder.png`,
+    imageAlt: 'Botón de retroceder en el navegador',
+    text: 'Permite volver a la página anterior dentro de la misma navegación. Es útil cuando se abrió un resultado y se quiere regresar rápidamente a la búsqueda anterior.',
+  },
+  {
+    title: 'Botón de avanzar',
+    image: `${BASE_PATH}/images/modulo-1/navegacion-web/avanzar.png`,
+    imageAlt: 'Botón de avanzar en el navegador',
+    text: 'Permite regresar hacia delante después de haber usado retroceder. No siempre está activo, porque depende de si ya se recorrieron páginas previas.',
+  },
+  {
+    title: 'Botón de actualizar',
+    image: `${BASE_PATH}/images/modulo-1/navegacion-web/actualizar.png`,
+    imageAlt: 'Botón de actualizar en el navegador',
+    text: 'Sirve para recargar la página actual. Puede ayudar cuando una página no terminó de cargar bien o cuando se quiere revisar si ya mostró cambios recientes.',
+  },
+  {
+    title: 'Barra de direcciones o URL',
+    image: `${BASE_PATH}/images/modulo-1/navegacion-web/url.png`,
+    imageAlt: 'Barra de direcciones o URL del navegador',
+    text: 'Es el espacio donde se escribe una búsqueda o una dirección web. También permite identificar en qué página se está navegando.',
+  },
+  {
+    title: 'Pestañas',
+    image: `${BASE_PATH}/images/modulo-1/navegacion-web/pestana.png`,
+    imageAlt: 'Pestañas del navegador',
+    text: 'Permiten tener varias páginas abiertas al mismo tiempo. Son útiles para comparar información, dejar una fuente abierta y consultar otra sin cerrar la anterior.',
+  },
+  {
+    title: 'Agregar a favoritos',
+    image: `${BASE_PATH}/images/modulo-1/navegacion-web/favoritos.png`,
+    imageAlt: 'Botón de agregar a favoritos',
+    text: 'Sirve para guardar una página importante y volver a ella con más facilidad después, sin tener que buscarla nuevamente.',
+  },
+  {
+    title: 'Historial',
+    image: `${BASE_PATH}/images/modulo-1/navegacion-web/historial.png`,
+    imageAlt: 'Historial del navegador',
+    text: 'Permite revisar páginas visitadas anteriormente. Puede ser útil cuando se encontró algo importante, pero ya no se recuerda exactamente cómo se llegó ahí.',
+  },
+  {
+    title: 'Menú principal del navegador',
+    image: `${BASE_PATH}/images/modulo-1/navegacion-web/menu-navegador.png`,
+    imageAlt: 'Menú principal del navegador',
+    text: 'Desde aquí suelen aparecer accesos a historial, descargas, configuración, marcadores o herramientas adicionales del navegador.',
+  },
+];
+
+const searchSteps = [
+  {
+    title: 'Buscar algo general',
+    image: `${BASE_PATH}/images/modulo-1/navegacion-web/busqueda-general.png`,
+    imageAlt: 'Ejemplo de búsqueda general',
+    steps: [
+      'Hacer clic izquierdo en la barra de búsqueda.',
+      'Escribir lo que se necesita encontrar, por ejemplo: historia de México independencia.',
+      'Presionar Enter.',
+      'Revisar los resultados antes de abrir uno.',
+    ],
+    note: 'Una búsqueda general sirve para comenzar cuando todavía no se necesita algo demasiado específico.',
+  },
+  {
+    title: 'Entrar a una página',
+    image: `${BASE_PATH}/images/modulo-1/navegacion-web/entrar-pagina.png`,
+    imageAlt: 'Ejemplo de entrar a una página web',
+    steps: [
+      'Leer el título del resultado.',
+      'Observar de qué sitio viene.',
+      'Hacer clic izquierdo sobre el resultado que parezca más útil.',
+      'Esperar a que la página cargue y revisar si realmente responde a lo que se buscaba.',
+    ],
+    note: 'Entrar a una página no obliga a quedarse en ella. Si no sirve, se puede regresar y probar otra opción.',
+  },
+  {
+    title: 'Copiar información útil',
+    image: `${BASE_PATH}/images/modulo-1/navegacion-web/copiar-texto.png`,
+    imageAlt: 'Ejemplo de copiar texto de una página',
+    steps: [
+      'Mantener presionado el clic izquierdo y arrastrar sobre el texto para seleccionarlo.',
+      'Presionar Ctrl + C o usar clic derecho y elegir “Copiar”.',
+      'Ir al documento donde se trabaja.',
+      'Presionar Ctrl + V para pegar.',
+    ],
+    note: 'Conviene copiar con cuidado y verificar después el formato o el contenido pegado.',
+  },
+];
+
+const teacherSearchExamples = [
+  {
+    title: 'Buscar material general para una clase',
+    query: 'historia de México independencia',
+    text: 'Sirve para comenzar con una búsqueda amplia y obtener páginas, imágenes, videos o recursos básicos.',
+  },
+  {
+    title: 'Buscar imágenes para apoyar una explicación',
+    query: 'historia de México independencia imágenes',
+    text: 'Ayuda a encontrar material visual para una presentación o una clase.',
+  },
+  {
+    title: 'Buscar documentos listos para consulta',
+    query: 'historia de México independencia filetype:pdf',
+    text: 'Sirve cuando se espera un documento más formal, por ejemplo una guía, lectura o material descargable.',
+  },
+  {
+    title: 'Buscar en un sitio específico',
+    query: 'historia de México independencia site:unam.mx',
+    text: 'Permite limitar la búsqueda a un sitio concreto que se considera más confiable para ese tema.',
+  },
+];
+
+const sponsoredVsOrganic = [
+  {
+    title: 'Resultado patrocinado',
+    image: `${BASE_PATH}/images/modulo-1/navegacion-web/patrocinado.png`,
+    imageAlt: 'Ejemplo de resultado patrocinado en Google',
+    text: 'Algunos resultados aparecen marcados como patrocinados o como anuncio. Eso significa que alguien pagó para que su enlace aparezca en ese espacio. No necesariamente es malo, pero no conviene asumir que por salir primero ya es la mejor fuente.',
+  },
+  {
+    title: 'Resultado normal u orgánico',
+    image: `${BASE_PATH}/images/modulo-1/navegacion-web/resultado-organico.png`,
+    imageAlt: 'Ejemplo de resultado orgánico en Google',
+    text: 'Son resultados que el buscador muestra por su relación con la búsqueda. Tampoco conviene confiar ciegamente, pero suelen ser los que más interesan cuando se busca información.',
+  },
+];
+
+const refinementMethods = [
+  {
+    title: 'Usar palabras más concretas',
+    text: 'No es igual buscar historia de México que buscar historia de México independencia primaria. Agregar contexto ayuda a obtener resultados más cercanos a lo que se necesita.',
+    example: 'historia de México independencia primaria',
+  },
+  {
+    title: 'Usar comillas para una frase exacta',
+    text: 'Sirve cuando se quiere buscar una expresión específica sin cambiar sus palabras.',
+    example: '"Niños héroes" historia de México',
+  },
+  {
+    title: 'Usar filetype: para un tipo de archivo',
+    text: 'Sirve cuando se espera encontrar directamente un PDF u otro formato de documento.',
+    example: 'historia de México primaria filetype:pdf',
+  },
+  {
+    title: 'Usar site: para limitar a un sitio',
+    text: 'Sirve cuando se confía más en una institución, universidad o página oficial concreta.',
+    example: 'calendario escolar site:gob.mx',
+  },
+  {
+    title: 'Buscar dentro de una plataforma conocida',
+    text: 'A veces conviene buscar en un sitio específico según lo que se necesita: video, documento, noticia o recurso institucional.',
+    example: 'fracciones site:youtube.com',
+  },
+  {
+    title: 'Combinar dos ideas',
+    text: 'También puede combinarse más de un criterio, por ejemplo sitio y tipo de archivo.',
+    example: 'historia de México site:unam.mx filetype:pdf',
+  },
+];
+
+const pageReadingTips = [
+  {
+    title: 'Revisar quién publica',
+    text: 'Antes de confiar en una página, conviene observar el nombre del sitio o de la institución que la publica.',
+  },
+  {
+    title: 'Leer el título y subtítulos',
+    text: 'Muchas veces basta con revisar primero el título principal y algunos subtítulos para decidir si la página sí servirá.',
+  },
+  {
+    title: 'Buscar fecha o actualización',
+    text: 'En temas cambiantes, conviene revisar si el contenido se ve reciente o si parece muy desactualizado.',
+  },
+  {
+    title: 'Comparar más de una fuente',
+    text: 'Si la información es importante, conviene revisar al menos dos fuentes en lugar de quedarse con la primera.',
+  },
+];
+
+const cookiesCards = [
+  {
+    title: '¿Qué son las cookies?',
+    text: 'Son datos que las páginas guardan en el navegador para recordar cierta información de la visita, como sesiones abiertas, preferencias o parte de la actividad de navegación.',
+  },
+  {
+    title: '¿Siempre son peligrosas?',
+    text: 'No. En muchos casos ayudan a que una página funcione mejor o recuerde configuraciones útiles. Aun así, aceptar menos cookies o revisar qué se permite también es una práctica válida.',
+  },
+  {
+    title: '¿Qué conviene hacer?',
+    text: 'Leer con calma cuando una página pide permisos o muestra opciones de cookies. Si no se tiene claridad, aceptar solo lo necesario o rechazar lo opcional puede ser una decisión prudente.',
+  },
+];
+
+const dangerSignals = [
+  'La página intenta generar urgencia exagerada, miedo o presión inmediata para hacer clic.',
+  'El sitio promete premios, regalos o soluciones demasiado buenas para ser verdad.',
+  'La dirección de la página se ve extraña, con letras raras, errores o imitaciones de marcas conocidas.',
+  'Aparecen muchas ventanas emergentes, descargas inesperadas o avisos alarmistas.',
+  'Se pide descargar un archivo sin que quede claro qué es, para qué sirve o de dónde viene.',
+  'La página pide datos sensibles sin una razón clara o sin suficiente contexto.',
+];
+
+const downloadSafetySteps = [
+  {
+    title: 'Antes de descargar',
+    text: 'Revisar qué página ofrece el archivo, cómo se llama y qué tipo de archivo parece ser. Conviene desconfiar de botones grandes de descarga cuando el sitio se ve desordenado o sospechoso.',
+  },
+  {
+    title: 'Durante la descarga',
+    text: 'Observar si el navegador muestra advertencias. Si aparece una alerta de seguridad, conviene detenerse y revisar antes de continuar.',
+  },
+  {
+    title: 'Después de descargar',
+    text: 'No abrir automáticamente todo archivo descargado. Primero conviene ver el nombre, la ubicación y, si hay duda, revisar la seguridad del equipo.',
+  },
+];
+
+const notFoundCases = [
+  {
+    title: 'La página no carga o dice que no se encontró',
+    text: 'Lo primero es revisar si la dirección se escribió bien. Si se entró desde un resultado de búsqueda, puede ser que la página haya cambiado, se haya movido o ya no exista.',
+  },
+  {
+    title: 'Qué hacer en ese caso',
+    text: 'Conviene regresar al buscador, abrir otro resultado, buscar el mismo tema con palabras distintas o entrar directamente al sitio principal para seguir desde ahí.',
+  },
+];
+
+const defenderQuickSteps = [
+  'Abrir el menú Inicio y escribir Windows Security o Seguridad de Windows.',
+  'Entrar al apartado de seguridad del equipo.',
+  'Revisar áreas como Protección contra virus y amenazas o App & browser control, según lo que se necesite comprobar.',
+  'Si el navegador o Windows mostró una advertencia, leer primero el mensaje antes de abrir el archivo o continuar.',
+];
+
+const commonMistakes = [
+  'Entrar al primer resultado sin revisar si era anuncio, patrocinado o una página poco clara.',
+  'Buscar con palabras demasiado vagas y luego pensar que internet no muestra resultados útiles.',
+  'Confiar en una sola página para temas importantes sin comparar al menos otra fuente.',
+  'Descargar archivos sin revisar bien de qué sitio provienen.',
+  'Aceptar todo rápidamente sin leer mensajes, permisos o avisos del navegador.',
+];
+
+const safetyMistakes = [
+  'Ignorar una advertencia de seguridad del navegador sin revisar por qué apareció.',
+  'Entregar datos personales o contraseñas en páginas que no se ven confiables.',
+  'Abrir archivos descargados de sitios dudosos como si fueran documentos normales.',
+  'Pensar que una página es confiable solo porque se ve bonita o profesional.',
+  'No revisar la dirección del sitio cuando parece una copia o imitación.',
+];
+
+const reinforcementVideos = [
+  {
+    videoId: 'SwTMDvrTuHk',
+    title: 'Recorrido por la interfaz de Google Chrome',
+    description: 'Un vistazo rápido a los elementos que componen el navegador, desde la barra de direcciones hasta el menú de configuración, ideal para familiarizarse con las herramientas de navegación. Créditos a: LearnFree en Español',
+  },
+  {
+    videoId: '9oWM50RDsLQ',
+    title: 'Dominando la Búsqueda Avanzada en Google',
+    description: 'Tutorial detallado sobre cómo usar comandos y filtros para refinar tus búsquedas, permitiéndote encontrar documentos específicos y resultados en sitios académicos de forma precisa. Créditos a: Aprender a Investigar',
+  },
+  {
+    videoId: 'on4XxwOCF1w',
+    title: 'Evaluación de Fuentes y Confiabilidad en Internet',
+    description: 'Aprende a aplicar criterios profesionales para decidir si la información de una página es confiable, analizando su origen, actualización y veracidad. Créditos a: EduBetsa',
+  },
+  {
+    videoId: 'd-363-1aGUo',
+    title: 'Seguridad al Navegar: Cómo Detectar URLs Falsas',
+    description: 'Guía práctica para identificar señales de alerta en las direcciones web y evitar sitios sospechosos que puedan comprometer tu seguridad o datos personales. Créditos a: Servicios y Capacitaciones en Informatica',
+  },
+  {
+    videoId: '3ZWbUn-oAco',
+    title: 'Organización de Pestañas en el Navegador',
+    description: 'Aprende a agrupar y gestionar múltiples pestañas abiertas para mantener un espacio de trabajo ordenado mientras comparas información o consultas diversas fuentes. Créditos a: Saber Programas',
+  },
+];
+
+const recommendedWebGuide = `${BASE_PATH}/docs/docentedigital_guia_sitios_web_v3.pdf`;
 ---
 
-<BaseLayout title="Módulo 1 | Navegación web">
-  <a href={`${BASE_PATH}/modulos/modulo-1/`} class="text-sm font-semibold text-sky-700 hover:text-sky-800">
-    ← Volver al módulo 1
-  </a>
+<BaseLayout
+  title="Módulo 1 | Navegación web y búsqueda de información"
+  description="Cómo buscar información en internet, leer resultados, encontrar páginas útiles y navegar con mayor seguridad."
+>
+  <div class="mb-8">
+    <a
+      href={`${BASE_PATH}/modulos/modulo-1/`}
+      class="text-sm font-semibold text-sky-700 hover:text-sky-800"
+    >
+      ← Volver al módulo 1
+    </a>
+  </div>
 
-  <section class="mt-8 content-card p-8">
-    <h1 class="text-3xl font-bold text-slate-900">Navegación web y criterios de confiabilidad</h1>
-    <p class="mt-4 leading-8 text-slate-700">
-      Esta sección se encuentra en preparación.
-    </p>
+  <SectionTitle
+    eyebrow="Tema 4"
+    title="Navegación web y búsqueda de información"
+    description="Buscar mejor, leer resultados con criterio y navegar con mayor seguridad facilita el trabajo diario con recursos en línea."
+  />
+
+  <section class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+    <div class="content-card p-8 prose-soft text-slate-700">
+      <p>
+        Navegar por internet ya no consiste solamente en escribir algo en Google y abrir la primera página.
+        También implica reconocer qué resultado conviene abrir, cómo buscar algo más específico y qué señales
+        ayudan a identificar una página confiable o una descarga sospechosa.
+      </p>
+      <p>
+        En este tema se explican pasos concretos para buscar información, copiar contenido útil, refinar
+        resultados y reducir errores comunes al navegar por la web.
+      </p>
+    </div>
+
+    <InfoBox title="Propósito del tema" tone="info">
+      <p>
+        Comprender cómo buscar, seleccionar y usar información en internet con mayor claridad, precisión
+        y seguridad.
+      </p>
+    </InfoBox>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Partes principales de un navegador"
+      description="Antes de buscar información, conviene reconocer algunos elementos básicos del navegador para moverse con mayor seguridad y entender mejor lo que aparece en pantalla."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+      <VisualActionCard
+        title="Vista general del navegador"
+        image={browserLayoutImage}
+        imageAlt="Vista general con las partes principales de un navegador"
+      >
+        <p>
+          Aquí conviene colocar una imagen general del navegador con etiquetas visibles para identificar
+          de manera rápida sus partes principales.
+        </p>
+        <p>
+          <strong>No hace falta memorizar todo.</strong> Lo importante es reconocer dónde está lo más útil
+          para navegar: retroceder, actualizar, ver la dirección de la página, trabajar con pestañas,
+          guardar favoritos y revisar el historial.
+        </p>
+      </VisualActionCard>
+
+      <div class="content-card p-6 md:p-8">
+        <h3 class="text-lg font-bold text-slate-900">¿Por qué conviene conocer estas partes?</h3>
+        <div class="mt-4 prose-soft text-slate-700">
+          <p>
+            Muchas dudas al navegar no se deben a internet en sí, sino a no reconocer qué botón sirve
+            para volver atrás, dónde se escribe una búsqueda o cómo recuperar una página que ya se había abierto.
+          </p>
+          <p>
+            Entender estas partes reduce errores simples y permite trabajar con más calma, especialmente
+            cuando se están consultando materiales, comparando fuentes o buscando recursos para una clase.
+          </p>
+        </div>
+
+        <div class="mt-6 rounded-2xl border border-sky-100 bg-sky-50/70 p-5 text-slate-700">
+          <p class="font-semibold text-slate-900">Idea práctica</p>
+          <p class="mt-2 leading-7">
+            Si una persona entiende bien la barra de direcciones, las pestañas, el botón de retroceso,
+            favoritos e historial, ya tiene una base muy útil para navegar con más claridad.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {browserParts.map((item) => (
+        <VisualActionCard
+          title={item.title}
+          image={item.image}
+          imageAlt={item.imageAlt}
+        >
+          <p>{item.text}</p>
+        </VisualActionCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Cómo buscar algo en internet"
+      description="Buscar bien no requiere pasos complicados, pero sí conviene seguir un orden claro."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {searchSteps.map((item) => (
+        <VisualActionCard
+          title={item.title}
+          image={item.image}
+          imageAlt={item.imageAlt}
+        >
+          <ol class="list-decimal space-y-2 pl-5">
+            {item.steps.map((step) => (
+              <li>{step}</li>
+            ))}
+          </ol>
+          <p class="mt-4"><strong>Nota:</strong> {item.note}</p>
+        </VisualActionCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Ejemplos de búsqueda útiles para una clase o tarea"
+      description="Estos ejemplos muestran cómo una misma necesidad puede buscarse de manera general o más específica."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {teacherSearchExamples.map((item) => (
+        <ExampleCard title={item.title}>
+          <p><strong>Búsqueda sugerida:</strong> {item.query}</p>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Resultados patrocinados y resultados normales"
+      description="Conviene distinguir entre anuncios y resultados orgánicos para no quedarse automáticamente con la primera opción."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      {sponsoredVsOrganic.map((item) => (
+        <VisualActionCard
+          title={item.title}
+          image={item.image}
+          imageAlt={item.imageAlt}
+        >
+          <p>{item.text}</p>
+        </VisualActionCard>
+      ))}
+    </div>
+
+    <div class="mt-6">
+      <InfoBox title="Idea clave" tone="warning">
+        <p>
+          Que un resultado aparezca primero no siempre significa que sea la mejor fuente. Lo más útil
+          es revisar qué sitio es, qué ofrece y si realmente responde a lo que se está buscando.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Cuando una página no abre o no se encuentra"
+      description="No siempre significa que la computadora falló. A veces solo cambió la dirección o el contenido ya no está disponible."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      {notFoundCases.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Cómo buscar de forma más específica"
+      description="Cuando una búsqueda simple no basta, conviene afinarla con algunos recursos muy prácticos."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {refinementMethods.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+          <p><strong>Ejemplo:</strong> {item.example}</p>
+        </ExampleCard>
+      ))}
+    </div>
+
+    <div class="mt-6">
+      <InfoBox title="Importante" tone="success">
+        <p>
+          Buscar de forma específica no reemplaza la búsqueda simple. Más bien sirve cuando ya se sabe
+          mejor qué se necesita: un PDF, un sitio oficial, una universidad concreta o una frase exacta.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Cómo leer una página antes de confiar en ella"
+      description="No se trata de desconfiar de todo, sino de observar algunas señales básicas antes de usar la información."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {pageReadingTips.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Cookies y avisos de consentimiento"
+      description="Estos avisos aparecen con frecuencia al entrar a páginas nuevas y conviene entenderlos de manera simple."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {cookiesCards.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Señales de alerta al navegar"
+      description="La mayor parte del cuidado práctico consiste en reconocer páginas que se ven extrañas, presionan demasiado o buscan que el usuario actúe sin pensar."
+    />
+
+    <div class="mb-6">
+      <InfoBox title="Importante" tone="warning">
+        <p>
+          Hoy los navegadores incluyen más protecciones y advertencias que antes, pero eso no reemplaza
+          el criterio del usuario. La mejor defensa sigue siendo detenerse un momento y revisar antes de hacer clic.
+        </p>
+      </InfoBox>
+    </div>
+
+    <HighlightMistakes
+      title="Señales comunes de una página sospechosa"
+      mistakes={dangerSignals}
+    />
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Descargar archivos con más cuidado"
+      description="Muchas dudas y muchos riesgos aparecen justo en el momento de descargar algo desde internet."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {downloadSafetySteps.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Revisión rápida con Windows Security"
+      description="Si una descarga o una página genera dudas, Windows incluye herramientas básicas de seguridad que conviene conocer al menos de forma general."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+      <VisualActionCard
+        title="Ubicar Seguridad de Windows"
+        image={`${BASE_PATH}/images/modulo-1/navegacion-web/windows-security.png`}
+        imageAlt="Ejemplo de la aplicación Seguridad de Windows"
+      >
+        <p>
+          Aquí puede colocarse una imagen de la aplicación Seguridad de Windows o Windows Security
+          para que el usuario sepa cómo se ve al abrirla.
+        </p>
+        <p>
+          Es suficiente con reconocerla y saber que existe como apoyo cuando hay dudas con una
+          descarga o una advertencia del sistema.
+        </p>
+      </VisualActionCard>
+
+      <div class="content-card p-6 md:p-8">
+        <ol class="space-y-4 text-slate-700">
+          {defenderQuickSteps.map((step, index) => (
+            <li class="flex items-start gap-4">
+              <div class="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sky-100 font-bold text-sky-700">
+                {index + 1}
+              </div>
+              <p class="leading-7">{step}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Errores frecuentes"
+      description="Muchos problemas al navegar no se deben a falta de capacidad, sino a actuar con prisa o sin revisar con calma lo que aparece en pantalla."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <CommonMistakes title="Errores comunes al buscar y navegar" mistakes={commonMistakes} />
+      <HighlightMistakes title="Errores frecuentes de seguridad" mistakes={safetyMistakes} />
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Guía de sitios web útiles"
+      description="Este recurso reúne páginas especialmente útiles para productividad, organización y resolución de tareas comunes en el trabajo docente."
+    />
+
+    <div class="content-card p-6 md:p-8">
+      <div class="mb-6 rounded-2xl border border-sky-100 bg-sky-50/70 p-5 text-slate-700">
+        <p class="font-semibold text-slate-900">¿Qué encontrará en este documento?</p>
+        <p class="mt-2 leading-7">
+          Una guía práctica con sitios web recomendados para tareas frecuentes como buscar videos
+          educativos, diseñar materiales, compartir archivos, crear formularios, trabajar con
+          documentos o resolver problemas comunes con PDF.
+        </p>
+        <p class="mt-2 leading-7">
+          La intención no es mostrar cualquier página de internet, sino reunir herramientas realmente
+          útiles, frecuentes y razonablemente confiables para el trabajo cotidiano.
+        </p>
+      </div>
+
+      <div class="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+        <div class="content-card border border-slate-200 p-5 shadow-none">
+          <h3 class="text-lg font-bold text-slate-900">¿Para qué sirve esta guía?</h3>
+          <div class="mt-4 prose-soft text-slate-700">
+            <p>
+              Sirve como documento de consulta rápida para recordar qué tipo de página puede ayudar
+              en cada necesidad concreta.
+            </p>
+            <p>
+              Por ejemplo: dónde buscar videos útiles, dónde crear materiales visuales, dónde hacer
+              formularios, dónde compartir archivos o qué herramienta puede ayudar con un PDF cuando
+              se necesita unir, convertir o comprimir documentos.
+            </p>
+          </div>
+        </div>
+
+        <InfoBox title="Sugerencia de uso" tone="info">
+          <p>
+            Conviene revisar esta guía como material complementario y no como una lista obligatoria.
+            Su valor está en ayudar a ubicar más rápido herramientas que suelen resolver problemas
+            reales del trabajo diario.
+          </p>
+        </InfoBox>
+      </div>
+
+      <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <iframe
+          src={`${recommendedWebGuide}#view=FitH`}
+          title="Guía de sitios web útiles para productividad y docencia"
+          class="h-[760px] w-full"
+          loading="lazy"
+        ></iframe>
+      </div>
+
+      <div class="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-600">
+        Si el visor no aparece correctamente en algún navegador, el documento puede abrirse en una
+        pestaña aparte desde
+        <a
+          href={recommendedWebGuide}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="font-semibold text-sky-700 hover:text-sky-800"
+        >
+          este enlace
+        </a>.
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Videos de refuerzo"
+      description="Estos videos pueden servir como apoyo visual para reforzar búsquedas, lectura de resultados y navegación más segura."
+    />
+
+    <VideoCarousel
+      title="Videos recomendados sobre navegación web"
+      videos={reinforcementVideos}
+    />
+  </section>
+
+  <section class="mt-14">
+    <InfoBox title="Cierre del tema" tone="success">
+      <p>
+        Navegar mejor no consiste en memorizar internet, sino en desarrollar criterio: saber buscar,
+        leer resultados con calma, reconocer señales útiles y actuar con más seguridad frente a páginas
+        y descargas.
+      </p>
+    </InfoBox>
   </section>
 </BaseLayout>

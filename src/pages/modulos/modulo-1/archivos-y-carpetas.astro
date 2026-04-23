@@ -1,17 +1,795 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SectionTitle from '../../../components/module/SectionTitle.astro';
+import InfoBox from '../../../components/module/InfoBox.astro';
+import ExampleCard from '../../../components/module/ExampleCard.astro';
+import HighlightMistakes from '../../../components/module/HighlightMistakes.astro';
+import CommonMistakes from '../../../components/module/CommonMistakes.astro';
+import VisualActionCard from '../../../components/module/VisualActionCard.astro';
+import VideoCarousel from '../../../components/module/VideoCarousel.astro';
 import { BASE_PATH } from '../../../consts';
+
+// Opcional: cuando tenga sus imágenes, puede reemplazar estas cadenas vacías
+// por rutas como `${BASE_PATH}/images/modulo-1/archivos-y-carpetas/arbol-general.png`
+const explorerTreeImage = '';
+const searchImage = '';
+
+const basicFolderActions = [
+  {
+    title: 'Abrir una carpeta',
+    image: `${BASE_PATH}/images/modulo-1/archivos-y-carpetas/abrir-carpeta.png`,
+    imageAlt: 'Ejemplo de cómo abrir una carpeta en el explorador de archivos',
+    steps: [
+      'Ubicar la carpeta en el Escritorio, en Descargas, en Documentos o dentro del explorador de archivos.',
+      'Hacer doble clic sobre la carpeta para abrirla.',
+      'Si se está usando un panel lateral dentro del explorador, también puede abrirse con un solo clic en algunas ubicaciones.',
+      'Una vez abierta, se podrán ver los archivos o subcarpetas que contiene.',
+    ],
+    note: 'En Windows 10 y Windows 11 la apariencia puede cambiar un poco, pero la idea general es la misma: localizar la carpeta y abrirla para ver su contenido.',
+  },
+  {
+    title: 'Crear una carpeta',
+    image: `${BASE_PATH}/images/modulo-1/archivos-y-carpetas/crear-carpeta.png`,
+    imageAlt: 'Ejemplo de cómo crear una carpeta',
+    steps: [
+      'Ir a la ubicación donde se quiere guardar la nueva carpeta.',
+      'Hacer clic derecho en un espacio vacío.',
+      'Elegir la opción “Nuevo” y después “Carpeta”.',
+      'Escribir un nombre claro y presionar Enter.',
+    ],
+    note: 'En Windows 11 algunas opciones pueden verse un poco distintas o resumidas, pero sigue existiendo la opción para crear una carpeta nueva.',
+  },
+  {
+    title: 'Mover archivos a una carpeta',
+    image: `${BASE_PATH}/images/modulo-1/archivos-y-carpetas/mover-archivo.png`,
+    imageAlt: 'Ejemplo de cómo mover archivos a una carpeta',
+    steps: [
+      'Seleccionar el archivo que se desea mover.',
+      'Arrastrarlo hacia la carpeta correspondiente y soltarlo ahí.',
+      'Otra opción es copiar o cortar el archivo, abrir la carpeta destino y pegarlo dentro.',
+      'Verificar después que el archivo haya quedado en la ubicación correcta.',
+    ],
+    note: 'Si el archivo está importante o se quiere evitar confusión, conviene revisar el destino antes de mover varios archivos al mismo tiempo.',
+  },
+  {
+    title: 'Renombrar carpetas y archivos',
+    image: `${BASE_PATH}/images/modulo-1/archivos-y-carpetas/renombrar-archivo.png`,
+    imageAlt: 'Ejemplo de cómo renombrar una carpeta o archivo',
+    steps: [
+      'Ubicar el archivo o carpeta que se quiere renombrar.',
+      'Hacer clic derecho sobre ese elemento.',
+      'Elegir la opción “Cambiar nombre” o “Renombrar”.',
+      'Escribir el nuevo nombre y presionar Enter.',
+    ],
+    note: 'También puede hacerse seleccionando el archivo y luego usando la tecla F2 en muchas computadoras con Windows.',
+  },
+];
+
+const commonFolders = [
+  {
+    title: 'Escritorio',
+    text: 'Suele ser lo primero que se ve al encender la computadora. Es útil para accesos rápidos o archivos de trabajo inmediato, pero no conviene convertirlo en el lugar permanente de todo.',
+    use: 'Materiales del día, accesos directos o archivos temporales.',
+  },
+  {
+    title: 'Descargas',
+    text: 'Aquí suelen guardarse automáticamente muchos archivos obtenidos de internet, correo o plataformas. Si no se revisa con frecuencia, puede llenarse rápidamente y volverse confuso.',
+    use: 'Archivos recién descargados, antes de moverlos a una carpeta más adecuada.',
+  },
+  {
+    title: 'Documentos',
+    text: 'Es una ubicación conveniente para guardar archivos de trabajo: textos, planeaciones, listas, evidencias, formatos o materiales que se usan con regularidad.',
+    use: 'Documentos importantes o archivos que ya tienen un lugar más estable.',
+  },
+  {
+    title: 'Imágenes',
+    text: 'Suele usarse para fotografías, capturas o recursos visuales. Puede ser útil si se quiere separar este tipo de materiales del resto de documentos.',
+    use: 'Fotos, ilustraciones, capturas de pantalla y recursos gráficos.',
+  },
+];
+
+const fileExamples = [
+  {
+    name: 'Planeacion_3B_Bloque1.docx',
+    meaning: 'Documento de texto editable.',
+    image: `${BASE_PATH}/images/modulo-1/archivos-y-carpetas/archivo-word.png`,
+    alt: 'Ejemplo visual de archivo Word',
+  },
+  {
+    name: 'Calificaciones_2A_Bimestre1.xlsx',
+    meaning: 'Hoja de cálculo para tablas y datos.',
+    image: `${BASE_PATH}/images/modulo-1/archivos-y-carpetas/archivo-excel.png`,
+    alt: 'Ejemplo visual de archivo Excel',
+  },
+  {
+    name: 'Reunion_Padres_Abril.pptx',
+    meaning: 'Presentación con diapositivas.',
+    image: `${BASE_PATH}/images/modulo-1/archivos-y-carpetas/archivo-powerpoint.png`,
+    alt: 'Ejemplo visual de archivo PowerPoint',
+  },
+  {
+    name: 'Guia_Atajos_Windows.pdf',
+    meaning: 'Documento pensado para lectura o distribución.',
+    image: `${BASE_PATH}/images/modulo-1/archivos-y-carpetas/archivo-pdf.png`,
+    alt: 'Ejemplo visual de archivo PDF',
+  },
+];
+
+const fileTypes = [
+  {
+    type: 'Word (.docx)',
+    purpose: 'Redactar documentos editables con formato, títulos, tablas, imágenes y texto continuo.',
+    opens: 'Word, Google Docs, LibreOffice Writer.',
+    caution: 'Puede abrirse en otros programas, pero el formato no siempre se conserva igual.',
+  },
+  {
+    type: 'PDF (.pdf)',
+    purpose: 'Compartir documentos de manera estable para lectura, impresión o consulta.',
+    opens: 'Navegador, Adobe Acrobat Reader y otros visores.',
+    caution: 'No está pensado para editarse libremente como un Word; muchos cambios requieren herramientas específicas.',
+  },
+  {
+    type: 'PowerPoint (.pptx)',
+    purpose: 'Crear presentaciones con diapositivas, imágenes, texto, animaciones y apoyo visual.',
+    opens: 'PowerPoint, Google Slides, LibreOffice Impress.',
+    caution: 'Si se abre en otro tipo de programa, no se verá como presentación completa y pueden perderse efectos.',
+  },
+  {
+    type: 'Excel (.xlsx)',
+    purpose: 'Organizar datos, tablas, fórmulas, listas y cálculos.',
+    opens: 'Excel, Google Sheets, LibreOffice Calc.',
+    caution: 'Puede volverse difícil de interpretar si se intenta abrir como texto plano o en un programa no adecuado.',
+  },
+  {
+    type: 'Texto plano (.txt)',
+    purpose: 'Guardar texto sin formato: notas simples, fragmentos de información o contenido muy básico.',
+    opens: 'Bloc de notas y editores de texto simples.',
+    caution: 'No conserva estilos, tamaños, negritas, tablas ni diseño visual.',
+  },
+  {
+    type: 'CSV (.csv)',
+    purpose: 'Guardar datos tabulares simples, normalmente separados por comas, para listas o exportaciones.',
+    opens: 'Excel, Sheets, Bloc de notas y otros programas de datos.',
+    caution: 'Puede abrirse en un editor simple, pero verse confuso; no conserva el diseño visual de una hoja trabajada.',
+  },
+  {
+    type: 'Imagen (.jpg, .png)',
+    purpose: 'Guardar fotografías, capturas, ilustraciones o recursos visuales.',
+    opens: 'Visores de imágenes, navegador y programas de diseño o edición.',
+    caution: 'No es un documento de texto; no permite editar contenido escrito como si fuera Word o PowerPoint.',
+  },
+  {
+    type: 'Comprimido (.zip)',
+    purpose: 'Agrupar varios archivos en uno solo para facilitar su envío o almacenamiento.',
+    opens: 'Explorador de archivos y programas de compresión.',
+    caution: 'Muchas veces primero debe extraerse su contenido antes de trabajar con los archivos que contiene.',
+  },
+];
+
+const fileTypeVisuals = [
+  {
+    title: 'Archivo Word',
+    image: `${BASE_PATH}/images/modulo-1/archivos-y-carpetas/logo-word.png`,
+    imageAlt: 'Icono o vista de archivo Word',
+    text: 'Suele identificarse por un icono azul y normalmente se usa para redactar y editar documentos.',
+  },
+  {
+    title: 'Archivo PDF',
+    image: `${BASE_PATH}/images/modulo-1/archivos-y-carpetas/logo-pdf.png`,
+    imageAlt: 'Icono o vista de archivo PDF',
+    text: 'Suele identificarse por un icono rojo. Se usa mucho para compartir documentos sin modificar fácilmente su formato.',
+  },
+  {
+    title: 'Archivo PowerPoint',
+    image: `${BASE_PATH}/images/modulo-1/archivos-y-carpetas/logo-powerpoint.png`,
+    imageAlt: 'Icono o vista de archivo PowerPoint',
+    text: 'Suele identificarse por un icono naranja y está pensado para presentaciones con diapositivas.',
+  },
+  {
+    title: 'Archivo Excel',
+    image: `${BASE_PATH}/images/modulo-1/archivos-y-carpetas/logo-excel.png`,
+    imageAlt: 'Icono o vista de archivo Excel',
+    text: 'Suele identificarse por un icono verde y normalmente contiene tablas, listas, datos o cálculos.',
+  },
+  {
+    title: 'Archivo TXT',
+    image: `${BASE_PATH}/images/modulo-1/archivos-y-carpetas/logo-txt.png`,
+    imageAlt: 'Icono o vista de archivo TXT',
+    text: 'Es un archivo de texto simple. Puede verse más básico porque no guarda formato visual avanzado.',
+  },
+  {
+    title: 'Archivo de imagen',
+    image: `${BASE_PATH}/images/modulo-1/archivos-y-carpetas/logo-imagen.png`,
+    imageAlt: 'Icono o vista de archivo de imagen',
+    text: 'Puede verse como una miniatura o como un icono. Se usa para fotografías, capturas o recursos visuales.',
+  },
+];
+
+const organizationRules = [
+  {
+    title: 'Separar por contexto real',
+    text: 'Primero conviene pensar en cómo se usa el material en la práctica: por nivel, grupo, materia, proyecto o tipo de trabajo. El criterio debe responder a una necesidad real, no solo a “guardar por guardar”.',
+  },
+  {
+    title: 'Evitar carpetas demasiado generales',
+    text: 'Una carpeta llamada solo “Matemáticas” o “Tareas” puede llenarse de archivos mezclados. Es preferible subdividir cuando haga falta, por ejemplo por grupo, tema o tipo de material.',
+  },
+  {
+    title: 'Mantener una estructura simple',
+    text: 'No hace falta crear veinte niveles. Lo importante es que el recorrido tenga lógica y que otra persona pueda entenderlo con facilidad si necesita revisar el trabajo.',
+  },
+  {
+    title: 'Guardar cada archivo en su lugar definitivo',
+    text: 'Descargas y Escritorio pueden ser puntos de paso, pero conviene mover los archivos importantes a una carpeta pensada para conservarlos y encontrarlos después.',
+  },
+];
+
+const namingRules = [
+  'Usar nombres que describan el contenido real del archivo.',
+  'Mantener el mismo orden en archivos parecidos.',
+  'Incluir materia, grupo, tema, alumno o fecha cuando sea necesario.',
+  'Evitar nombres vagos como “nuevo”, “final”, “ahora sí” o “documento 2”.',
+  'Si se usa fecha, conviene escribirla en formato AAAA-MM-DD para que se ordene mejor.',
+];
+
+const badVsGoodNames = [
+  {
+    bad: 'Juanito.docx',
+    good: '2B_Matematicas_Juanito_Tarea_Fracciones.docx',
+  },
+  {
+    bad: 'tarea final ahora si.pdf',
+    good: '3A_Espanol_Resena_Cuento_2026-04-21.pdf',
+  },
+  {
+    bad: 'planeacion nueva.pptx',
+    good: 'Historia_1Sec_Planeacion_Revolucion_Bloque2.pptx',
+  },
+  {
+    bad: 'lista.csv',
+    good: 'Calificaciones_2C_Bimestre1.csv',
+  },
+];
+
+const searchSteps = [
+  'Entrar primero a la carpeta más probable. Buscar dentro de una ubicación razonable reduce resultados innecesarios.',
+  'Escribir una palabra estable del nombre del archivo: materia, grupo, alumno, tema, fecha o tipo de trabajo.',
+  'Si aparecen demasiados resultados, afinar la búsqueda agregando otra palabra clave del mismo nombre.',
+  'Antes de abrir un resultado, revisar el tipo de archivo para no confundir un PDF con un documento editable o una presentación con una hoja de cálculo.',
+];
+
+const searchKeywords = [
+  'Materia',
+  'Grupo',
+  'Alumno',
+  'Tema',
+  'Fecha',
+  'Tipo de archivo',
+];
+
+const folderMistakes = [
+  'Guardar todo en Descargas y no mover nunca los archivos a una carpeta más clara.',
+  'Tener una sola carpeta con demasiadas cosas mezcladas: grupos, materias, imágenes, listas y presentaciones en el mismo lugar.',
+  'Duplicar carpetas con nombres casi iguales y después no recordar cuál era la correcta.',
+  'Crear demasiadas subcarpetas sin necesidad, hasta volver lenta la búsqueda manual.',
+  'Dejar archivos importantes repartidos entre Escritorio, USB, correo y carpetas distintas sin un criterio fijo.',
+];
+
+const namingMistakes = [
+  'Usar nombres como “documento”, “nuevo”, “final”, “final final” o “lista buena”.',
+  'Guardar varios archivos relacionados sin indicar materia, grupo, tema o contexto.',
+  'Cambiar el criterio cada vez: a veces poner fecha, a veces alumno, a veces nada.',
+  'Confiar en que después se recordará dónde quedó el archivo aunque el nombre no diga casi nada.',
+  'Pensar que el buscador resolverá el problema incluso cuando los nombres son vagos o repetidos.',
+];
+
+const reinforcementVideos = [
+  {
+    videoId: 'rMOFWyYnehE',
+    title: 'Práctica de Carpetas y Archivos en Windows',
+    description: 'Aprende a navegar por el explorador de archivos, creando estructuras jerárquicas con carpetas principales y subcarpetas para organizar tu información y guardar documentos directamente en su destino final. Créditos a: DavidIbiza',
+  },
+  {
+    videoId: 'z1K5YupKhgE',
+    title: 'Tipos de Archivos y sus Extensiones',
+    description: 'Una guía visual para identificar los formatos más comunes (Word, PDF, Excel) mediante sus iconos y extensiones, comprendiendo la importancia de utilizar el programa correcto para cada tipo de información. Créditos a: Profe Juan Hernani',
+  },
+  {
+    videoId: 'Skyv1B2hc_Q',
+    title: 'Estrategias de Organización y Jerarquía',
+    description: 'Domina un sistema lógico para estructurar tu computadora, aplicando reglas de nombramiento consistentes que te permitan reconocer el contenido de cualquier archivo rápidamente sin necesidad de abrirlo. Créditos a: Apolo Digital',
+  },
+  {
+    videoId: 'bcnf1SemRx4',
+    title: 'Técnicas de Búsqueda Avanzada',
+    description: 'Maximiza tu eficiencia localizando documentos específicos mediante el uso de filtros por fecha, tamaño y tipo de archivo, además de trucos con palabras clave para encontrar información en segundos. Créditos a: Ronal Mañuico',
+  },
+];
 ---
 
-<BaseLayout title="Módulo 1 | Archivos y carpetas">
-  <a href={`${BASE_PATH}/modulos/modulo-1/`} class="text-sm font-semibold text-sky-700 hover:text-sky-800">
-    ← Volver al módulo 1
-  </a>
+<BaseLayout
+  title="Módulo 1 | Gestión de archivos y carpetas"
+  description="Organizar carpetas, identificar tipos de archivo y nombrar documentos de forma clara para encontrarlos con facilidad."
+>
+  <div class="mb-8">
+    <a
+      href={`${BASE_PATH}/modulos/modulo-1/`}
+      class="text-sm font-semibold text-sky-700 hover:text-sky-800"
+    >
+      ← Volver al módulo 1
+    </a>
+  </div>
 
-  <section class="mt-8 content-card p-8">
-    <h1 class="text-3xl font-bold text-slate-900">Gestión de archivos y carpetas</h1>
-    <p class="mt-4 leading-8 text-slate-700">
-      Esta sección se encuentra en preparación.
-    </p>
+  <SectionTitle
+    eyebrow="Tema 2"
+    title="Gestión de archivos y carpetas"
+    description="Ordenar archivos de forma clara facilita encontrarlos, compartirlos y trabajar con menos confusión."
+  />
+
+  <section class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+    <div class="content-card p-8 prose-soft text-slate-700">
+      <p>
+        Organizar archivos no consiste en memorizar toda la estructura interna de la computadora,
+        sino en desarrollar un criterio de orden que permita guardar, ubicar y reutilizar la
+        información con mayor facilidad.
+      </p>
+      <p>
+        En este tema se explican las carpetas más comunes, los tipos de archivo más utilizados,
+        las diferencias entre ellos y algunas reglas sencillas para nombrar y buscar documentos
+        sin depender solamente de la memoria.
+      </p>
+    </div>
+
+    <InfoBox title="Propósito del tema" tone="info">
+      <p>
+        Comprender cómo organizar carpetas y archivos para encontrar materiales con rapidez,
+        reducir confusiones y mantener un trabajo digital más ordenado.
+      </p>
+    </InfoBox>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Carpetas y archivos: la base del orden digital"
+      description="Antes de organizar mejor, conviene distinguir qué es una carpeta y qué es un archivo."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <ExampleCard title="¿Qué es una carpeta?">
+        <p>
+          Una carpeta es un espacio de organización. Sirve para reunir archivos relacionados entre
+          sí y también puede contener otras subcarpetas.
+        </p>
+        <p>
+          Su función principal es mantener un orden lógico. Una carpeta puede concentrar documentos,
+          imágenes, listas, presentaciones, hojas de cálculo y muchos otros tipos de archivo.
+        </p>
+      </ExampleCard>
+
+      <ExampleCard title="¿Qué es un archivo?">
+        <p>
+          Un archivo es la unidad concreta de información con la que se trabaja: un documento, una
+          imagen, una presentación, una hoja de cálculo, un PDF o incluso una nota simple.
+        </p>
+        <p>
+          Cada archivo tiene un nombre y un tipo. Ese tipo influye en cómo se abre, cómo se edita
+          y para qué resulta más útil.
+        </p>
+      </ExampleCard>
+    </div>
+
+    <div class="mt-6">
+      <InfoBox title="Idea clave" tone="success">
+        <p>
+          La carpeta organiza; el archivo contiene la información. Cuando ambos se usan con un
+          criterio claro, se vuelve mucho más fácil localizar materiales después.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Ubicaciones comunes dentro de la computadora"
+      description="No hace falta conocer todo el sistema. Basta con reconocer algunos lugares frecuentes y entender para qué suelen usarse."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+      <div class="grid gap-6 md:grid-cols-2">
+        {commonFolders.map((folder) => (
+          <ExampleCard title={folder.title}>
+            <p>{folder.text}</p>
+            <p><strong>Conviene usarlo para:</strong> {folder.use}</p>
+          </ExampleCard>
+        ))}
+      </div>
+
+      <VisualActionCard
+        title="Vista general del explorador"
+        image={explorerTreeImage}
+        imageAlt="Vista general del explorador de archivos"
+      >
+        <p>
+          Aquí puede colocarse una captura sencilla del explorador de archivos para mostrar de forma
+          general cómo se ven las carpetas y cómo se recorre el árbol de ubicaciones.
+        </p>
+        <p>
+          <strong>No hace falta memorizar todo.</strong> Lo importante es reconocer que la
+          computadora ya tiene espacios organizados y que el usuario puede crear sus propias
+          carpetas con sentido.
+        </p>
+      </VisualActionCard>
+    </div>
+
+    <div class="mt-6">
+      <InfoBox title="Importante" tone="warning">
+        <p>
+          Descargas y Escritorio suelen ser lugares de paso. Los archivos importantes conviene
+          moverlos después a una carpeta más estable y mejor organizada.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Acciones básicas con carpetas y archivos"
+      description="Antes de organizar mejor, conviene saber realizar algunas acciones simples que se usan con frecuencia."
+    />
+
+    <div class="mb-6">
+      <InfoBox title="Nota sobre Windows 10 y Windows 11" tone="info">
+        <p>
+          En ambas versiones la lógica general es muy parecida. Puede cambiar un poco el diseño de los
+          botones o de los menús, pero las acciones principales siguen siendo prácticamente las mismas.
+        </p>
+      </InfoBox>
+    </div>
+
+    <div class="grid gap-6 md:grid-cols-2">
+      {basicFolderActions.map((action) => (
+        <VisualActionCard
+          title={action.title}
+          image={action.image}
+          imageAlt={action.imageAlt}
+        >
+          <ol class="list-decimal space-y-2 pl-5">
+            {action.steps.map((step) => (
+              <li>{step}</li>
+            ))}
+          </ol>
+          <p class="mt-4"><strong>Nota:</strong> {action.note}</p>
+        </VisualActionCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Cómo identificar un archivo"
+      description="Para entender qué archivo se tiene enfrente, conviene observar su nombre y su terminación."
+    />
+
+    <div class="content-card p-6 md:p-8">
+      <p class="leading-7 text-slate-700">
+        Normalmente, el tipo de archivo se reconoce por la parte final del nombre, por ejemplo
+        <strong> .docx</strong>, <strong>.pdf</strong> o <strong>.pptx</strong>. Esa terminación
+        se conoce como extensión y ayuda a saber con qué programa suele abrirse y para qué fue
+        creado.
+      </p>
+
+      <p class="mt-4 leading-7 text-slate-700">
+        En algunas computadoras la extensión no siempre se muestra claramente, pero el icono del
+        archivo y la información del explorador también ayudan a identificarlo.
+      </p>
+
+      <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {fileExamples.map((item) => (
+          <div class="content-card overflow-hidden p-5">
+            <div class="flex h-24 items-center justify-center rounded-2xl bg-slate-50 p-3">
+              <img
+                src={item.image}
+                alt={item.alt}
+                class="h-full w-full object-contain"
+                loading="lazy"
+              />
+            </div>
+
+            <p class="mt-4 break-all text-sm font-semibold text-slate-900">{item.name}</p>
+            <p class="mt-2 text-sm leading-6 text-slate-600">{item.meaning}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Tipos de archivo más comunes"
+      description="No todos los archivos sirven para lo mismo. Reconocer sus diferencias evita errores al abrirlos, editarlos o compartirlos."
+    />
+
+    <div class="content-card overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+          <thead class="bg-slate-50">
+            <tr>
+              <th class="px-4 py-4 font-semibold text-slate-900">Tipo de archivo</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">¿Para qué sirve?</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">¿Con qué suele abrirse?</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">¿Qué conviene recordar?</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 bg-white">
+            {fileTypes.map((fileType) => (
+              <tr>
+                <td class="px-4 py-4 align-top font-semibold text-slate-900">{fileType.type}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{fileType.purpose}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{fileType.opens}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{fileType.caution}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {fileTypeVisuals.map((item) => (
+        <VisualActionCard
+          title={item.title}
+          image={item.image}
+          imageAlt={item.imageAlt}
+        >
+          <p>{item.text}</p>
+        </VisualActionCard>
+      ))}
+    </div>
+
+    <div class="mt-6">
+      <InfoBox title="Importante" tone="warning">
+        <p>
+          Que un archivo se abra no significa que se vea o se edite correctamente. Un programa
+          puede mostrar un archivo, pero no necesariamente respetar su formato, su estructura o sus
+          funciones principales.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Confusiones comunes al abrir archivos"
+      description="Varios problemas cotidianos no se deben al archivo en sí, sino a usar un programa que no corresponde con su propósito."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      <ExampleCard title="Un PDF no sustituye a Word">
+        <p>
+          El PDF está pensado principalmente para lectura, impresión o distribución. Aunque puede
+          modificarse en algunos casos, no funciona como un documento editable normal.
+        </p>
+      </ExampleCard>
+
+      <ExampleCard title="Una presentación no es un texto corrido">
+        <p>
+          Un archivo de PowerPoint está diseñado para diapositivas. Si se intenta tratar como un
+          documento de texto, se perderá la lógica visual con la que fue creado.
+        </p>
+      </ExampleCard>
+
+      <ExampleCard title="Un CSV no siempre se ve “bonito”">
+        <p>
+          Un CSV guarda datos de manera simple. Puede abrirse en Excel, pero si se abre como texto
+          plano puede verse desordenado o difícil de entender.
+        </p>
+      </ExampleCard>
+
+      <ExampleCard title="Un archivo ZIP suele ser solo un contenedor">
+        <p>
+          Cuando un archivo viene comprimido, muchas veces primero hay que extraer su contenido.
+          Hasta entonces se podrá trabajar normalmente con los documentos que contiene.
+        </p>
+      </ExampleCard>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Cómo organizar carpetas sin complicarse"
+      description="Una buena organización no necesita ser compleja; necesita tener sentido y repetirse con consistencia."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+      <div class="content-card p-6 md:p-8">
+        <p class="leading-7 text-slate-700">
+          Cuando una sola carpeta concentra demasiadas cosas, encontrar un archivo se vuelve más
+          lento. Por eso conviene separar el material con un criterio estable: por nivel, grupo,
+          materia, proyecto o tipo de recurso.
+        </p>
+
+        <div class="mt-6 overflow-x-auto rounded-2xl border border-slate-200 bg-slate-50 p-5">
+          <pre class="text-sm leading-7 text-slate-700 whitespace-pre-wrap">
+Materiales_de_clase
+├── Secundaria_1
+│   ├── Matematicas
+│   │   ├── Planeaciones
+│   │   ├── Presentaciones
+│   │   └── Evaluaciones
+│   └── Espanol
+├── Secundaria_2
+│   ├── Matematicas
+│   └── Ciencias
+└── Recursos_generales
+    ├── Imagenes
+    ├── Formatos
+    └── Guias
+          </pre>
+        </div>
+
+        <p class="mt-4 leading-7 text-slate-700">
+          Lo importante no es copiar exactamente esta estructura, sino entender la idea: dividir el
+          contenido en bloques que tengan una lógica clara y que ayuden a ubicar cada archivo con
+          rapidez.
+        </p>
+      </div>
+
+      <div class="grid gap-6">
+        {organizationRules.map((rule, index) => (
+          <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-sm font-semibold text-sky-700">Criterio {index + 1}</p>
+            <h3 class="mt-2 text-lg font-bold text-slate-900">{rule.title}</h3>
+            <p class="mt-3 leading-7 text-slate-700">{rule.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Cómo poner nombres útiles a los archivos"
+      description="Un buen nombre permite entender el contenido sin necesidad de abrir el archivo."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+      <div class="content-card p-6 md:p-8">
+        <p class="leading-7 text-slate-700">
+          Nombrar bien un archivo ayuda a reconocerlo, buscarlo y diferenciarlo de otros parecidos.
+          Esto es especialmente importante cuando se trabaja con varios grupos, materias, alumnos o
+          versiones del mismo material.
+        </p>
+
+        <div class="mt-6 grid gap-3">
+          {namingRules.map((rule) => (
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-slate-700 shadow-sm">
+              <p class="leading-7">{rule}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="content-card overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+            <thead class="bg-slate-50">
+              <tr>
+                <th class="px-4 py-4 font-semibold text-slate-900">Nombre poco útil</th>
+                <th class="px-4 py-4 font-semibold text-slate-900">Nombre más claro</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 bg-white">
+              {badVsGoodNames.map((item) => (
+                <tr>
+                  <td class="px-4 py-4 align-top leading-7 text-rose-700">{item.bad}</td>
+                  <td class="px-4 py-4 align-top leading-7 text-emerald-700">{item.good}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-6">
+      <InfoBox title="La búsqueda ayuda, pero no hace magia" tone="warning">
+        <p>
+          El buscador funciona mucho mejor cuando los archivos tienen nombres claros y consistentes.
+          Si varios documentos se llaman casi igual o no describen su contenido, encontrarlos
+          seguirá siendo difícil.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Búsqueda de archivos"
+      description="Buscar no reemplaza la organización, pero sí puede ahorrar tiempo cuando ya existe un criterio claro para nombrar y guardar."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+      <VisualActionCard
+        title="Buscar con intención"
+        image={searchImage}
+        imageAlt="Campo de búsqueda en el explorador de archivos"
+      >
+        <p>
+          Aquí puede colocarse una imagen sencilla del cuadro de búsqueda del explorador para
+          mostrar visualmente dónde suele escribirse una palabra clave.
+        </p>
+        <p>
+          <strong>Conviene buscar palabras estables</strong>, por ejemplo materia, grupo, alumno,
+          tema o fecha.
+        </p>
+      </VisualActionCard>
+
+      <div class="content-card p-6 md:p-8">
+        <ol class="space-y-4 text-slate-700">
+          {searchSteps.map((step, index) => (
+            <li class="flex items-start gap-4">
+              <div class="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sky-100 font-bold text-sky-700">
+                {index + 1}
+              </div>
+              <p class="leading-7">{step}</p>
+            </li>
+          ))}
+        </ol>
+
+        <div class="mt-6">
+          <p class="text-sm font-semibold text-slate-900">Palabras que suelen ayudar al buscar:</p>
+          <div class="mt-3 flex flex-wrap gap-2">
+            {searchKeywords.map((keyword) => (
+              <span class="rounded-full bg-slate-100 px-3 py-2 text-sm font-medium text-slate-700">
+                {keyword}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Errores frecuentes"
+      description="Estos errores son comunes cuando todavía no existe un criterio fijo de organización. Detectarlos a tiempo ayuda a corregirlos."
+    />
+
+    <div class="mb-6">
+      <InfoBox title="Importante" tone="warning">
+        <p>
+          El problema casi nunca es “no saber usar la computadora”, sino no contar todavía con un
+          método claro para guardar, nombrar y recuperar archivos.
+        </p>
+      </InfoBox>
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <CommonMistakes title="Errores al organizar carpetas" mistakes={folderMistakes} />
+      <HighlightMistakes title="Errores al nombrar archivos" mistakes={namingMistakes} />
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Videos de refuerzo"
+      description="Estos videos pueden servir como complemento visual para reforzar la organización de carpetas, archivos y búsquedas básicas."
+    />
+
+    <VideoCarousel
+      title="Videos recomendados sobre archivos y carpetas"
+      videos={reinforcementVideos}
+    />
+  </section>
+
+  <section class="mt-14">
+    <InfoBox title="Cierre del tema" tone="success">
+      <p>
+        Organizar carpetas y nombrar archivos con claridad reduce tiempo perdido, evita confusiones
+        y facilita el trabajo cotidiano. En el siguiente tema se profundizará en archivos como PDF,
+        DOCX y PPTX, así como en sus usos y diferencias más importantes.
+      </p>
+    </InfoBox>
   </section>
 </BaseLayout>

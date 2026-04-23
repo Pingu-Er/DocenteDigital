@@ -1,17 +1,505 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SectionTitle from '../../../components/module/SectionTitle.astro';
+import InfoBox from '../../../components/module/InfoBox.astro';
+import ExampleCard from '../../../components/module/ExampleCard.astro';
+import HighlightMistakes from '../../../components/module/HighlightMistakes.astro';
+import CommonMistakes from '../../../components/module/CommonMistakes.astro';
+import VisualActionCard from '../../../components/module/VisualActionCard.astro';
+import VideoCarousel from '../../../components/module/VideoCarousel.astro';
 import { BASE_PATH } from '../../../consts';
+
+const cloudBasics = [
+  {
+    title: '¿Qué significa guardar en la nube?',
+    text: 'Guardar en la nube significa almacenar archivos en un servicio en línea en lugar de depender solo del almacenamiento local de una computadora o memoria USB.',
+  },
+  {
+    title: '¿Para qué sirve?',
+    text: 'Permite acceder a archivos desde distintos dispositivos, compartir materiales con otras personas y reducir la dependencia de tener todo guardado en un solo equipo.',
+  },
+  {
+    title: '¿Qué se necesita?',
+    text: 'Normalmente se necesita una cuenta, conexión a internet en la mayoría de los casos y un dispositivo compatible para entrar, revisar o editar archivos.',
+  },
+];
+
+const providerOverview = [
+  {
+    title: 'Google Drive',
+    image: `${BASE_PATH}/images/modulo-1/nube/google-drive.png`,
+    imageAlt: 'Vista general de Google Drive',
+    text: 'Drive permite guardar archivos, crear carpetas, compartir contenido y trabajar con documentos de Google como Docs, Sheets, Slides y Forms dentro del mismo entorno.',
+  },
+  {
+    title: 'OneDrive',
+    image: `${BASE_PATH}/images/modulo-1/nube/onedrive.png`,
+    imageAlt: 'Vista general de OneDrive',
+    text: 'OneDrive permite almacenar archivos, compartirlos, sincronizarlos entre dispositivos y trabajar con documentos dentro del ecosistema de Microsoft.',
+  },
+];
+
+const cloudAreas = [
+  {
+    title: 'Mi unidad o Mis archivos',
+    image: `${BASE_PATH}/images/modulo-1/nube/mi-unidad.png`,
+    imageAlt: 'Área principal de archivos en la nube',
+    text: 'Es el espacio principal donde se guardan archivos y carpetas propias. Ahí suele comenzar la organización personal.',
+  },
+  {
+    title: 'Compartidos',
+    image: `${BASE_PATH}/images/modulo-1/nube/compartidos.png`,
+    imageAlt: 'Sección de archivos compartidos',
+    text: 'Aquí suelen aparecer archivos o carpetas que otras personas han compartido con el usuario.',
+  },
+  {
+    title: 'Recientes',
+    image: `${BASE_PATH}/images/modulo-1/nube/recientes.png`,
+    imageAlt: 'Sección de archivos recientes',
+    text: 'Sirve para volver más rápido a documentos usados recientemente, sin tener que recorrer toda la estructura de carpetas.',
+  },
+  {
+    title: 'Papelera',
+    image: `${BASE_PATH}/images/modulo-1/nube/papelera.png`,
+    imageAlt: 'Papelera de la nube',
+    text: 'Es el lugar donde suelen enviarse temporalmente los archivos eliminados antes de desaparecer por completo.',
+  },
+  {
+    title: 'Botón Nuevo o Cargar',
+    image: `${BASE_PATH}/images/modulo-1/nube/nuevo-cargar.png`,
+    imageAlt: 'Botón para crear o subir archivos',
+    text: 'Desde aquí normalmente se crean carpetas nuevas, se suben archivos desde la computadora o se generan documentos nuevos en la plataforma.',
+  },
+  {
+    title: 'Buscador interno',
+    image: `${BASE_PATH}/images/modulo-1/nube/busqueda-nube.png`,
+    imageAlt: 'Buscador dentro de la nube',
+    text: 'Ayuda a localizar archivos por nombre o palabra clave, especialmente cuando ya hay muchos documentos guardados.',
+  },
+];
+
+const driveCreateOptions = [
+  {
+    title: 'Crear documentos dentro de Drive',
+    image: `${BASE_PATH}/images/modulo-1/nube/crear-docs-drive.png`,
+    imageAlt: 'Crear Docs, Sheets o Slides desde Google Drive',
+    text: 'En Drive es común crear directamente un documento, una hoja de cálculo, una presentación o un formulario sin salir del entorno principal.',
+  },
+  {
+    title: 'Subir archivos existentes',
+    image: `${BASE_PATH}/images/modulo-1/nube/subir-archivo-drive.png`,
+    imageAlt: 'Subir archivos a Google Drive',
+    text: 'También se pueden subir archivos ya existentes desde la computadora y después organizarlos o compartirlos desde la nube.',
+  },
+  {
+    title: 'Abrir y convertir para editar',
+    image: `${BASE_PATH}/images/modulo-1/nube/abrir-con-drive.png`,
+    imageAlt: 'Abrir archivo con herramientas de Google',
+    text: 'Algunos archivos pueden abrirse y convertirse para trabajar en formato de Google, lo que facilita seguir editándolos en el navegador.',
+  },
+];
+
+const teacherComparison = [
+  {
+    title: 'Para un flujo docente con Google',
+    text: 'Si el trabajo diario ya usa Docs, Sheets, Slides, Forms, Classroom o enlaces de Google, Drive suele sentirse más directo para crear, organizar y compartir materiales sin cambiar tanto de entorno.',
+  },
+  {
+    title: 'Para un flujo docente con Microsoft',
+    text: 'Si el trabajo gira más alrededor de Outlook, Windows, archivos de Office y Microsoft 365, OneDrive puede resultar más natural para respaldar y compartir documentos ya trabajados en ese ecosistema.',
+  },
+  {
+    title: 'Recomendación práctica',
+    text: 'Para un uso docente general y ligero, Drive suele ser una opción muy cómoda por su integración inmediata con documentos colaborativos. Aun así, OneDrive puede ser una muy buena opción cuando ya se trabaja principalmente con Microsoft.',
+  },
+  {
+    title: 'Lo importante no es la marca',
+    text: 'Lo importante es que la plataforma permita guardar con orden, compartir con claridad y encontrar los archivos fácilmente después.',
+  },
+];
+
+const shareActions = [
+  {
+    title: 'Compartir un archivo',
+    image: `${BASE_PATH}/images/modulo-1/nube/compartir-archivo.png`,
+    imageAlt: 'Opción para compartir archivo en la nube',
+    steps: [
+      'Seleccionar el archivo que se quiere compartir.',
+      'Hacer clic en la opción Compartir.',
+      'Escribir el correo de la persona o copiar un enlace.',
+      'Elegir el permiso más adecuado.',
+      'Enviar o copiar el enlace para compartir.',
+    ],
+    note: 'Conviene revisar bien a quién se comparte y con qué nivel de acceso.',
+  },
+  {
+    title: 'Compartir una carpeta',
+    image: `${BASE_PATH}/images/modulo-1/nube/compartir-carpeta.png`,
+    imageAlt: 'Opción para compartir carpeta en la nube',
+    steps: [
+      'Seleccionar la carpeta que se quiere compartir.',
+      'Entrar a la opción Compartir.',
+      'Agregar a las personas o generar un enlace.',
+      'Definir si solo podrán ver o también editar.',
+      'Confirmar que la carpeta compartida sea la correcta.',
+    ],
+    note: 'Compartir carpetas completas puede ahorrar tiempo cuando varias personas necesitan acceder al mismo conjunto de materiales.',
+  },
+  {
+    title: 'Cambiar permisos',
+    image: `${BASE_PATH}/images/modulo-1/nube/permisos-compartir.png`,
+    imageAlt: 'Opciones de permisos al compartir',
+    steps: [
+      'Abrir nuevamente el panel de compartir.',
+      'Revisar quién ya tiene acceso.',
+      'Cambiar permisos si hace falta.',
+      'Quitar acceso si el archivo ya no debe compartirse.',
+    ],
+    note: 'No siempre conviene dejar edición abierta para todas las personas.',
+  },
+];
+
+const permissionCards = [
+  {
+    title: 'Solo ver',
+    text: 'La persona puede abrir el archivo o la carpeta, pero no modificar el contenido.',
+  },
+  {
+    title: 'Comentar o revisar',
+    text: 'En algunos entornos se permite comentar o revisar sin editar por completo el contenido.',
+  },
+  {
+    title: 'Editar',
+    text: 'La persona puede hacer cambios directos en el archivo o en el contenido compartido.',
+  },
+  {
+    title: 'Pensar antes de compartir',
+    text: 'El permiso debe corresponder a la necesidad real. No siempre hace falta dar edición completa.',
+  },
+];
+
+const teacherUseCases = [
+  {
+    title: 'Carpeta por grupo',
+    text: 'Se puede crear una carpeta para cada grupo y dentro guardar planeaciones, presentaciones, formatos y materiales de apoyo.',
+  },
+  {
+    title: 'Carpeta o repositorio por alumno',
+    text: 'También puede usarse una carpeta por alumno para concentrar evidencias, actividades, entregas o seguimiento específico.',
+  },
+  {
+    title: 'Repositorio de materiales comunes',
+    text: 'Una carpeta compartida puede servir para reunir lecturas, guías, formatos o recursos que varias personas necesiten consultar.',
+  },
+  {
+    title: 'Trabajo colaborativo con colegas',
+    text: 'Se pueden compartir carpetas o documentos con otros docentes para coeditar materiales, revisar planeaciones o actualizar formatos.',
+  },
+];
+
+const goodPractices = [
+  {
+    title: 'Organizar antes de llenar',
+    text: 'Conviene crear primero una estructura clara de carpetas en lugar de subir muchos archivos sueltos sin criterio.',
+  },
+  {
+    title: 'Nombrar bien los archivos',
+    text: 'La nube ayuda mucho, pero sigue siendo importante usar nombres claros para reconocer documentos sin abrirlos.',
+  },
+  {
+    title: 'Revisar permisos',
+    text: 'Antes de enviar un enlace, conviene comprobar si realmente permite ver o editar según lo esperado.',
+  },
+  {
+    title: 'No depender solo de Recientes',
+    text: 'La sección de recientes ayuda, pero no sustituye una buena organización por carpetas.',
+  },
+];
+
+const commonMistakes = [
+  'Subir archivos a la nube sin colocarlos en carpetas claras.',
+  'Compartir documentos sin revisar si la persona podrá abrirlos o editarlos.',
+  'Confundir un archivo propio con uno compartido por otra persona.',
+  'Dejar demasiados enlaces abiertos sin controlar quién tiene acceso.',
+  'Pensar que la nube organiza automáticamente todo aunque los nombres y carpetas estén desordenados.',
+];
+
+const sharingMistakes = [
+  'Dar permiso de edición cuando solo se necesitaba lectura.',
+  'Compartir la carpeta equivocada por no revisar antes.',
+  'No comprobar si el enlace realmente funciona con el permiso esperado.',
+  'Trabajar entre varias personas sin acordar una organización mínima.',
+  'Usar la nube como almacén sin criterio y luego no encontrar nada.',
+];
+
+const reinforcementVideos = [
+  {
+    videoId: 'VIDEO_ID_1',
+    title: 'Qué significa guardar en la nube',
+    description: 'Refuerzo visual para entender almacenamiento en línea, acceso desde distintos dispositivos y organización básica.',
+  },
+  {
+    videoId: 'VIDEO_ID_2',
+    title: 'Cómo compartir archivos y carpetas',
+    description: 'Apoyo para distinguir permisos, enlaces y prácticas básicas de colaboración.',
+  },
+  {
+    videoId: 'VIDEO_ID_3',
+    title: 'Drive y OneDrive en trabajo docente',
+    description: 'Video complementario para visualizar usos prácticos de la nube en materiales, repositorios y trabajo compartido.',
+  },
+];
 ---
 
-<BaseLayout title="Módulo 1 | Nube">
-  <a href={`${BASE_PATH}/modulos/modulo-1/`} class="text-sm font-semibold text-sky-700 hover:text-sky-800">
-    ← Volver al módulo 1
-  </a>
+<BaseLayout
+  title="Módulo 1 | Nube: Drive y OneDrive"
+  description="Guardar, organizar y compartir archivos en Google Drive y OneDrive para trabajar con mayor orden y acceso desde distintos dispositivos."
+>
+  <div class="mb-8">
+    <a
+      href={`${BASE_PATH}/modulos/modulo-1/`}
+      class="text-sm font-semibold text-sky-700 hover:text-sky-800"
+    >
+      ← Volver al módulo 1
+    </a>
+  </div>
 
-  <section class="mt-8 content-card p-8">
-    <h1 class="text-3xl font-bold text-slate-900">Nube: Drive y OneDrive</h1>
-    <p class="mt-4 leading-8 text-slate-700">
-      Esta sección se encuentra en preparación.
-    </p>
+  <SectionTitle
+    eyebrow="Tema 6"
+    title="Nube: Drive y OneDrive"
+    description="Guardar archivos en la nube facilita el acceso, la organización y el trabajo compartido con otras personas."
+  />
+
+  <section class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+    <div class="content-card p-8 prose-soft text-slate-700">
+      <p>
+        Guardar en la nube ya no solo significa tener respaldo, sino también poder acceder a
+        archivos desde distintos dispositivos, compartir materiales y trabajar de forma más ordenada
+        con documentos propios o colaborativos.
+      </p>
+      <p>
+        En este tema se explican de forma clara Google Drive y OneDrive, con énfasis en
+        organización, creación de archivos, compartición de carpetas y usos prácticos dentro del
+        trabajo docente.
+      </p>
+    </div>
+
+    <InfoBox title="Propósito del tema" tone="info">
+      <p>
+        Comprender cómo funciona el almacenamiento en la nube y cómo aprovecharlo para guardar,
+        organizar y compartir archivos o carpetas con mayor claridad.
+      </p>
+    </InfoBox>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="¿Qué significa guardar en la nube?"
+      description="Antes de comparar herramientas, conviene entender la idea general del almacenamiento en línea."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {cloudBasics.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+
+    <div class="mt-6">
+      <InfoBox title="Idea clave" tone="success">
+        <p>
+          Un archivo guardado en la nube puede consultarse desde otros dispositivos si la cuenta,
+          el permiso y el equipo lo permiten. Esa es una de sus mayores ventajas.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Drive y OneDrive: una vista general"
+      description="Ambos servicios permiten guardar y compartir archivos, pero cada uno se siente más natural según el entorno de trabajo que ya se utiliza."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      {providerOverview.map((item) => (
+        <VisualActionCard
+          title={item.title}
+          image={item.image}
+          imageAlt={item.imageAlt}
+        >
+          <p>{item.text}</p>
+        </VisualActionCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Partes principales del entorno en la nube"
+      description="No hace falta memorizar toda la interfaz. Basta con reconocer algunas áreas importantes para empezar a trabajar con más seguridad."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {cloudAreas.map((item) => (
+        <VisualActionCard
+          title={item.title}
+          image={item.image}
+          imageAlt={item.imageAlt}
+        >
+          <p>{item.text}</p>
+        </VisualActionCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Crear, subir y trabajar archivos en Drive"
+      description="Drive suele ser especialmente cómodo cuando se quiere crear materiales directamente en línea y compartirlos después."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {driveCreateOptions.map((item) => (
+        <VisualActionCard
+          title={item.title}
+          image={item.image}
+          imageAlt={item.imageAlt}
+        >
+          <p>{item.text}</p>
+        </VisualActionCard>
+      ))}
+    </div>
+
+    <div class="mt-6">
+      <InfoBox title="Importante" tone="info">
+        <p>
+          En un flujo docente general, Google Drive suele sentirse muy práctico cuando se quiere
+          crear un documento compartido, una presentación, una hoja de cálculo o un formulario y
+          dejarlo guardado desde el principio en la nube.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Comparación práctica para un profesor"
+      description="Aquí la comparación no busca decir cuál es mejor en general, sino cuál puede resultar más cómoda según el tipo de trabajo."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {teacherComparison.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Compartir archivos y carpetas"
+      description="Una de las ventajas más útiles de la nube es permitir que otras personas accedan al mismo material sin tener que estar enviando versiones por separado."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {shareActions.map((item) => (
+        <VisualActionCard
+          title={item.title}
+          image={item.image}
+          imageAlt={item.imageAlt}
+        >
+          <ol class="list-decimal space-y-2 pl-5">
+            {item.steps.map((step) => (
+              <li>{step}</li>
+            ))}
+          </ol>
+          <p class="mt-4"><strong>Nota:</strong> {item.note}</p>
+        </VisualActionCard>
+      ))}
+    </div>
+
+    <div class="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {permissionCards.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Usos prácticos en trabajo docente"
+      description="La nube no sirve solo para guardar archivos: también puede ayudar a crear estructuras útiles para seguimiento, colaboración y acceso compartido."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {teacherUseCases.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+
+    <div class="mt-6">
+      <InfoBox title="Idea práctica" tone="warning">
+        <p>
+          Una carpeta compartida puede funcionar como repositorio, libreta digital o espacio de
+          seguimiento, siempre que exista un criterio claro para nombrar y organizar lo que se guarda.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Buenas prácticas al trabajar en la nube"
+      description="La nube ayuda mucho, pero sigue necesitando orden y criterio para que de verdad resulte útil."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {goodPractices.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Errores frecuentes"
+      description="Muchos problemas con Drive o OneDrive no se deben a la herramienta, sino a compartir sin revisar o a guardar sin una estructura clara."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <CommonMistakes title="Errores comunes al usar la nube" mistakes={commonMistakes} />
+      <HighlightMistakes title="Errores frecuentes al compartir" mistakes={sharingMistakes} />
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Videos de refuerzo"
+      description="Estos videos pueden servir como apoyo visual para entender almacenamiento en la nube, compartición y organización básica."
+    />
+
+    <VideoCarousel
+      title="Videos recomendados sobre Drive y OneDrive"
+      videos={reinforcementVideos}
+    />
+  </section>
+
+  <section class="mt-14">
+    <InfoBox title="Cierre del tema" tone="success">
+      <p>
+        Guardar en la nube no solo ayuda a conservar archivos, sino también a organizarlos, encontrarlos
+        y compartirlos con mayor facilidad. La herramienta será más útil cuando se combine con una
+        estructura clara de carpetas, nombres y permisos bien revisados.
+      </p>
+    </InfoBox>
   </section>
 </BaseLayout>

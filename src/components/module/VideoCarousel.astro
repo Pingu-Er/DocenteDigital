@@ -1,0 +1,191 @@
+---
+interface VideoItem {
+  videoId: string;
+  title: string;
+  description?: string;
+}
+
+interface Props {
+  title: string;
+  videos: VideoItem[];
+  note?: string;
+}
+
+const {
+  title,
+  videos = [],
+  note = 'Estos videos funcionan como material de refuerzo. Puede verlos aquí mismo o abrirlos en YouTube.'
+} = Astro.props;
+
+const hasVideos = Array.isArray(videos) && videos.length > 0;
+const carouselId = `video-carousel-${title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '')}`;
+
+const getEmbedUrl = (videoId: string) =>
+  `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`;
+
+const getWatchUrl = (videoId: string) =>
+  `https://www.youtube.com/watch?v=${videoId}`;
+---
+
+{hasVideos && (
+  <div class="content-card p-6">
+    <div class="mb-4 flex items-center justify-between gap-4">
+      <h3 class="text-lg font-bold text-slate-900">{title}</h3>
+
+      <div class="flex gap-2">
+        <button
+          class="carousel-btn"
+          type="button"
+          data-video-prev={carouselId}
+          aria-label={`Anterior en ${title}`}
+        >
+          ←
+        </button>
+        <button
+          class="carousel-btn"
+          type="button"
+          data-video-next={carouselId}
+          aria-label={`Siguiente en ${title}`}
+        >
+          →
+        </button>
+      </div>
+    </div>
+
+    <p class="mb-4 text-sm leading-6 text-slate-600">
+      {note}
+    </p>
+
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-black">
+      <div class="aspect-video">
+        <iframe
+          data-video-player={carouselId}
+          src={getEmbedUrl(videos[0].videoId)}
+          title={videos[0].title}
+          class="h-full w-full"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          referrerpolicy="strict-origin-when-cross-origin"
+        ></iframe>
+      </div>
+    </div>
+
+    <div class="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
+      <p
+        data-video-label={carouselId}
+        class="text-sm font-semibold text-sky-700"
+      >
+        Video 1 de {videos.length}
+      </p>
+
+      <h4
+        data-video-title={carouselId}
+        class="mt-1 text-lg font-bold text-slate-900"
+      >
+        {videos[0].title}
+      </h4>
+
+      <p
+        data-video-description={carouselId}
+        class="mt-2 leading-7 text-slate-700"
+      >
+        {videos[0].description || ''}
+      </p>
+
+      <div class="mt-4">
+        <a
+          data-video-link={carouselId}
+          href={getWatchUrl(videos[0].videoId)}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex rounded-xl bg-sky-700 px-4 py-2 font-semibold text-white hover:bg-sky-800"
+        >
+          Ver en YouTube
+        </a>
+      </div>
+    </div>
+
+    <div class="mt-4 flex flex-wrap gap-2">
+      {videos.map((video, index) => (
+        <button
+          type="button"
+          class="carousel-dot"
+          data-video-dot={carouselId}
+          data-target-index={index}
+          aria-label={`Ir al video ${index + 1}: ${video.title}`}
+          title={video.title}
+        />
+      ))}
+    </div>
+  </div>
+)}
+
+<script define:vars={{ carouselId, videos }}>
+  (() => {
+    const rootId = carouselId;
+    const items = videos;
+
+    const prevBtn = document.querySelector(`[data-video-prev="${rootId}"]`);
+    const nextBtn = document.querySelector(`[data-video-next="${rootId}"]`);
+    const player = document.querySelector(`[data-video-player="${rootId}"]`);
+    const label = document.querySelector(`[data-video-label="${rootId}"]`);
+    const title = document.querySelector(`[data-video-title="${rootId}"]`);
+    const description = document.querySelector(`[data-video-description="${rootId}"]`);
+    const link = document.querySelector(`[data-video-link="${rootId}"]`);
+    const dots = Array.from(document.querySelectorAll(`[data-video-dot="${rootId}"]`));
+
+    if (!player || !label || !title || !description || !link || items.length === 0) return;
+
+    let index = 0;
+
+    const getEmbedUrl = (videoId) =>
+      `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`;
+
+    const getWatchUrl = (videoId) =>
+      `https://www.youtube.com/watch?v=${videoId}`;
+
+    const update = () => {
+      const current = items[index];
+      if (!current) return;
+
+      player.setAttribute('src', getEmbedUrl(current.videoId));
+      player.setAttribute('title', current.title);
+
+      label.textContent = `Video ${index + 1} de ${items.length}`;
+      title.textContent = current.title;
+      description.textContent = current.description || '';
+      link.setAttribute('href', getWatchUrl(current.videoId));
+
+      dots.forEach((dot, i) => {
+        if (i === index) {
+          dot.classList.add('is-active');
+        } else {
+          dot.classList.remove('is-active');
+        }
+      });
+    };
+
+    prevBtn?.addEventListener('click', () => {
+      index = index === 0 ? items.length - 1 : index - 1;
+      update();
+    });
+
+    nextBtn?.addEventListener('click', () => {
+      index = index === items.length - 1 ? 0 : index + 1;
+      update();
+    });
+
+    dots.forEach((dot) => {
+      dot.addEventListener('click', () => {
+        const target = Number(dot.getAttribute('data-target-index'));
+        if (!Number.isNaN(target)) {
+          index = target;
+          update();
+        }
+      });
+    });
+
+    update();
+  })();
+</script>

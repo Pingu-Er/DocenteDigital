@@ -3,10 +3,10 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import SectionTitle from '../../../components/module/SectionTitle.astro';
 import InfoBox from '../../../components/module/InfoBox.astro';
 
-import ExampleCard from '../../../components/module/ExampleCard.astro';
 import VisualActionCard from '../../../components/module/VisualActionCard.astro';
 import HighlightMistakes from '../../../components/module/HighlightMistakes.astro';
 import SimpleCarousel from '../../../components/module/SimpleCarousel.astro';
+import VideoCarousel from '../../../components/module/VideoCarousel.astro';
 import { BASE_PATH } from '../../../consts';
 
 const mouseMistakes = [
@@ -180,6 +180,15 @@ const windowShortcuts = [
 ];
 
 const shortcutsPdf = `${BASE_PATH}/docs/guia-atajos-windows-esencial.pdf`;
+
+const reinforcementVideos = [
+  {
+    videoId: 'r3BcZpYYkRI',
+    title: 'Uso correcto del Mouse y el Teclado',
+    description: 'Aprende la postura adecuada para manejar periféricos y domina funciones esenciales como el clic derecho para opciones, el doble clic para abrir programas y la técnica de arrastrar elementos con precisión. Créditos a: Marcelo PC',
+  },
+];
+
 ---
 
 <BaseLayout
@@ -364,6 +373,18 @@ const shortcutsPdf = `${BASE_PATH}/docs/guia-atajos-windows-esencial.pdf`;
         </a>.
       </div>
     </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Videos de refuerzo"
+      description="Estos recursos pueden ayudar a reforzar lo visto en el tema mediante explicaciones visuales complementarias."
+    />
+
+    <VideoCarousel
+      title="Videos recomendados sobre periféricos"
+      videos={reinforcementVideos}
+    />
   </section>
 
   <section class="mt-14">

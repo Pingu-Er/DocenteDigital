@@ -1,17 +1,677 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SectionTitle from '../../../components/module/SectionTitle.astro';
+import InfoBox from '../../../components/module/InfoBox.astro';
+import ExampleCard from '../../../components/module/ExampleCard.astro';
+import HighlightMistakes from '../../../components/module/HighlightMistakes.astro';
+import CommonMistakes from '../../../components/module/CommonMistakes.astro';
+import VisualActionCard from '../../../components/module/VisualActionCard.astro';
+import VideoCarousel from '../../../components/module/VideoCarousel.astro';
 import { BASE_PATH } from '../../../consts';
+
+const emailOverviewCards = [
+  {
+    title: '¿Para qué sirve hoy el correo?',
+    text: 'Sigue siendo útil para recibir avisos importantes, registrarse en plataformas, recuperar accesos, enviar archivos, confirmar cuentas y mantener una comunicación más formal.',
+  },
+  {
+    title: 'No solo sirve para escribir mensajes',
+    text: 'En la práctica, muchas personas usan el correo más para entrar a servicios, recibir notificaciones y validar cuentas que para mantener conversaciones largas.',
+  },
+  {
+    title: 'Es una puerta de acceso',
+    text: 'Un correo bien organizado permite entrar a plataformas, recuperar contraseñas y administrar mejor múltiples herramientas en línea.',
+  },
+];
+
+const providerComparison = [
+  {
+    title: 'Gmail',
+    image: `${BASE_PATH}/images/modulo-1/correo/gmail.png`,
+    imageAlt: 'Interfaz general de Gmail',
+    text: 'Gmail forma parte del ecosistema de Google. Una cuenta de Google también puede dar acceso a otros servicios como Drive, Docs, Forms, Classroom o YouTube.',
+  },
+  {
+    title: 'Outlook / Hotmail',
+    image: `${BASE_PATH}/images/modulo-1/correo/outlook.png`,
+    imageAlt: 'Interfaz general de Outlook',
+    text: 'Outlook.com forma parte del ecosistema de Microsoft. Una cuenta de Microsoft puede usarse también para servicios como Outlook, OneDrive y Microsoft 365.',
+  },
+];
+
+const providerDifferences = [
+  {
+    title: 'Gmail suele integrarse fácilmente con servicios de Google',
+    text: 'Es común encontrar opciones de acceso rápido con cuenta de Google en muchas plataformas y herramientas en línea.',
+  },
+  {
+    title: 'Outlook se integra bien con servicios de Microsoft',
+    text: 'Resulta útil cuando se trabaja con Outlook, OneDrive o herramientas de Microsoft 365.',
+  },
+  {
+    title: 'Ambos sirven para registrarse e iniciar sesión',
+    text: 'En términos prácticos, ambos permiten crear cuentas, validar accesos, recibir notificaciones y recuperar contraseñas.',
+  },
+  {
+    title: 'No hace falta dominar todos los correos del mercado',
+    text: 'Para este nivel basta con entender bien Gmail y Outlook/Hotmail, porque cubren muchos de los casos más comunes.',
+  },
+];
+
+const googleSignupSteps = {
+  title: 'Crear una cuenta de Google',
+  image: `${BASE_PATH}/images/modulo-1/correo/crear-cuenta-google.png`,
+  imageAlt: 'Pantalla de creación de una cuenta de Google',
+  steps: [
+    'Entrar a la página de creación de cuenta de Google.',
+    'Elegir la opción para crear una cuenta personal.',
+    'Escribir nombre, apellido y los datos que el formulario solicite.',
+    'Elegir una dirección de Gmail disponible o, en algunos casos, usar otro correo.',
+    'Crear una contraseña segura y confirmarla.',
+    'Completar la verificación que el sistema solicite.',
+    'Revisar y aceptar los pasos finales para terminar el registro.',
+  ],
+  note: 'Google puede pedir datos como fecha de nacimiento, género o verificación adicional, según el caso. La apariencia exacta puede variar un poco, pero la lógica general del proceso es la misma.',
+};
+
+const microsoftSignupSteps = {
+  title: 'Crear una cuenta de Microsoft / Outlook',
+  image: `${BASE_PATH}/images/modulo-1/correo/crear-cuenta-microsoft.png`,
+  imageAlt: 'Pantalla de creación de una cuenta de Microsoft u Outlook',
+  steps: [
+    'Entrar a Outlook.com o a la página de creación de cuenta de Microsoft.',
+    'Elegir la opción para crear una cuenta gratuita.',
+    'Escribir la dirección que se quiere usar o crear una nueva dirección de Outlook.',
+    'Crear una contraseña segura.',
+    'Completar nombre, país u otros datos que el formulario solicite.',
+    'Realizar la verificación que pida el sistema.',
+    'Finalizar la configuración para comenzar a usar la cuenta.',
+  ],
+  note: 'Microsoft puede pedir verificaciones adicionales según el dispositivo, la región o el momento del registro. Si se quiere una dirección nueva tipo Outlook, se crea desde Outlook.com.',
+};
+
+const accountCreationTips = [
+  {
+    title: 'Elegir una contraseña clara y segura',
+    text: 'Conviene usar una contraseña que no sea demasiado obvia y que pueda recordarse sin tener que improvisar una nueva cada vez.',
+  },
+  {
+    title: 'Guardar bien el correo creado',
+    text: 'Después de crear la cuenta, conviene anotar o recordar con claridad la dirección exacta, porque esa será la base para entrar a otros servicios.',
+  },
+  {
+    title: 'No apresurarse con los permisos',
+    text: 'Durante el registro o al entrar a otros servicios, conviene leer con calma qué pide el sistema antes de aceptar.',
+  },
+  {
+    title: 'Tener presente la recuperación',
+    text: 'Si el sistema pide un correo de recuperación o una verificación adicional, conviene completarla bien para evitar problemas de acceso después.',
+  },
+];
+
+const emailParts = [
+  {
+    title: 'Bandeja de entrada',
+    image: `${BASE_PATH}/images/modulo-1/correo/bandeja-entrada.png`,
+    imageAlt: 'Bandeja de entrada del correo',
+    text: 'Es donde llegan la mayoría de los correos nuevos. Conviene revisarla con calma y no abrir inmediatamente mensajes sospechosos.',
+  },
+  {
+    title: 'Enviados',
+    image: `${BASE_PATH}/images/modulo-1/correo/enviados.png`,
+    imageAlt: 'Carpeta de correos enviados',
+    text: 'Aquí se guardan los mensajes que ya fueron enviados. Puede servir para verificar si un correo realmente salió o para revisar lo que se mandó antes.',
+  },
+  {
+    title: 'Borradores',
+    image: `${BASE_PATH}/images/modulo-1/correo/borradores.png`,
+    imageAlt: 'Carpeta de borradores',
+    text: 'Guarda mensajes que todavía no se han enviado. Es útil cuando se deja un correo incompleto y se quiere terminar después.',
+  },
+  {
+    title: 'Spam o correo no deseado',
+    image: `${BASE_PATH}/images/modulo-1/correo/spam.png`,
+    imageAlt: 'Carpeta de spam o no deseado',
+    text: 'Aquí suelen llegar mensajes que el sistema considera sospechosos, publicitarios o no deseados. Conviene revisarlo con cuidado y no confiar automáticamente en sus enlaces.',
+  },
+  {
+    title: 'Adjuntos',
+    image: `${BASE_PATH}/images/modulo-1/correo/adjuntos.png`,
+    imageAlt: 'Archivo adjunto en un correo',
+    text: 'Son archivos enviados dentro del correo, como documentos, imágenes o formatos. Antes de abrirlos, conviene revisar quién los manda y si el archivo tiene sentido en ese contexto.',
+  },
+  {
+    title: 'Buscar en el correo',
+    image: `${BASE_PATH}/images/modulo-1/correo/busqueda-correo.png`,
+    imageAlt: 'Barra de búsqueda en el correo',
+    text: 'Sirve para localizar correos antiguos por remitente, asunto o palabras clave. Esto ayuda mucho cuando el buzón ya tiene muchos mensajes.',
+  },
+];
+
+const composeSteps = [
+  {
+    title: 'Redactar un correo básico',
+    image: `${BASE_PATH}/images/modulo-1/correo/redactar-correo.png`,
+    imageAlt: 'Ventana para redactar un correo',
+    steps: [
+      'Hacer clic en el botón para redactar o crear un nuevo mensaje.',
+      'Escribir la dirección de correo de la persona destinataria.',
+      'Agregar un asunto breve y claro.',
+      'Escribir el mensaje.',
+      'Adjuntar archivos si hace falta.',
+      'Revisar todo antes de enviar.',
+    ],
+    note: 'Esta parte es importante, pero en este tema no será la prioridad principal. Lo más relevante es entender cómo el correo se usa para acceder a otros servicios.',
+  },
+  {
+    title: 'Abrir un correo y revisar un archivo',
+    image: `${BASE_PATH}/images/modulo-1/correo/abrir-correo.png`,
+    imageAlt: 'Ejemplo de abrir un correo y revisar un archivo adjunto',
+    steps: [
+      'Hacer clic en el correo que se desea abrir.',
+      'Leer con calma quién lo envió y qué dice el asunto.',
+      'Revisar si el contenido tiene sentido.',
+      'Si incluye archivo, verificar su nombre antes de descargarlo o abrirlo.',
+    ],
+    note: 'No todo archivo adjunto debe abrirse de inmediato. Conviene revisar primero si el correo parece legítimo.',
+  },
+];
+
+const signInCards = [
+  {
+    title: 'Continuar con Google',
+    image: `${BASE_PATH}/images/modulo-1/correo/continuar-google.png`,
+    imageAlt: 'Botón continuar con Google',
+    text: 'Muchas plataformas permiten crear una cuenta o iniciar sesión usando una cuenta de Google. Normalmente esto evita escribir usuario y contraseña por separado en cada sitio.',
+  },
+  {
+    title: 'Continuar con Microsoft',
+    image: `${BASE_PATH}/images/modulo-1/correo/continuar-microsoft.png`,
+    imageAlt: 'Botón continuar con Microsoft',
+    text: 'También es común ver acceso con cuenta de Microsoft. Esta opción puede ser útil si ya se trabaja con Outlook u otros servicios Microsoft.',
+  },
+  {
+    title: 'Revisar permisos antes de aceptar',
+    image: `${BASE_PATH}/images/modulo-1/correo/permisos-acceso.png`,
+    imageAlt: 'Pantalla de permisos al iniciar sesión',
+    text: 'Antes de continuar, muchas plataformas muestran qué información o acceso están solicitando. Conviene leer esa pantalla antes de aceptar.',
+  },
+];
+
+const signInFlow = [
+  {
+    title: 'Cómo suele verse un registro con correo o cuenta vinculada',
+    text: 'En muchos sitios aparece un formulario con correo y contraseña, o bien botones como “Continuar con Google” o “Continuar con Microsoft”.',
+  },
+  {
+    title: 'Qué suele pasar después',
+    text: 'El sistema puede pedir seleccionar una cuenta, escribir contraseña, confirmar identidad, revisar permisos o aceptar continuar con ese acceso.',
+  },
+  {
+    title: 'Qué conviene revisar',
+    text: 'Antes de aceptar, conviene revisar si el sitio es confiable, si el acceso tiene sentido y qué información pide compartir.',
+  },
+  {
+    title: 'Qué pasa si después no entra',
+    text: 'Si una cuenta se creó con Google o Microsoft, normalmente conviene volver a usar ese mismo método para iniciar sesión en el futuro.',
+  },
+];
+
+const linkedServicesExamples = [
+  {
+    title: 'Crear una cuenta en una herramienta en línea',
+    text: 'En muchas plataformas basta con escribir el correo o usar una cuenta ya existente de Google o Microsoft para crear el acceso.',
+  },
+  {
+    title: 'Entrar a ChatGPT u otras herramientas de IA',
+    text: 'Es común que estos servicios permitan crear o abrir una cuenta con Google o Microsoft. Lo importante es recordar con qué método se creó originalmente.',
+  },
+  {
+    title: 'Recibir códigos o mensajes de verificación',
+    text: 'Algunas plataformas envían un correo para confirmar que la cuenta es real. Por eso conviene saber revisar la bandeja de entrada y, si hace falta, spam.',
+  },
+  {
+    title: 'Usar el correo como cuenta base',
+    text: 'Muchas veces el correo ya no solo sirve para recibir mensajes, sino como la identidad principal con la que se entra a otros servicios.',
+  },
+];
+
+const permissionsAndVerification = [
+  {
+    title: 'Permisos',
+    text: 'Al vincular una cuenta, el sistema puede pedir acceso a nombre, correo, foto de perfil u otros datos básicos. Conviene leer antes de aceptar.',
+  },
+  {
+    title: 'Verificación',
+    text: 'A veces el sistema envía un código o un enlace al correo para comprobar que la cuenta realmente pertenece al usuario.',
+  },
+  {
+    title: 'Volver a iniciar sesión',
+    text: 'En algunas plataformas se pedirá iniciar sesión otra vez después de cierto tiempo. Eso no siempre significa problema; a veces es una medida normal de seguridad.',
+  },
+  {
+    title: 'No compartir contraseñas',
+    text: 'Aunque una plataforma pida acceso con una cuenta, no conviene entregar la contraseña directamente a sitios dudosos. Lo más prudente es usar métodos reconocidos y revisar permisos.',
+  },
+];
+
+const cookiesBrief = [
+  {
+    title: '¿Qué tiene que ver esto con cookies?',
+    text: 'Cuando una cuenta queda iniciada o una página “recuerda” al usuario, parte de esa experiencia puede apoyarse también en cookies y otros datos del navegador.',
+  },
+  {
+    title: '¿Hay que asustarse?',
+    text: 'No necesariamente. En muchos casos esto solo ayuda a mantener la sesión abierta o recordar preferencias. Aun así, sigue siendo válido revisar qué se acepta.',
+  },
+];
+
+const spamSignals = [
+  'El correo genera urgencia exagerada y pide actuar de inmediato.',
+  'El mensaje pide entrar a un enlace extraño para “confirmar” la cuenta.',
+  'El remitente parece conocido, pero la dirección real se ve rara o poco confiable.',
+  'El texto tiene errores extraños, frases alarmistas o promesas poco creíbles.',
+  'Incluye archivos adjuntos inesperados o sin contexto claro.',
+];
+
+const emailSafetyCards = [
+  {
+    title: 'Spam o no deseado',
+    text: 'No todo correo sospechoso significa que la cuenta se perdió. Muchas veces solo es correo no deseado que llegó por exposición del correo en distintos servicios o sitios.',
+  },
+  {
+    title: 'Phishing o suplantación',
+    text: 'Algunos correos intentan hacerse pasar por empresas o servicios conocidos para que el usuario haga clic, entregue datos o abra archivos.',
+  },
+  {
+    title: 'Qué conviene hacer',
+    text: 'Si un correo se ve extraño, conviene no abrir sus enlaces de inmediato, revisar con calma el remitente y evitar entregar datos personales o contraseñas.',
+  },
+];
+
+const multiAccountRules = [
+  {
+    title: 'Sí se pueden tener varias cuentas',
+    text: 'Puede ser útil separar una cuenta personal, una profesional, una escolar o una destinada a registros en plataformas.',
+  },
+  {
+    title: 'No conviene crear cuentas sin orden',
+    text: 'Tener demasiadas cuentas sin una lógica clara puede complicar accesos, recuperación de contraseñas y organización del trabajo.',
+  },
+  {
+    title: 'Conviene asignar un propósito a cada una',
+    text: 'Por ejemplo: una cuenta para trabajo formal, otra para registros o pruebas y otra personal. Lo importante es no perder claridad.',
+  },
+  {
+    title: 'Recordar con qué cuenta se entró a cada servicio',
+    text: 'Muchos problemas aparecen no porque el servicio falle, sino porque se intenta entrar con una cuenta distinta a la que se usó al registrarse.',
+  },
+];
+
+const commonMistakes = [
+  'Abrir enlaces sospechosos solo porque el correo menciona una marca conocida.',
+  'No revisar spam o no deseado cuando se espera un código de verificación.',
+  'Crear cuentas en muchos servicios sin recordar con qué correo se registró cada uno.',
+  'Pensar que el correo solo sirve para mandar mensajes y no para acceder a plataformas.',
+  'No leer la pantalla de permisos antes de aceptar acceso con Google o Microsoft.',
+];
+
+const securityMistakes = [
+  'Entregar datos o contraseñas desde un enlace dudoso recibido por correo.',
+  'Abrir archivos adjuntos inesperados sin revisar bien el remitente.',
+  'Confiar en un mensaje solo porque parece venir de Microsoft, Google o un servicio conocido.',
+  'Ignorar que algunas plataformas exigen volver a entrar con el mismo método original de acceso.',
+  'Perder el control de varias cuentas por no tener un criterio claro de organización.',
+];
+
+const reinforcementVideos = [
+  {
+    videoId: 'aSWIQJw3o0k',
+    title: 'Gmail y el Ecosistema de Google',
+    description: 'Explora la interfaz de Gmail y comprende cómo tu cuenta de correo es la llave maestra para acceder a servicios como Drive, Classroom y Forms. Créditos a: Ciudadano 2.0',
+  },
+  {
+    videoId: 'HJQzXXDmCCY',
+    title: 'Guía de Uso de Outlook y Hotmail',
+    description: 'Aprende a navegar por la bandeja de entrada de Microsoft, gestionar mensajes y entender su integración con el entorno de Office 365. Créditos a: Programación Fácil, SEO y Marketing',
+  },
+  {
+    videoId: 'UuuAlP7ay6U',
+    title: 'Seguridad: ¿Qué es el Phishing y cómo funciona?',
+    description: 'Refuerzo visual sobre los métodos de engaño más comunes en el correo electrónico y consejos esenciales para no caer en trampas de suplantación de identidad. Créditos a: Retro',
+  },
+];
 ---
 
-<BaseLayout title="Módulo 1 | Correo electrónico">
-  <a href={`${BASE_PATH}/modulos/modulo-1/`} class="text-sm font-semibold text-sky-700 hover:text-sky-800">
-    ← Volver al módulo 1
-  </a>
+<BaseLayout
+  title="Módulo 1 | Correo electrónico"
+  description="Gmail, Outlook y uso del correo para comunicación, registro en plataformas y acceso a servicios en línea."
+>
+  <div class="mb-8">
+    <a
+      href={`${BASE_PATH}/modulos/modulo-1/`}
+      class="text-sm font-semibold text-sky-700 hover:text-sky-800"
+    >
+      ← Volver al módulo 1
+    </a>
+  </div>
 
-  <section class="mt-8 content-card p-8">
-    <h1 class="text-3xl font-bold text-slate-900">Correo electrónico</h1>
-    <p class="mt-4 leading-8 text-slate-700">
-      Esta sección se encuentra en preparación.
-    </p>
+  <SectionTitle
+    eyebrow="Tema 5"
+    title="Correo electrónico"
+    description="Entender el correo ayuda no solo a enviar mensajes, sino también a registrarse en plataformas, validar accesos y trabajar con mayor seguridad en servicios en línea."
+  />
+
+  <section class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+    <div class="content-card p-8 prose-soft text-slate-700">
+      <p>
+        El correo electrónico sigue siendo una herramienta importante, pero hoy no solo se usa para
+        enviar mensajes. También sirve para crear cuentas, recuperar accesos, recibir códigos de
+        verificación y entrar a plataformas de trabajo o aprendizaje.
+      </p>
+      <p>
+        En este tema se explican de forma clara los aspectos más útiles del correo en la práctica:
+        sus partes principales, la diferencia general entre Gmail y Outlook, y el uso del correo
+        como acceso a otros servicios.
+      </p>
+    </div>
+
+    <InfoBox title="Propósito del tema" tone="info">
+      <p>
+        Comprender cómo funciona el correo en tareas reales: comunicación básica, acceso a plataformas,
+        verificación de cuentas y cuidado frente a mensajes sospechosos.
+      </p>
+    </InfoBox>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="¿Para qué sigue siendo útil el correo?"
+      description="Aunque hoy existen muchos medios de comunicación, el correo sigue siendo una herramienta clave para organización y acceso digital."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {emailOverviewCards.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Gmail y Outlook: una diferencia general"
+      description="Para este nivel basta con distinguir de forma simple los dos servicios más comunes en muchos entornos."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      {providerComparison.map((item) => (
+        <VisualActionCard
+          title={item.title}
+          image={item.image}
+          imageAlt={item.imageAlt}
+        >
+          <p>{item.text}</p>
+        </VisualActionCard>
+      ))}
+    </div>
+
+    <div class="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {providerDifferences.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Cómo crear una cuenta en Google o en Outlook"
+      description="Aunque las pantallas pueden cambiar un poco, el proceso general suele seguir pasos parecidos: elegir una cuenta, escribir datos básicos, crear contraseña y completar verificaciones."
+    />
+
+    <div class="mb-6">
+      <InfoBox title="Importante" tone="info">
+        <p>
+          No hace falta memorizar cada pantalla exactamente igual. Lo importante es reconocer la lógica
+          general del proceso y avanzar con calma leyendo cada paso antes de continuar.
+        </p>
+      </InfoBox>
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <VisualActionCard
+        title={googleSignupSteps.title}
+        image={googleSignupSteps.image}
+        imageAlt={googleSignupSteps.imageAlt}
+      >
+        <ol class="list-decimal space-y-2 pl-5">
+          {googleSignupSteps.steps.map((step) => (
+            <li>{step}</li>
+          ))}
+        </ol>
+        <p class="mt-4"><strong>Nota:</strong> {googleSignupSteps.note}</p>
+      </VisualActionCard>
+
+      <VisualActionCard
+        title={microsoftSignupSteps.title}
+        image={microsoftSignupSteps.image}
+        imageAlt={microsoftSignupSteps.imageAlt}
+      >
+        <ol class="list-decimal space-y-2 pl-5">
+          {microsoftSignupSteps.steps.map((step) => (
+            <li>{step}</li>
+          ))}
+        </ol>
+        <p class="mt-4"><strong>Nota:</strong> {microsoftSignupSteps.note}</p>
+      </VisualActionCard>
+    </div>
+
+    <div class="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {accountCreationTips.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Partes principales del correo"
+      description="No hace falta memorizar todo. Basta con reconocer algunas partes importantes para trabajar con mayor seguridad."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {emailParts.map((item) => (
+        <VisualActionCard
+          title={item.title}
+          image={item.image}
+          imageAlt={item.imageAlt}
+        >
+          <p>{item.text}</p>
+        </VisualActionCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Acciones básicas con el correo"
+      description="Estas acciones conviene conocerlas, aunque en este tema el foco principal no será redactar a detalle, sino usar el correo de forma práctica."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2">
+      {composeSteps.map((item) => (
+        <VisualActionCard
+          title={item.title}
+          image={item.image}
+          imageAlt={item.imageAlt}
+        >
+          <ol class="list-decimal space-y-2 pl-5">
+            {item.steps.map((step) => (
+              <li>{step}</li>
+            ))}
+          </ol>
+          <p class="mt-4"><strong>Nota:</strong> {item.note}</p>
+        </VisualActionCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Usar una cuenta de correo para entrar a otras plataformas"
+      description="Después de crear una cuenta, muchas plataformas permiten usarla como acceso rápido para registrarse, iniciar sesión o validar identidad."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {signInCards.map((item) => (
+        <VisualActionCard
+          title={item.title}
+          image={item.image}
+          imageAlt={item.imageAlt}
+        >
+          <p>{item.text}</p>
+        </VisualActionCard>
+      ))}
+    </div>
+
+    <div class="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {signInFlow.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+
+    <div class="mt-6">
+      <InfoBox title="Importante" tone="warning">
+        <p>
+          Cuando una plataforma permite entrar con Google o Microsoft, conviene revisar con calma
+          qué método se usó al principio. En muchos casos, después habrá que seguir entrando con ese mismo método.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Ejemplos prácticos de uso"
+      description="Estas situaciones muestran por qué el correo sigue siendo tan importante incluso cuando no se usa principalmente para conversar."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {linkedServicesExamples.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Permisos, verificación e inicio de sesión"
+      description="Muchos registros y accesos en línea siguen una lógica parecida: cuenta, contraseña, confirmación y permisos."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {permissionsAndVerification.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+
+    <div class="mt-6 grid gap-6 lg:grid-cols-2">
+      {cookiesBrief.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Spam, correo no deseado y mensajes sospechosos"
+      description="No todo correo extraño significa que la cuenta se perdió, pero sí conviene reconocer señales de alerta y actuar con más cuidado."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {emailSafetyCards.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+
+    <div class="mt-8">
+      <HighlightMistakes
+        title="Señales comunes de un correo sospechoso"
+        mistakes={spamSignals}
+      />
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Tener varias cuentas: cuándo ayuda y cuándo complica"
+      description="Tener más de un correo puede ser útil, pero conviene hacerlo con orden y con un propósito claro."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {multiAccountRules.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+
+    <div class="mt-6">
+      <InfoBox title="Regla práctica" tone="success">
+        <p>
+          Más importante que tener muchas cuentas es saber para qué sirve cada una y recordar
+          con cuál se entró a cada servicio o plataforma.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Errores frecuentes"
+      description="Muchos problemas con el correo no se deben a falta de capacidad, sino a no distinguir todavía entre mensaje, cuenta, acceso, verificación y seguridad."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <CommonMistakes title="Errores comunes con el correo" mistakes={commonMistakes} />
+      <HighlightMistakes title="Errores frecuentes de seguridad" mistakes={securityMistakes} />
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Videos de refuerzo"
+      description="Estos videos pueden servir como apoyo visual para identificar partes del correo, registros en plataformas y señales de alerta."
+    />
+
+    <VideoCarousel
+      title="Videos recomendados sobre correo electrónico"
+      videos={reinforcementVideos}
+    />
+  </section>
+
+  <section class="mt-14">
+    <InfoBox title="Cierre del tema" tone="success">
+      <p>
+        Entender el correo ayuda no solo a enviar mensajes, sino también a crear cuentas, recuperar accesos,
+        revisar verificaciones y trabajar con más seguridad en plataformas digitales. En el siguiente tema se
+        profundizará en herramientas en la nube y compartición de archivos.
+      </p>
+    </InfoBox>
   </section>
 </BaseLayout>

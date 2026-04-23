@@ -1,17 +1,697 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SectionTitle from '../../../components/module/SectionTitle.astro';
+import InfoBox from '../../../components/module/InfoBox.astro';
+import ExampleCard from '../../../components/module/ExampleCard.astro';
+import HighlightMistakes from '../../../components/module/HighlightMistakes.astro';
+import CommonMistakes from '../../../components/module/CommonMistakes.astro';
+import VisualActionCard from '../../../components/module/VisualActionCard.astro';
+import VideoCarousel from '../../../components/module/VideoCarousel.astro';
 import { BASE_PATH } from '../../../consts';
+
+const downloadLocations = [
+  {
+    title: 'Carpeta Descargas',
+    image: `${BASE_PATH}/images/modulo-1/archivos-pdf-docx-pptx/descargas.png`,
+    imageAlt: 'Ubicación de la carpeta Descargas en Windows',
+    text: 'La mayoría de los archivos obtenidos desde internet, correo o plataformas suelen guardarse primero en la carpeta Descargas.',
+  },
+  {
+    title: 'Navegador o historial de descargas',
+    image: `${BASE_PATH}/images/modulo-1/archivos-pdf-docx-pptx/navegador-descargas.png`,
+    imageAlt: 'Área de descargas en el navegador',
+    text: 'Si no se encuentra el archivo rápidamente, el navegador suele mostrar una lista reciente de archivos descargados.',
+  },
+  {
+    title: 'Ubicación elegida por el usuario',
+    image: `${BASE_PATH}/images/modulo-1/archivos-pdf-docx-pptx/guardar-como.png`,
+    imageAlt: 'Ventana para elegir ubicación de guardado',
+    text: 'En algunos casos, antes de descargar, el sistema permite elegir manualmente en qué carpeta se guardará el archivo.',
+  },
+];
+
+const basicActions = [
+  {
+    title: 'Abrir un archivo descargado',
+    image: `${BASE_PATH}/images/modulo-1/archivos-pdf-docx-pptx/abrir-archivo.png`,
+    imageAlt: 'Ejemplo de abrir un archivo descargado',
+    steps: [
+      'Ubicar el archivo en Descargas o en la lista de descargas del navegador.',
+      'Hacer doble clic sobre el archivo para abrirlo.',
+      'Esperar a que se abra con el programa correspondiente.',
+      'Revisar primero qué tipo de archivo es antes de intentar modificarlo.',
+    ],
+    note: 'No todos los archivos se comportan igual. Algunos se abren para lectura, otros permiten edición y otros requieren programas específicos.',
+  },
+  {
+    title: 'Renombrar un archivo descargado',
+    image: `${BASE_PATH}/images/modulo-1/archivos-pdf-docx-pptx/renombrar-archivo.png`,
+    imageAlt: 'Ejemplo de renombrar un archivo',
+    steps: [
+      'Ubicar el archivo dentro del explorador de archivos.',
+      'Hacer clic derecho sobre el archivo.',
+      'Elegir la opción “Cambiar nombre” o “Renombrar”.',
+      'Escribir un nombre claro y presionar Enter.',
+    ],
+    note: 'Conviene renombrar el archivo antes de que se mezcle con otros documentos parecidos.',
+  },
+  {
+    title: 'Guardar una copia propia',
+    image: `${BASE_PATH}/images/modulo-1/archivos-pdf-docx-pptx/guardar-copia.png`,
+    imageAlt: 'Ejemplo de guardar una copia del archivo',
+    steps: [
+      'Abrir el archivo en el programa correspondiente.',
+      'Buscar una opción como “Guardar como”, “Duplicar”, “Hacer una copia” o similar.',
+      'Elegir una carpeta clara para guardar la nueva versión.',
+      'Asignar un nombre útil al nuevo archivo.',
+    ],
+    note: 'Esto es especialmente útil cuando no conviene modificar el archivo original o cuando el documento abre con restricciones.',
+  },
+  {
+    title: 'Mover el archivo a su lugar correcto',
+    image: `${BASE_PATH}/images/modulo-1/archivos-pdf-docx-pptx/mover-archivo.png`,
+    imageAlt: 'Ejemplo de mover archivo descargado',
+    steps: [
+      'Seleccionar el archivo dentro de Descargas.',
+      'Cortarlo o arrastrarlo a la carpeta donde realmente debe guardarse.',
+      'Verificar que quede dentro de la ubicación correcta.',
+      'Evitar dejar archivos importantes permanentemente en Descargas.',
+    ],
+    note: 'Descargas suele ser un punto de paso, no el lugar final para organizar documentos de trabajo.',
+  },
+];
+
+const fileTypes = [
+  {
+    type: 'Word (.docx)',
+    purpose: 'Editar texto con formato, títulos, tablas, imágenes y contenido escrito.',
+    editable: 'Sí, normalmente.',
+    usualApp: 'Word, Google Docs, LibreOffice Writer.',
+    caution: 'Es uno de los formatos más comunes para documentos de trabajo y correcciones.',
+  },
+  {
+    type: 'Excel (.xlsx)',
+    purpose: 'Organizar datos, listas, tablas, fórmulas y registros.',
+    editable: 'Sí, normalmente.',
+    usualApp: 'Excel, Google Sheets, LibreOffice Calc.',
+    caution: 'Es frecuente en listas de cotejo, inventarios, registros y concentrados de información.',
+  },
+  {
+    type: 'PowerPoint (.pptx)',
+    purpose: 'Editar presentaciones con diapositivas, imágenes, cuadros de texto y apoyo visual.',
+    editable: 'Sí, normalmente.',
+    usualApp: 'PowerPoint, Google Slides, LibreOffice Impress.',
+    caution: 'Puede modificarse, aunque algunos elementos cambian si viene de otra plataforma.',
+  },
+  {
+    type: 'PDF (.pdf)',
+    purpose: 'Leer, compartir o imprimir documentos manteniendo mejor su forma original.',
+    editable: 'No siempre.',
+    usualApp: 'Navegador, Adobe Acrobat Reader y otros visores.',
+    caution: 'Se puede leer con facilidad, pero no siempre se puede editar directamente como si fuera Word.',
+  },
+];
+
+const practicalCases = [
+  {
+    title: 'Lista de cotejo o registro en Excel',
+    text: 'Un archivo de Excel suele ser útil para listas de cotejo, registros de asistencia, inventarios, concentrados de calificaciones o seguimiento de actividades. Su ventaja es que permite ordenar información en tablas y trabajar fila por fila o columna por columna.',
+  },
+  {
+    title: 'Planeación o formato en Word',
+    text: 'Un archivo de Word suele ser más conveniente para planeaciones, oficios, reportes, actas, observaciones, rúbricas con mucho texto o documentos que necesitan redacción continua. Su ventaja es que permite escribir, corregir y dar formato con mayor libertad.',
+  },
+  {
+    title: 'Presentación de clase en PowerPoint',
+    text: 'Un archivo de PowerPoint suele usarse para presentaciones de clase, exposiciones, reuniones escolares o materiales visuales de apoyo. Su ventaja es organizar la información por diapositivas y combinar texto, imágenes y elementos visuales.',
+  },
+  {
+    title: 'Guía o formato en PDF',
+    text: 'Un PDF suele servir para compartir una guía, una lectura, una actividad lista para imprimir o un documento que se quiere conservar tal como fue enviado. Su ventaja es que mantiene mejor su presentación, aunque no siempre sea fácil de editar.',
+  },
+];
+
+const restrictionScenarios = [
+  {
+    title: 'Vista protegida o contenido bloqueado',
+    image: `${BASE_PATH}/images/modulo-1/archivos-pdf-docx-pptx/vista-protegida.png`,
+    imageAlt: 'Ejemplo de aviso amarillo o archivo en modo protegido',
+    text: 'Algunos archivos descargados desde internet o recibidos por otros medios pueden abrirse primero en modo protegido. En ese caso, el programa permite leer el contenido, pero limita la edición hasta que el usuario habilita la edición o crea una copia propia.',
+  },
+  {
+    title: 'Archivo solo para lectura',
+    image: `${BASE_PATH}/images/modulo-1/archivos-pdf-docx-pptx/solo-lectura.png`,
+    imageAlt: 'Ejemplo de archivo solo lectura',
+    text: 'En otros casos el archivo sí abre, pero no permite hacer cambios directos. Esto puede depender del archivo, del origen o de los permisos con los que fue compartido.',
+  },
+  {
+    title: 'Documento compartido con restricciones',
+    image: `${BASE_PATH}/images/modulo-1/archivos-pdf-docx-pptx/hacer-copia.png`,
+    imageAlt: 'Ejemplo de opción hacer una copia',
+    text: 'A veces el sistema muestra que no conviene editar el original y sugiere hacer una copia. Esa copia se convierte en la versión de trabajo del usuario.',
+  },
+];
+
+const externalPlatformExamples = [
+  {
+    title: 'De Canva a PowerPoint',
+    text: 'Una presentación creada en Canva puede exportarse y luego abrirse en PowerPoint. Sin embargo, algunos elementos pueden cambiar de posición, fuente, animación o tamaño. Conviene revisarla después de abrirla.',
+  },
+  {
+    title: 'De Google Docs a Word',
+    text: 'Un documento trabajado en Google Docs puede descargarse como Word. Normalmente funciona bien, pero algunas diferencias de formato pueden requerir pequeños ajustes.',
+  },
+  {
+    title: 'De Google Sheets a Excel',
+    text: 'Una hoja trabajada en Sheets puede abrirse en Excel, aunque algunas fórmulas, colores o detalles visuales podrían cambiar ligeramente.',
+  },
+  {
+    title: 'Exportar para compartir',
+    text: 'Cuando ya no se quiere seguir editando un archivo y solo se necesita enviarlo o imprimirlo, muchas veces conviene exportarlo a PDF para conservar mejor su presentación.',
+  },
+];
+
+const exportMenuImage = '';
+const exportResultImage = '';
+
+const exportBasics = [
+  {
+    title: '¿Qué es exportar?',
+    text: 'Exportar significa generar una nueva versión del archivo en otro formato. No se trata solamente de guardar, sino de crear una copia pensada para otro uso, por ejemplo compartir, imprimir o abrir en otra plataforma.',
+  },
+  {
+    title: '¿Para qué sirve exportar?',
+    text: 'Sirve para adaptar un archivo a una necesidad diferente. Por ejemplo, convertir un documento a PDF para enviarlo, una tabla a CSV para subirla a una plataforma o una presentación a PDF para compartirla sin editarla.',
+  },
+  {
+    title: '¿Qué conviene recordar?',
+    text: 'Al exportar, normalmente el archivo original sigue existiendo en su formato inicial. La exportación genera una nueva versión, y esa nueva versión puede perder ciertas funciones de edición dependiendo del tipo de archivo elegido.',
+  },
+];
+
+const exportFormats = [
+  {
+    source: 'Word (.docx)',
+    exportTo: 'PDF (.pdf)',
+    use: 'Compartir, imprimir o enviar un documento conservando mejor su presentación.',
+    note: 'Es útil cuando ya no se necesita seguir editando el texto con tanta libertad.',
+  },
+  {
+    source: 'Excel (.xlsx)',
+    exportTo: 'PDF (.pdf)',
+    use: 'Compartir una tabla, reporte o formato sin que la otra persona tenga que editar las celdas.',
+    note: 'Conviene revisar cómo se acomodan las hojas antes de exportar.',
+  },
+  {
+    source: 'Excel (.xlsx)',
+    exportTo: 'CSV (.csv)',
+    use: 'Mover datos tabulares simples a otras plataformas o sistemas.',
+    note: 'Puede perder formato visual, colores, varias hojas o algunas funciones avanzadas.',
+  },
+  {
+    source: 'PowerPoint (.pptx)',
+    exportTo: 'PDF (.pdf)',
+    use: 'Compartir diapositivas para revisión, consulta o impresión.',
+    note: 'Las diapositivas se conservan como páginas, pero ya no funcionan igual que una presentación editable.',
+  },
+  {
+    source: 'PowerPoint (.pptx)',
+    exportTo: 'Video o imágenes',
+    use: 'Distribuir una presentación como material visual o audiovisual.',
+    note: 'Depende de la versión del programa y no siempre conserva todas las interacciones igual.',
+  },
+];
+
+const exportUseCases = [
+  {
+    title: 'Enviar una planeación sin que se desacomode',
+    text: 'Si una planeación se trabajó en Word y ya está lista, exportarla a PDF puede ayudar a compartirla o imprimirla sin que cambie fácilmente su formato.',
+  },
+  {
+    title: 'Compartir una lista o formato sin editar',
+    text: 'Si una tabla de Excel solo se va a revisar o imprimir, exportarla a PDF puede ser más conveniente que enviar directamente el archivo editable.',
+  },
+  {
+    title: 'Subir datos a una plataforma',
+    text: 'En algunos sistemas o plataformas en línea, una tabla puede pedirse en formato CSV. En ese caso, exportar desde Excel puede ser la solución más práctica.',
+  },
+  {
+    title: 'Compartir una presentación como apoyo visual',
+    text: 'Si no se necesita que otra persona edite las diapositivas, exportar una presentación a PDF puede facilitar su distribución y consulta.',
+  },
+];
+
+const renameRules = [
+  'El nombre con el que se descarga un archivo no siempre es el más útil para seguir trabajando.',
+  'Conviene cambiarlo si no describe claramente el contenido o si responde mejor al contexto de otra persona.',
+  'Un nombre más claro ayuda a reconocer el archivo sin necesidad de abrirlo.',
+];
+
+const renameExamples = [
+  {
+    bad: 'documento.docx',
+    good: 'Planeacion_Historia_2A_Bloque1.docx',
+  },
+  {
+    bad: 'lista nueva.xlsx',
+    good: 'ListaCotejo_Ciencias_1B_2026-04.xlsx',
+  },
+  {
+    bad: 'archivo descargado.pdf',
+    good: 'Guia_Actividad_ProyectoFinal.pdf',
+  },
+];
+
+const commonMistakes = [
+  'Intentar editar un PDF como si fuera un Word.',
+  'Modificar directamente un archivo recibido sin guardar una copia propia primero.',
+  'Dejar el archivo únicamente en Descargas y después no recordar dónde quedó.',
+  'Cambiar de programa sin revisar si el formato se conservó bien.',
+  'Pensar que si el archivo abrió, entonces necesariamente puede editarse sin problema.',
+  'Pensar que exportar y guardar son exactamente lo mismo, cuando en realidad exportar crea una nueva versión en otro formato.',
+];
+
+const editingMistakes = [
+  'No revisar si el archivo está en modo protegido o solo lectura.',
+  'No guardar cambios con frecuencia mientras se trabaja.',
+  'Trabajar sobre el archivo original cuando convenía duplicarlo primero.',
+  'No renombrar la copia y terminar con varias versiones confusas.',
+  'Exportar o convertir sin revisar el resultado final.',
+  'Exportar un archivo y no revisar después si el resultado conservó correctamente el contenido, el orden o el formato esperado.',
+];
+
+const reinforcementVideos = [
+  {
+    videoId: 'U6Dbi-fX5H8',
+    title: 'Guardar vs. Guardar como: Creando Copias de Trabajo',
+    description: 'Explicación fundamental sobre cuándo usar cada opción para no sobrescribir documentos originales. Ideal para aprender a crear versiones propias de archivos recibidos y mantener un historial de cambios organizado. Créditos a: Clase de Informática',
+  },
+    {
+    videoId: '1uKLyJggU6A',
+    title: 'Conversión de Office a PDF (Sin programas externos)',
+    description: 'Guía paso a paso para transformar cualquier documento de Word, Excel o PowerPoint en un formato PDF profesional utilizando las herramientas nativas de Windows, asegurando que el diseño no se mueva al enviarlo. Créditos a: Juan Andrés Creations',
+  },
+  {
+    videoId: '-0yjX-4L9wI',
+    title: 'Guía Completa: Organización de Archivos y Carpetas',
+    description: 'Domina el explorador de archivos aprendiendo a crear, mover y clasificar tus documentos docentes. Es el complemento ideal para limpiar la carpeta de Descargas y establecer un orden jerárquico profesional en tu PC. Créditos a: Informática en la Web',
+  },
+];
 ---
 
-<BaseLayout title="Módulo 1 | Descarga y edición de archivos">
-  <a href={`${BASE_PATH}/modulos/modulo-1/`} class="text-sm font-semibold text-sky-700 hover:text-sky-800">
-    ← Volver al módulo 1
-  </a>
+<BaseLayout
+  title="Módulo 1 | Descarga y edición de archivos"
+  description="Cómo encontrar archivos descargados, reconocer si pueden editarse y trabajar con Word, Excel, PowerPoint y PDF."
+>
+  <div class="mb-8">
+    <a
+      href={`${BASE_PATH}/modulos/modulo-1/`}
+      class="text-sm font-semibold text-sky-700 hover:text-sky-800"
+    >
+      ← Volver al módulo 1
+    </a>
+  </div>
 
-  <section class="mt-8 content-card p-8">
-    <h1 class="text-3xl font-bold text-slate-900">Descarga y edición de archivos</h1>
-    <p class="mt-4 leading-8 text-slate-700">
-      Esta sección se encuentra en preparación.
-    </p>
+  <SectionTitle
+    eyebrow="Tema 3"
+    title="Descarga y edición de archivos"
+    description="Ubicar archivos descargados, reconocer sus posibilidades de edición y trabajar con ellos de manera más clara y segura."
+  />
+
+  <section class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+    <div class="content-card p-8 prose-soft text-slate-700">
+      <p>
+        Descargar un archivo es una acción cotidiana, pero no siempre resulta claro dónde quedó,
+        con qué programa debe abrirse o si realmente puede editarse.
+      </p>
+      <p>
+        En este tema se explican los formatos más comunes de trabajo, la diferencia entre ver y
+        editar, y algunas decisiones prácticas que ayudan a evitar errores al modificar documentos.
+      </p>
+    </div>
+
+    <InfoBox title="Propósito del tema" tone="info">
+      <p>
+        Reconocer dónde se guardan normalmente los archivos descargados y cómo trabajar con ellos de
+        manera más segura cuando sí es posible editarlos.
+      </p>
+    </InfoBox>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="¿Dónde suelen quedar los archivos descargados?"
+      description="Antes de editar, lo primero es localizar el archivo con claridad."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {downloadLocations.map((item) => (
+        <VisualActionCard
+          title={item.title}
+          image={item.image}
+          imageAlt={item.imageAlt}
+        >
+          <p>{item.text}</p>
+        </VisualActionCard>
+      ))}
+    </div>
+
+    <div class="mt-6">
+      <InfoBox title="Idea clave" tone="success">
+        <p>
+          En la mayoría de los casos, el archivo descargado aparece primero en <strong>Descargas</strong>.
+          Desde ahí conviene abrirlo, renombrarlo y moverlo a su ubicación correcta si se va a seguir usando.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Acciones básicas con archivos descargados"
+      description="Estas acciones ayudan a trabajar mejor desde el primer momento."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2">
+      {basicActions.map((action) => (
+        <VisualActionCard
+          title={action.title}
+          image={action.image}
+          imageAlt={action.imageAlt}
+        >
+          <ol class="list-decimal space-y-2 pl-5">
+            {action.steps.map((step) => (
+              <li>{step}</li>
+            ))}
+          </ol>
+          <p class="mt-4"><strong>Nota:</strong> {action.note}</p>
+        </VisualActionCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Archivos que con más frecuencia pueden editarse"
+      description="No todos los formatos están pensados para modificarse igual. Estos son algunos de los más comunes en el trabajo cotidiano."
+    />
+
+    <div class="content-card overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+          <thead class="bg-slate-50">
+            <tr>
+              <th class="px-4 py-4 font-semibold text-slate-900">Tipo de archivo</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">¿Para qué sirve?</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">¿Se edita normalmente?</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">¿Con qué suele abrirse?</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">Observación importante</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 bg-white">
+            {fileTypes.map((fileType) => (
+              <tr>
+                <td class="px-4 py-4 align-top font-semibold text-slate-900">{fileType.type}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{fileType.purpose}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{fileType.editable}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{fileType.usualApp}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{fileType.caution}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mt-6">
+      <InfoBox title="Importante" tone="warning">
+        <p>
+          Que un archivo se pueda abrir no significa automáticamente que se pueda editar con libertad.
+          En algunos casos solo permite lectura, en otros pide habilitar edición y en otros conviene
+          trabajar sobre una copia propia.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Ejemplos prácticos de trabajo"
+      description="Estas situaciones son comunes en el trabajo cotidiano y ayudan a entender mejor cuándo un archivo sí conviene editarse."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {practicalCases.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Cuando el archivo no permite editar de inmediato"
+      description="A veces el documento sí abre, pero el programa limita los cambios por seguridad, permisos o por la forma en que fue compartido."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {restrictionScenarios.map((item) => (
+        <VisualActionCard
+          title={item.title}
+          image={item.image}
+          imageAlt={item.imageAlt}
+        >
+          <p>{item.text}</p>
+        </VisualActionCard>
+      ))}
+    </div>
+
+    <div class="mt-6 grid gap-6 lg:grid-cols-2">
+      <ExampleCard title="¿Qué conviene hacer en esos casos?">
+        <p>
+          Lo más recomendable es leer primero el aviso que aparece en pantalla. Si el sistema ofrece
+          opciones como <strong>habilitar edición</strong>, <strong>hacer una copia</strong> o
+          <strong> guardar como</strong>, conviene trabajar a partir de una versión propia del archivo.
+        </p>
+        <p>
+          De esa manera se reduce el riesgo de dañar el original o de perder claridad sobre cuál
+          documento se está modificando.
+        </p>
+      </ExampleCard>
+
+      <InfoBox title="Regla práctica" tone="warning">
+        <p>
+          Si el archivo vino de otra persona, de internet o de una plataforma compartida, suele ser
+          buena idea crear primero una copia propia antes de empezar a editar.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Editar archivos que vienen de otras plataformas"
+      description="Sí es posible trabajar archivos exportados desde otros servicios, pero no siempre se conservan exactamente igual."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {externalPlatformExamples.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+
+    <div class="mt-6">
+      <InfoBox title="Importante" tone="warning">
+        <p>
+          Cuando un archivo cambia de plataforma o de programa, conviene revisar con atención textos,
+          fuentes, tablas, imágenes, animaciones o acomodos antes de darlo por terminado.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Exportar archivos"
+      description="Además de abrir, editar o guardar, muchos programas también permiten exportar un archivo a otro formato según la necesidad."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+      <div class="grid gap-6">
+        {exportBasics.map((item) => (
+          <ExampleCard title={item.title}>
+            <p>{item.text}</p>
+          </ExampleCard>
+        ))}
+      </div>
+
+      <div class="grid gap-6">
+        <VisualActionCard
+          title="Dónde suele aparecer la opción Exportar"
+          image={exportMenuImage}
+          imageAlt="Ejemplo de la opción exportar dentro de un programa"
+        >
+          <p>
+            Aquí puede colocarse una imagen donde se vea la opción <strong>Exportar</strong>,
+            generalmente dentro del menú <strong>Archivo</strong>.
+          </p>
+          <p>
+            Según el programa, también puede aparecer como <strong>Guardar como</strong>,
+            <strong> Descargar</strong> o como una opción específica de exportación.
+          </p>
+        </VisualActionCard>
+
+        <VisualActionCard
+          title="Resultado de una exportación"
+          image={exportResultImage}
+          imageAlt="Ejemplo del resultado al exportar un archivo"
+        >
+          <p>
+            Aquí puede colocarse una imagen que muestre cómo se elige el formato de salida o cómo
+            luce el archivo ya exportado.
+          </p>
+          <p>
+            Lo importante es entender que el archivo original sigue existiendo y que la exportación
+            crea una nueva versión pensada para otro uso.
+          </p>
+        </VisualActionCard>
+      </div>
+    </div>
+
+    <div class="mt-8 content-card overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+          <thead class="bg-slate-50">
+            <tr>
+              <th class="px-4 py-4 font-semibold text-slate-900">Archivo original</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">Se puede exportar a</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">¿Para qué puede servir?</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">¿Qué conviene recordar?</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 bg-white">
+            {exportFormats.map((item) => (
+              <tr>
+                <td class="px-4 py-4 align-top font-semibold text-slate-900">{item.source}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.exportTo}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.use}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {exportUseCases.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+
+    <div class="mt-6">
+      <InfoBox title="Idea clave" tone="warning">
+        <p>
+          Exportar no es lo mismo que editar. Exportar crea una nueva versión del archivo para otro
+          propósito. Muchas veces esa versión exportada ya no conserva la misma facilidad de edición
+          que el archivo original.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Ajustar el nombre del archivo a nuestras necesidades"
+      description="El nombre con el que se descarga un archivo no siempre es el más útil para seguir trabajando con claridad."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+      <div class="content-card p-6 md:p-8">
+        <p class="leading-7 text-slate-700">
+          Cuando un archivo se descarga, muchas veces conserva el nombre que le dio la persona que lo creó,
+          la plataforma desde la que se bajó o incluso un nombre automático. Ese nombre no tiene por qué ser
+          el definitivo. Puede ajustarse para que resulte más claro y más útil según las necesidades de quien
+          lo va a usar.
+        </p>
+
+        <div class="mt-6 grid gap-3">
+          {renameRules.map((rule) => (
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-slate-700 shadow-sm">
+              <p class="leading-7">{rule}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="content-card overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+            <thead class="bg-slate-50">
+              <tr>
+                <th class="px-4 py-4 font-semibold text-slate-900">Nombre poco útil</th>
+                <th class="px-4 py-4 font-semibold text-slate-900">Nombre más claro</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 bg-white">
+              {renameExamples.map((item) => (
+                <tr>
+                  <td class="px-4 py-4 align-top leading-7 text-rose-700">{item.bad}</td>
+                  <td class="px-4 py-4 align-top leading-7 text-emerald-700">{item.good}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Errores frecuentes"
+      description="Muchos problemas con archivos descargados se deben a pequeñas decisiones que pueden corregirse con un mejor criterio de trabajo."
+    />
+
+    <div class="mb-6">
+      <InfoBox title="Importante" tone="warning">
+        <p>
+          La mayoría de las dificultades en este tema no se deben a incapacidad, sino a no distinguir
+          todavía entre abrir, editar, duplicar, exportar o renombrar un archivo.
+        </p>
+      </InfoBox>
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <CommonMistakes title="Errores comunes al descargar y abrir archivos" mistakes={commonMistakes} />
+      <HighlightMistakes title="Errores frecuentes al editar archivos" mistakes={editingMistakes} />
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Videos de refuerzo"
+      description="Estos videos pueden servir como complemento visual para reforzar la descarga, apertura y edición básica de archivos."
+    />
+
+    <VideoCarousel
+      title="Videos recomendados sobre descarga y edición de archivos"
+      videos={reinforcementVideos}
+    />
+  </section>
+
+  <section class="mt-14">
+    <InfoBox title="Cierre del tema" tone="success">
+      <p>
+        Reconocer dónde quedó un archivo, saber si realmente puede editarse y trabajar sobre una
+        copia clara cuando sea necesario permite ahorrar tiempo y evitar errores. En los siguientes
+        temas se continuará con navegación web, correo y herramientas en la nube.
+      </p>
+    </InfoBox>
   </section>
 </BaseLayout>
