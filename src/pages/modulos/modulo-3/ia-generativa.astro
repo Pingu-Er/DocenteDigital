@@ -1,0 +1,278 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SectionTitle from '../../../components/module/SectionTitle.astro';
+import InfoBox from '../../../components/module/InfoBox.astro';
+import ExampleCard from '../../../components/module/ExampleCard.astro';
+import VisualActionCard from '../../../components/module/VisualActionCard.astro';
+import HighlightMistakes from '../../../components/module/HighlightMistakes.astro';
+import { BASE_PATH } from '../../../consts';
+---
+
+<BaseLayout
+  title="Módulo 3 | Qué es la IA generativa"
+  description="Comprende qué es la inteligencia artificial generativa, cómo produce respuestas y por qué debe usarse con criterio docente."
+>
+  <div class="mb-8">
+    <a
+      href={`${BASE_PATH}/modulos/modulo-3/`}
+      class="text-sm font-semibold text-sky-700 hover:text-sky-800"
+    >
+      ← Volver al módulo
+    </a>
+  </div>
+
+  <SectionTitle
+    eyebrow="Tema 1"
+    title="Qué es la IA generativa y cómo responde"
+    description="Antes de usar una herramienta de inteligencia artificial, es necesario comprender qué hace, cómo produce sus respuestas y por qué no debe tratarse como una fuente infalible."
+  />
+
+  <section class="grid gap-8 lg:grid-cols-[1.25fr_0.95fr]">
+    <div class="content-card p-8">
+      <h3 class="text-xl font-bold text-slate-900">¿Qué aprenderás en este tema?</h3>
+
+      <div class="mt-4 prose-soft text-slate-700">
+        <p>
+          La inteligencia artificial generativa puede redactar textos, resumir información,
+          proponer actividades, explicar conceptos, transformar documentos y ayudar a organizar ideas.
+          Pero su utilidad depende de comprender una idea central: la IA no entrega verdad automática.
+        </p>
+
+        <p>
+          En este tema revisarás qué significa que una IA sea “generativa”, cómo produce respuestas
+          y por qué siempre debe existir una revisión humana, especialmente cuando se usa en contextos educativos.
+        </p>
+      </div>
+    </div>
+
+    <InfoBox title="Idea central" tone="info">
+      <p>
+        Una IA generativa no solo busca información: genera una respuesta nueva a partir de la instrucción
+        que recibe, del contexto disponible y de patrones aprendidos durante su entrenamiento.
+      </p>
+    </InfoBox>
+  </section>
+
+  <section class="mt-12">
+    <SectionTitle
+      title="1. ¿Qué es la IA generativa?"
+      description="La IA generativa es un tipo de inteligencia artificial capaz de producir contenido nuevo a partir de una instrucción."
+    />
+
+    <div class="grid gap-6 md:grid-cols-3">
+      <ExampleCard title="Puede generar texto">
+        <p>
+          Por ejemplo: una explicación sobre un tema, una rúbrica, una planeación inicial,
+          una carta formal o una lista de actividades para clase.
+        </p>
+      </ExampleCard>
+
+      <ExampleCard title="Puede transformar contenido">
+        <p>
+          Puede resumir un texto, cambiar el tono de una explicación, simplificar instrucciones
+          o convertir ideas sueltas en una estructura más clara.
+        </p>
+      </ExampleCard>
+
+      <ExampleCard title="Puede apoyar procesos">
+        <p>
+          También puede ayudar a organizar criterios, comparar opciones, proponer preguntas
+          o revisar la coherencia de un documento.
+        </p>
+      </ExampleCard>
+    </div>
+
+    <div class="mt-8">
+      <InfoBox title="Importante" tone="warning">
+        <p>
+          Que la IA pueda producir una respuesta clara no significa que esa respuesta sea correcta,
+          completa, actualizada o adecuada para tus estudiantes. La claridad de una respuesta no equivale
+          a confiabilidad.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-12">
+    <SectionTitle
+      title="2. ¿Cómo responde una IA generativa?"
+      description="Una IA generativa trabaja a partir de instrucciones. Mientras mejor sea el contexto, más útil puede ser la respuesta."
+    />
+
+    <VisualActionCard
+      title="Flujo básico de una respuesta generada con IA"
+      imageSrc={`${BASE_PATH}/images/modulo-3/ia-generativa/flujo-ia-generativa.png`}
+      imageAlt="Esquema del flujo: instrucción del usuario, modelo de IA, respuesta generada y revisión humana."
+    >
+      <p>
+        El proceso puede entenderse de forma sencilla: el usuario escribe una instrucción,
+        la herramienta interpreta el contexto, genera una respuesta y después la persona debe revisar,
+        ajustar o descartar lo recibido.
+      </p>
+
+      <p>
+        La parte más importante del proceso no es solo escribir la instrucción, sino revisar la respuesta
+        con criterio profesional.
+      </p>
+    </VisualActionCard>
+  </section>
+
+  <section class="mt-12">
+    <SectionTitle
+      title="3. La IA no piensa igual que una persona"
+      description="Este punto es clave para evitar expectativas equivocadas."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <ExampleCard title="Lo que sí hace">
+        <ul class="list-disc pl-5">
+          <li>Reconoce patrones en el lenguaje.</li>
+          <li>Relaciona ideas a partir del contexto que recibe.</li>
+          <li>Genera respuestas coherentes y estructuradas.</li>
+          <li>Adapta el tono, formato o nivel si se le pide con claridad.</li>
+        </ul>
+      </ExampleCard>
+
+      <ExampleCard title="Lo que no debe asumirse">
+        <ul class="list-disc pl-5">
+          <li>No garantiza verdad.</li>
+          <li>No siempre distingue una fuente confiable de una débil.</li>
+          <li>No conoce necesariamente el contexto específico de tu escuela.</li>
+          <li>No reemplaza el juicio pedagógico del docente.</li>
+        </ul>
+      </ExampleCard>
+    </div>
+  </section>
+
+  <section class="mt-12">
+    <SectionTitle
+      title="4. IA generativa, buscador web y editor de texto no son lo mismo"
+      description="Distinguir estas herramientas ayuda a usarlas mejor y a evitar errores de confianza."
+    />
+
+    <VisualActionCard
+      title="Diferencia práctica entre herramientas"
+      imageSrc={`${BASE_PATH}/images/modulo-3/ia-generativa/ia-no-es-buscador.png`}
+      imageAlt="Comparación visual entre buscador web, IA generativa y editor de texto."
+    >
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-left text-sm">
+          <thead>
+            <tr class="border-b border-slate-200 text-slate-900">
+              <th class="py-3 pr-4 font-bold">Herramienta</th>
+              <th class="py-3 pr-4 font-bold">Qué hace mejor</th>
+              <th class="py-3 pr-4 font-bold">Riesgo principal</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 text-slate-700">
+            <tr>
+              <td class="py-3 pr-4 font-semibold">Buscador web</td>
+              <td class="py-3 pr-4">Encuentra páginas, documentos, noticias o fuentes existentes.</td>
+              <td class="py-3 pr-4">Puede mostrar resultados poco confiables o desactualizados.</td>
+            </tr>
+            <tr>
+              <td class="py-3 pr-4 font-semibold">IA generativa</td>
+              <td class="py-3 pr-4">Produce explicaciones, borradores, ideas, síntesis y estructuras nuevas.</td>
+              <td class="py-3 pr-4">Puede inventar datos, simplificar de más o responder con seguridad aunque esté equivocada.</td>
+            </tr>
+            <tr>
+              <td class="py-3 pr-4 font-semibold">Editor de texto</td>
+              <td class="py-3 pr-4">Permite escribir, dar formato, corregir y organizar documentos.</td>
+              <td class="py-3 pr-4">No interpreta por sí solo la calidad pedagógica del contenido.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </VisualActionCard>
+  </section>
+
+  <section class="mt-12">
+    <SectionTitle
+      title="5. Ejemplos de uso docente"
+      description="La IA puede ser útil, pero el tipo de tarea determina cuánto cuidado se necesita."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2">
+      <InfoBox title="Uso razonable" tone="success">
+        <p>
+          Pedir a la IA que proponga tres formas de explicar un concepto difícil,
+          generar una primera lista de actividades o convertir una explicación larga
+          en instrucciones más claras para estudiantes.
+        </p>
+      </InfoBox>
+
+      <InfoBox title="Uso riesgoso" tone="warning">
+        <p>
+          Copiar directamente una explicación generada sobre un tema especializado,
+          usar una rúbrica sin revisarla o aceptar datos, citas o referencias sin comprobarlos.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-12">
+    <SectionTitle
+      title="Errores frecuentes al empezar con IA"
+      description="Estos errores no impiden usar IA, pero sí reducen la calidad y la confiabilidad del trabajo."
+    />
+
+    <HighlightMistakes
+      mistakes={[
+        {
+          title: 'Creer que una respuesta bien redactada es automáticamente correcta',
+          description: 'La IA puede escribir con seguridad incluso cuando la información es incompleta, imprecisa o falsa.',
+        },
+        {
+          title: 'Usarla como reemplazo del criterio docente',
+          description: 'La IA puede apoyar la planeación o producción de materiales, pero no conoce por sí sola las necesidades reales del grupo.',
+        },
+        {
+          title: 'Pedir respuestas demasiado generales',
+          description: 'Instrucciones vagas producen respuestas genéricas. La calidad mejora cuando se indica nivel, contexto, propósito y formato.',
+        },
+        {
+          title: 'No revisar el resultado antes de usarlo',
+          description: 'Todo contenido generado para estudiantes debe revisarse, ajustarse y contextualizarse antes de aplicarse.',
+        },
+      ]}
+    />
+  </section>
+
+  <section class="mt-12">
+    <SectionTitle
+      title="Actividad breve"
+      description="Antes de avanzar, identifica una tarea docente donde la IA podría ayudarte y analiza el nivel de cuidado que requiere."
+    />
+
+    <div class="content-card p-8">
+      <h3 class="text-xl font-bold text-slate-900">Ejercicio de reflexión</h3>
+
+      <div class="mt-4 prose-soft text-slate-700">
+        <p>
+          Elige una tarea real de tu trabajo docente, por ejemplo: preparar una explicación,
+          diseñar una actividad, revisar una rúbrica, resumir un documento o generar preguntas.
+        </p>
+
+        <p>
+          Después responde:
+        </p>
+
+        <ol>
+          <li>¿Qué parte de la tarea podría apoyar la IA?</li>
+          <li>¿Qué parte no debería delegarse completamente?</li>
+          <li>¿Qué tendrías que revisar antes de usar la respuesta?</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-12">
+    <InfoBox title="Cierre del tema" tone="success">
+      <p>
+        La IA generativa es útil cuando se entiende como una herramienta de apoyo, no como una autoridad.
+        Puede acelerar procesos, proponer ideas y mejorar borradores, pero siempre requiere dirección,
+        revisión y criterio pedagógico.
+      </p>
+    </InfoBox>
+  </section>
+</BaseLayout>

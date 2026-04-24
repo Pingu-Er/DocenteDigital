@@ -1,0 +1,88 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import TopicCard from '../../../components/module/TopicCard.astro';
+import SectionTitle from '../../../components/module/SectionTitle.astro';
+import InfoBox from '../../../components/module/InfoBox.astro';
+import { module3Topics } from '../../../consts';
+---
+
+<BaseLayout
+  title="DocenteDigital | Módulo 3"
+  description="Comprender la inteligencia artificial generativa con criterio pedagógico"
+>
+  <SectionTitle
+    eyebrow="Módulo 3"
+    title="Comprender la IA generativa con criterio"
+    description="Este módulo introduce el uso crítico de la inteligencia artificial generativa para que el docente pueda comprender sus posibilidades, reconocer sus límites y tomar mejores decisiones antes de integrarla a su trabajo."
+  />
+
+  <section class="grid gap-8 lg:grid-cols-[1.3fr_0.9fr]">
+    <div class="content-card p-8">
+      <h3 class="text-xl font-bold text-slate-900">¿Por qué es importante este módulo?</h3>
+
+      <div class="mt-4 prose-soft text-slate-700">
+        <p>
+          La inteligencia artificial generativa puede apoyar tareas docentes como organizar ideas,
+          resumir información, proponer actividades, revisar textos o generar materiales iniciales.
+          Sin embargo, su utilidad depende del criterio con el que se use.
+        </p>
+
+        <p>
+          No toda respuesta generada por IA es correcta, actualizada, pertinente o segura.
+          Por eso, antes de aprender a escribir mejores instrucciones, es necesario comprender
+          qué tipo de herramienta se está usando, cómo responde y en qué situaciones puede fallar.
+        </p>
+      </div>
+    </div>
+
+    <InfoBox title="Ruta sugerida" tone="info">
+      <p>
+        Se recomienda avanzar en orden, porque el módulo construye una base crítica antes de pasar
+        al uso práctico de prompts en el siguiente módulo.
+      </p>
+
+      <ol class="mt-3 list-decimal pl-6">
+        <li>Qué es la IA generativa y cómo responde</li>
+        <li>Limitaciones, errores y sesgos de la IA</li>
+        <li>Cuándo conviene usar IA y cuándo no</li>
+        <li>Comparación general de herramientas de IA</li>
+      </ol>
+    </InfoBox>
+  </section>
+
+  <section class="mt-12">
+    <SectionTitle
+      title="Temas del módulo"
+      description="Seleccione un tema para comenzar. Cada apartado ayuda a construir una postura más crítica, práctica y responsable frente al uso de IA en el trabajo docente."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {module3Topics.map((topic) => (
+        <TopicCard
+          title={topic.title}
+          description={topic.description}
+          href={topic.href}
+          status={topic.status}
+        />
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-12 grid gap-8 lg:grid-cols-2">
+    <InfoBox title="Enfoque del módulo" tone="success">
+      <p>
+        Este módulo no busca presentar la IA como una solución automática. Su propósito es que el
+        docente aprenda a usarla con criterio: identificando posibilidades, riesgos, límites y
+        condiciones mínimas de verificación.
+      </p>
+    </InfoBox>
+
+    <InfoBox title="Entregable del módulo" tone="warning">
+      <p>
+        Al finalizar, se recomienda construir una matriz de uso responsable de IA para decidir
+        qué tareas docentes pueden apoyarse con IA, cuáles requieren revisión cuidadosa y cuáles
+        no deberían delegarse a una herramienta automática.
+      </p>
+    </InfoBox>
+  </section>
+</BaseLayout>

@@ -71,3 +71,30 @@ export const module2Topics = [
     status: 'Disponible',
   },
 ];
+
+export const module3Topics = [
+  {
+    title: 'Qué es la IA generativa y cómo responde',
+    description: 'Comprende cómo producen respuestas las herramientas de IA y por qué no deben confundirse con fuentes infalibles.',
+    href: `${BASE_PATH}/modulos/modulo-3/ia-generativa/`,
+    status: 'Disponible',
+  },
+  {
+    title: 'Limitaciones, errores y sesgos de la IA',
+    description: 'Reconoce errores frecuentes, sesgos, información desactualizada y riesgos al usar IA en contextos educativos.',
+    href: `${BASE_PATH}/modulos/modulo-3/limitaciones-sesgos/`,
+    status: 'Disponible',
+  },
+  {
+    title: 'Cuándo conviene usar IA y cuándo no',
+    description: 'Analiza tareas docentes donde la IA puede aportar valor y casos donde requiere cautela o no conviene utilizarla.',
+    href: `${BASE_PATH}/modulos/modulo-3/uso-criterio/`,
+    status: 'Disponible',
+  },
+  {
+    title: 'Comparación general de herramientas de IA',
+    description: 'Compara herramientas como ChatGPT, Claude, Gemini y Copilot desde criterios prácticos de uso docente.',
+    href: `${BASE_PATH}/modulos/modulo-3/comparacion-herramientas/`,
+    status: 'Disponible',
+  },
+];
