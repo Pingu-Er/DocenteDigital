@@ -1,0 +1,100 @@
+---
+import InfoBox from '../module/InfoBox.astro';
+import SectionTitle from '../module/SectionTitle.astro';
+
+interface Props {
+  generalCount: number;
+  technicalCount: number;
+}
+
+const { generalCount, technicalCount } = Astro.props;
+const totalCount = generalCount + technicalCount;
+---
+
+<section
+  data-stage-screen="intro"
+  class="space-y-8"
+>
+  <SectionTitle
+    eyebrow="Módulo 2"
+    title="Diagnóstico interactivo de herramientas de productividad"
+    description="Este cuestionario está pensado para ayudarte a reconocer tu nivel real de manejo en documentos, hojas de cálculo, presentaciones y formularios. Primero verás una parte general y después una parte técnica."
+  />
+
+  <div class="grid gap-4 md:grid-cols-3">
+    <div class="content-card p-5">
+      <p class="text-sm font-semibold uppercase tracking-wide text-sky-700">
+        Bloque general
+      </p>
+      <p class="mt-2 text-3xl font-bold text-slate-900">{generalCount}</p>
+      <p class="mt-2 text-sm leading-6 text-slate-600">
+        Preguntas sobre decisiones prácticas, uso funcional y situaciones reales del trabajo docente.
+      </p>
+    </div>
+
+    <div class="content-card p-5">
+      <p class="text-sm font-semibold uppercase tracking-wide text-violet-700">
+        Bloque técnico
+      </p>
+      <p class="mt-2 text-3xl font-bold text-slate-900">{technicalCount}</p>
+      <p class="mt-2 text-sm leading-6 text-slate-600">
+        Preguntas sobre funciones, herramientas y acciones concretas dentro del software.
+      </p>
+    </div>
+
+    <div class="content-card p-5">
+      <p class="text-sm font-semibold uppercase tracking-wide text-emerald-700">
+        Total
+      </p>
+      <p class="mt-2 text-3xl font-bold text-slate-900">{totalCount}</p>
+      <p class="mt-2 text-sm leading-6 text-slate-600">
+        Al terminar verás tu desempeño general, técnico y por herramienta.
+      </p>
+    </div>
+  </div>
+
+  <InfoBox title="Antes de comenzar" tone="info">
+    <p>
+      Este diagnóstico no guarda información en la nube. Tu avance será temporal dentro de la página.
+      Si recargas por accidente, puede recuperarse dentro de la misma sesión.
+    </p>
+    <p class="mt-3">
+      La parte general evalúa criterio de uso. La parte técnica evalúa manejo operativo.
+      Las opciones pueden aparecer en distinto orden para evitar patrones repetidos.
+    </p>
+  </InfoBox>
+
+  <div class="content-card p-6">
+    <h3 class="text-xl font-bold text-slate-900">¿Qué vas a encontrar?</h3>
+
+    <div class="mt-4 grid gap-4 md:grid-cols-2">
+      <div class="rounded-2xl bg-slate-50 p-4">
+        <p class="font-semibold text-slate-900">En la parte general</p>
+        <p class="mt-2 text-sm leading-7 text-slate-700">
+          Situaciones reales sobre planeaciones, listas, rúbricas, presentaciones, organización de datos y formularios.
+        </p>
+      </div>
+
+      <div class="rounded-2xl bg-slate-50 p-4">
+        <p class="font-semibold text-slate-900">En la parte técnica</p>
+        <p class="mt-2 text-sm leading-7 text-slate-700">
+          Funciones y acciones concretas como insertar tablas, usar fórmulas, distinguir animaciones y configurar preguntas.
+        </p>
+      </div>
+    </div>
+
+    <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <p class="text-sm leading-6 text-slate-500">
+        Puedes iniciar cuando quieras. Al terminar, la página te mostrará una interpretación clara de tus resultados.
+      </p>
+
+      <button
+        type="button"
+        class="inline-flex items-center justify-center rounded-xl bg-sky-700 px-5 py-3 font-semibold text-white transition hover:bg-sky-800"
+        data-start-quiz
+      >
+        Comenzar diagnóstico
+      </button>
+    </div>
+  </div>
+</section>

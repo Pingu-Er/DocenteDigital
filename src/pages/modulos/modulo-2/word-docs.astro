@@ -1,0 +1,116 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SectionTitle from '../../../components/module/SectionTitle.astro';
+import InfoBox from '../../../components/module/InfoBox.astro';
+
+const playlistImage = '/DocenteDigital/images/module-2/playlist-placeholder.svg';
+
+const playlist = {
+  title: 'Lista de reproducción: Word / Docs',
+  href: 'https://www.youtube.com/playlist?list=PL6mdiqzGtgKm68vf_FjwVNoE2EAFK23wO',
+};
+---
+
+<BaseLayout
+  title="DocenteDigital | Word y Docs"
+  description="Recursos para reforzar el uso de documentos en Word y Google Docs."
+>
+  <SectionTitle
+    eyebrow="Módulo 2"
+    title="Word / Docs"
+    description="Este apartado reúne recursos para reforzar la creación, edición, organización y presentación de documentos útiles en el trabajo docente."
+  />
+
+  <section class="grid gap-8 lg:grid-cols-[1.25fr_0.95fr]">
+    <div class="content-card p-8">
+      <h3 class="text-xl font-bold text-slate-900">¿Qué conviene reforzar aquí?</h3>
+      <div class="mt-4 prose-soft text-slate-700">
+        <p>
+          Word y Docs son herramientas clave para elaborar planeaciones, reportes,
+          rúbricas, circulares, formatos, listas de cotejo y materiales imprimibles.
+        </p>
+        <p>
+          El objetivo no es memorizar todos los botones, sino dominar acciones frecuentes:
+          formato de texto, tablas, imágenes, comentarios, revisión, exportación a PDF
+          y estructura clara del documento.
+        </p>
+      </div>
+    </div>
+
+    <InfoBox title="Ruta sugerida" tone="info">
+      <p>Para estudiar este tema, conviene avanzar en este orden:</p>
+      <ol class="mt-3 list-decimal pl-6">
+        <li>Formato básico de texto</li>
+        <li>Tablas, listas y organización visual</li>
+        <li>Inserción y ajuste de imágenes</li>
+        <li>Comentarios, revisión y colaboración</li>
+        <li>Exportación o entrega en PDF</li>
+      </ol>
+    </InfoBox>
+  </section>
+
+  <section class="mt-12 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+    <a
+      href={playlist.href}
+      target="_blank"
+      rel="noreferrer"
+      class="content-card group block overflow-hidden transition hover:-translate-y-1 hover:shadow-lg"
+    >
+      <div class="flex h-64 items-center justify-center bg-slate-100 p-6">
+        <img
+          src={playlistImage}
+          alt={playlist.title}
+          class="h-full w-full object-contain"
+          loading="lazy"
+        />
+      </div>
+      <div class="p-6">
+        <p class="text-sm font-semibold uppercase tracking-wide text-sky-700">
+          YouTube
+        </p>
+        <h3 class="mt-2 text-xl font-bold text-slate-900 group-hover:text-sky-700">
+          {playlist.title}
+        </h3>
+        <p class="mt-3 leading-7 text-slate-600">
+          Accede a una lista de videos para reforzar el manejo práctico de documentos.
+        </p>
+      </div>
+    </a>
+
+    <div class="content-card p-8">
+      <h3 class="text-xl font-bold text-slate-900">Otros lugares útiles para aprender</h3>
+      <div class="mt-4 grid gap-4">
+        <a class="rounded-2xl border border-slate-200 bg-white p-4 hover:border-sky-300 hover:bg-sky-50" href="https://support.microsoft.com/es-es/microsoft-365" target="_blank" rel="noreferrer">
+          <p class="font-bold text-slate-900">Ayuda y aprendizaje de Microsoft 365</p>
+          <p class="mt-2 text-sm leading-7 text-slate-600">
+            Recurso oficial con guías, plantillas y apoyo para Word, Excel, PowerPoint y Forms.
+          </p>
+        </a>
+
+        <a class="rounded-2xl border border-slate-200 bg-white p-4 hover:border-sky-300 hover:bg-sky-50" href="https://learn.microsoft.com/es-es/training/" target="_blank" rel="noreferrer">
+          <p class="font-bold text-slate-900">Microsoft Learn</p>
+          <p class="mt-2 text-sm leading-7 text-slate-600">
+            Plataforma oficial con módulos y rutas de aprendizaje a ritmo propio.
+          </p>
+        </a>
+
+        <a class="rounded-2xl border border-slate-200 bg-white p-4 hover:border-sky-300 hover:bg-sky-50" href="https://www.aulaclic.es/index.htm" target="_blank" rel="noreferrer">
+          <p class="font-bold text-slate-900">AulaClic</p>
+          <p class="mt-2 text-sm leading-7 text-slate-600">
+            Sitio con tutoriales prácticos para conocer funciones de Word y otras herramientas de oficina.
+          </p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-12">
+    <InfoBox title="Sugerencia de uso docente" tone="success">
+      <p>
+        Después de revisar los recursos, intenta crear un documento real: una rúbrica,
+        una circular o una planeación breve. El aprendizaje mejora cuando se practica
+        con materiales que sí usarás en tu contexto.
+      </p>
+    </InfoBox>
+  </section>
+</BaseLayout>

@@ -1,0 +1,69 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SectionTitle from '../../../components/module/SectionTitle.astro';
+import InfoBox from '../../../components/module/InfoBox.astro';
+import QuizShell from '../../../components/quiz/QuizShell.astro';
+
+import generalQuestions from '../../../data/modulo2/generalQuestions';
+import technicalQuestions from '../../../data/modulo2/technicalQuestions';
+import recommendations from '../../../data/modulo2/recommendations';
+---
+
+<BaseLayout
+  title="DocenteDigital | Módulo 2 | Diagnóstico interactivo"
+  description="Diagnóstico interactivo para evaluar el uso general y técnico de herramientas de productividad en docencia."
+>
+  <SectionTitle
+    eyebrow="Módulo 2"
+    title="Diagnóstico interactivo"
+    description="Este espacio te permite identificar tu nivel de manejo en documentos, hojas de cálculo, presentaciones y formularios. Primero encontrarás una parte general y después una parte técnica."
+  />
+
+  <section class="grid gap-8 lg:grid-cols-[1.35fr_0.95fr]">
+    <div class="content-card p-8">
+      <h3 class="text-xl font-bold text-slate-900">¿Qué evalúa este diagnóstico?</h3>
+
+      <div class="mt-4 prose-soft text-slate-700">
+        <p>
+          La primera parte evalúa decisiones prácticas de uso: cuándo conviene utilizar
+          una herramienta, cómo resolver una necesidad real del trabajo docente y qué tipo
+          de acción ayuda a organizar mejor la información.
+        </p>
+
+        <p>
+          La segunda parte evalúa manejo técnico-operativo: funciones, herramientas y acciones
+          concretas dentro de Word o Docs, Excel o Sheets, presentaciones y formularios.
+        </p>
+
+        <p>
+          Al terminar, verás un resumen de tu desempeño general, técnico y por herramienta,
+          junto con recomendaciones para reforzar las áreas que más lo necesiten.
+        </p>
+      </div>
+    </div>
+
+    <InfoBox title="Antes de comenzar" tone="info">
+      <p>
+        Este cuestionario es temporal y funciona dentro de la página.
+        No guarda información en la nube.
+      </p>
+
+      <p class="mt-3">
+        Si recargas accidentalmente, el avance puede mantenerse durante la misma sesión.
+        Si reinicias el cuestionario, el progreso se borra.
+      </p>
+
+      <p class="mt-3">
+        Las opciones pueden aparecer en distinto orden para evitar patrones repetidos.
+      </p>
+    </InfoBox>
+  </section>
+
+  <section class="mt-12">
+    <QuizShell
+      generalQuestions={generalQuestions}
+      technicalQuestions={technicalQuestions}
+      recommendations={recommendations}
+    />
+  </section>
+</BaseLayout>

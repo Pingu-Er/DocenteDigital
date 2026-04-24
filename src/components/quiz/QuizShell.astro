@@ -1,0 +1,1032 @@
+---
+import QuizIntro from './QuizIntro.astro';
+import QuizSection from './QuizSection.astro';
+
+interface QuestionOption {
+  id: string;
+  text: string;
+}
+
+interface QuestionItem {
+  id: string;
+  herramienta: string;
+  competencia: string;
+  peso: number;
+  pregunta: string;
+  opciones: QuestionOption[];
+  correctOptionId: string;
+  retroalimentacion: string;
+}
+
+interface RecommendationItem {
+  id: string;
+  tool: string;
+  title: string;
+  description?: string;
+  href?: string;
+  label?: string;
+  level?: 'refuerzo' | 'practica' | 'mejora';
+  section?: 'general' | 'technical' | 'both';
+}
+
+interface Props {
+  generalQuestions?: QuestionItem[];
+  technicalQuestions?: QuestionItem[];
+  recommendations?: RecommendationItem[];
+}
+
+const {
+  generalQuestions = [],
+  technicalQuestions = [],
+  recommendations = [],
+} = Astro.props;
+
+const shellId = `quiz-shell-${Math.random().toString(36).slice(2, 10)}`;
+---
+
+<div
+  id={shellId}
+  class="space-y-10"
+  data-quiz-shell
+  data-storage-key="docentedigital-modulo2-quiz-v1"
+>
+  <QuizIntro
+    generalCount={generalQuestions.length}
+    technicalCount={technicalQuestions.length}
+  />
+
+  <QuizSection
+    sectionKey="general"
+    eyebrow="Bloque 1"
+    title="Parte general"
+    description="Aquí se evalúa si reconoces qué herramienta conviene usar, cómo resolver situaciones prácticas y qué decisiones ayudan a trabajar con claridad en contextos docentes."
+    questions={generalQuestions}
+    hidden={true}
+  />
+
+  <QuizSection
+    sectionKey="technical"
+    eyebrow="Bloque 2"
+    title="Parte técnica"
+    description="Aquí se evalúa el manejo operativo de funciones y herramientas concretas dentro de Word o Docs, Excel o Sheets, presentaciones y formularios."
+    questions={technicalQuestions}
+    hidden={true}
+  />
+
+  <section class="hidden space-y-8" data-stage-screen="results">
+    <div class="mb-8">
+      <p class="mb-3 inline-block rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-700">
+        Resultados
+      </p>
+      <h2 class="text-3xl font-bold tracking-tight text-slate-900">
+        Resumen de tu desempeño
+      </h2>
+      <p class="mt-4 max-w-3xl text-lg leading-8 text-slate-600">
+        Aquí puedes ver cómo te fue en la parte general, en la parte técnica y en cada herramienta.
+        La idea no es juzgarte, sino mostrarte con claridad en qué ya tienes base suficiente y qué conviene reforzar.
+      </p>
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-3">
+      <div class="content-card p-5">
+        <p class="text-sm font-semibold uppercase tracking-wide text-sky-700">
+          Bloque general
+        </p>
+        <p class="mt-2 text-3xl font-bold text-slate-900" data-general-score>
+          0 / 0
+        </p>
+        <p class="mt-2 text-sm leading-6 text-slate-600" data-general-band>
+          Sin resultados todavía.
+        </p>
+      </div>
+
+      <div class="content-card p-5">
+        <p class="text-sm font-semibold uppercase tracking-wide text-violet-700">
+          Bloque técnico
+        </p>
+        <p class="mt-2 text-3xl font-bold text-slate-900" data-technical-score>
+          0 / 0
+        </p>
+        <p class="mt-2 text-sm leading-6 text-slate-600" data-technical-band>
+          Sin resultados todavía.
+        </p>
+      </div>
+
+      <div class="content-card p-5">
+        <p class="text-sm font-semibold uppercase tracking-wide text-emerald-700">
+          Total
+        </p>
+        <p class="mt-2 text-3xl font-bold text-slate-900" data-total-score>
+          0 / 0
+        </p>
+        <p class="mt-2 text-sm leading-6 text-slate-600" data-total-band>
+          Sin resultados todavía.
+        </p>
+      </div>
+    </div>
+
+    <div class="content-card p-6">
+      <h3 class="text-xl font-bold text-slate-900">
+        Desempeño por herramienta
+      </h3>
+      <div class="mt-5 space-y-4" data-tool-results>
+        <p class="text-sm leading-6 text-slate-500">
+          Completa el cuestionario para ver el detalle por herramienta.
+        </p>
+      </div>
+    </div>
+
+    <div class="content-card p-6">
+      <h3 class="text-xl font-bold text-slate-900">
+        Recomendaciones
+      </h3>
+      <div class="mt-5 space-y-4" data-recommendations-results>
+        <p class="text-sm leading-6 text-slate-500">
+          Al terminar aparecerán aquí recomendaciones de refuerzo según tu desempeño.
+        </p>
+      </div>
+    </div>
+
+    <div class="content-card p-6">
+      <h3 class="text-xl font-bold text-slate-900">
+        Preguntas que conviene repasar
+      </h3>
+      <div class="mt-5 space-y-4" data-incorrect-summary>
+        <p class="text-sm leading-6 text-slate-500">
+          Aquí aparecerán las preguntas en las que te equivocaste, junto con la respuesta correcta y una breve explicación.
+        </p>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
+      <button
+        type="button"
+        class="inline-flex items-center justify-center rounded-xl border border-slate-300 px-4 py-2.5 font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+        data-restart-quiz
+      >
+        Reiniciar cuestionario
+      </button>
+    </div>
+  </section>
+
+  <script type="application/json" data-recommendations-json>
+    {JSON.stringify(recommendations)}
+  </script>
+</div>
+
+<script define:vars={{ shellId }}>
+  (() => {
+    const shell = document.getElementById(shellId);
+    if (!shell) return;
+
+    const storageKey =
+      shell.getAttribute('data-storage-key') || 'docentedigital-modulo2-quiz-v1';
+
+    const screens = {
+      intro: shell.querySelector('[data-stage-screen="intro"]'),
+      general: shell.querySelector('[data-stage-screen="general"]'),
+      technical: shell.querySelector('[data-stage-screen="technical"]'),
+      results: shell.querySelector('[data-stage-screen="results"]'),
+    };
+
+    const generalRoot = shell.querySelector('[data-quiz-section-root="general"]');
+    const technicalRoot = shell.querySelector('[data-quiz-section-root="technical"]');
+
+    if (!generalRoot || !technicalRoot) return;
+
+    const recommendationsJsonEl = shell.querySelector('[data-recommendations-json]');
+    let recommendations = [];
+    try {
+      recommendations = recommendationsJsonEl
+        ? JSON.parse(recommendationsJsonEl.textContent || '[]')
+        : [];
+    } catch {
+      recommendations = [];
+    }
+
+    function createDefaultState() {
+      return {
+        stage: 'intro',
+        optionOrders: {},
+        general: {
+          currentIndex: 0,
+          answers: {},
+        },
+        technical: {
+          currentIndex: 0,
+          answers: {},
+        },
+      };
+    }
+
+    function cloneState(state) {
+      return JSON.parse(JSON.stringify(state));
+    }
+
+    function shuffleArray(items) {
+      const clone = [...items];
+      for (let i = clone.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [clone[i], clone[j]] = [clone[j], clone[i]];
+      }
+      return clone;
+    }
+
+    function loadState() {
+      try {
+        const raw = sessionStorage.getItem(storageKey);
+        if (!raw) return createDefaultState();
+
+        const parsed = JSON.parse(raw);
+        const base = createDefaultState();
+
+        return {
+          ...base,
+          ...parsed,
+          general: {
+            ...base.general,
+            ...(parsed.general || {}),
+          },
+          technical: {
+            ...base.technical,
+            ...(parsed.technical || {}),
+          },
+          optionOrders: {
+            ...(parsed.optionOrders || {}),
+          },
+        };
+      } catch {
+        return createDefaultState();
+      }
+    }
+
+    function saveState() {
+      try {
+        sessionStorage.setItem(storageKey, JSON.stringify(state));
+      } catch {
+        // noop
+      }
+    }
+
+    function createSectionController(root, sectionKey) {
+      const questionCards = Array.from(root.querySelectorAll('[data-question-card]'));
+      const totalQuestions = questionCards.length;
+
+      const progressRoot = root.querySelector('[data-progress-root]');
+      const progressCurrent = progressRoot?.querySelector('[data-progress-current]');
+      const progressTotal = progressRoot?.querySelector('[data-progress-total]');
+      const progressFill = progressRoot?.querySelector('[data-progress-fill]');
+      const progressPercent = progressRoot?.querySelector('[data-progress-percent]');
+      const progressBar = progressRoot?.querySelector('[data-progressbar]');
+
+      const lastCard = questionCards[questionCards.length - 1];
+      const lastNextButton = lastCard?.querySelector('[data-next-button]');
+      if (lastNextButton) {
+        lastNextButton.textContent =
+          sectionKey === 'general'
+            ? 'Continuar a la parte técnica'
+            : 'Ver resultados';
+      }
+
+      return {
+        root,
+        sectionKey,
+        questionCards,
+        totalQuestions,
+        progressCurrent,
+        progressTotal,
+        progressFill,
+        progressPercent,
+        progressBar,
+      };
+    }
+
+    function normalizeToolKey(rawTool) {
+      const value = String(rawTool || '').toLowerCase();
+
+      if (value.includes('word') || value.includes('docs')) return 'word';
+      if (value.includes('excel') || value.includes('sheet')) return 'excel';
+      if (value.includes('present')) return 'presentaciones';
+      if (value.includes('form')) return 'forms';
+
+      return 'otro';
+    }
+
+    function getToolLabel(toolKey) {
+      const labels = {
+        word: 'Word / Docs',
+        excel: 'Excel / Sheets',
+        presentaciones: 'Presentaciones',
+        forms: 'Forms',
+        otro: 'Otra herramienta',
+      };
+
+      return labels[toolKey] || 'Herramienta';
+    }
+
+    function getBandText(score, max, scope) {
+      const percent = max > 0 ? Math.round((score / max) * 100) : 0;
+
+      if (scope === 'general') {
+        if (percent >= 75) {
+          return 'Tu criterio funcional es sólido y reconoces bien cómo usar estas herramientas en contextos reales.';
+        }
+        if (percent >= 50) {
+          return 'Tienes una base útil, pero aún conviene reforzar algunas decisiones de uso y organización.';
+        }
+        return 'Conviene fortalecer más tu criterio de uso práctico para trabajar con mayor seguridad.';
+      }
+
+      if (scope === 'technical') {
+        if (percent >= 75) {
+          return 'Tu manejo técnico-operativo es bastante sólido en varias funciones importantes.';
+        }
+        if (percent >= 50) {
+          return 'Tienes base técnica útil, aunque todavía hay funciones y acciones que conviene reforzar.';
+        }
+        return 'Conviene repasar funciones y acciones técnicas frecuentes para ganar soltura en el uso del software.';
+      }
+
+      if (percent >= 75) {
+        return 'Tu desempeño global muestra una base funcional y técnica sólida para trabajar con estas herramientas.';
+      }
+      if (percent >= 50) {
+        return 'Tu resultado general es útil, pero todavía hay áreas que conviene reforzar para trabajar con mayor seguridad.';
+      }
+      return 'Tu resultado sugiere que conviene reforzar varias herramientas para trabajar con más claridad, rapidez y confianza.';
+    }
+
+    function getToolBand(percent) {
+      if (percent >= 75) return 'Dominio funcional suficiente';
+      if (percent >= 50) return 'Base útil, pero conviene reforzar';
+      return 'Conviene repasar fundamentos prácticos';
+    }
+
+    let state = loadState();
+
+    const sectionMap = {
+      general: createSectionController(generalRoot, 'general'),
+      technical: createSectionController(technicalRoot, 'technical'),
+    };
+
+    function initializeOptionOrders(section) {
+      section.questionCards.forEach((card) => {
+        const questionId = card.getAttribute('data-question-id');
+        if (!questionId) return;
+
+        const fieldsetGrid = card.querySelector('fieldset .grid');
+        if (!fieldsetGrid) return;
+
+        const optionLabels = Array.from(fieldsetGrid.children);
+        const optionIds = optionLabels
+          .map((label) => label.querySelector('[data-option-input]')?.value)
+          .filter(Boolean);
+
+        if (!state.optionOrders[questionId]) {
+          state.optionOrders[questionId] = shuffleArray(optionIds);
+          saveState();
+        }
+
+        const labelMap = new Map(
+          optionLabels.map((label) => {
+            const input = label.querySelector('[data-option-input]');
+            return [input?.value, label];
+          }),
+        );
+
+        state.optionOrders[questionId].forEach((optionId) => {
+          const label = labelMap.get(optionId);
+          if (label) {
+            fieldsetGrid.appendChild(label);
+          }
+        });
+
+        const orderedLabels = Array.from(fieldsetGrid.children);
+        orderedLabels.forEach((label, index) => {
+          const bubble =
+            label.querySelector('[data-option-card]')?.firstElementChild;
+          if (bubble) {
+            bubble.textContent = ['A', 'B', 'C', 'D'][index] || '';
+          }
+        });
+      });
+    }
+
+    initializeOptionOrders(sectionMap.general);
+    initializeOptionOrders(sectionMap.technical);
+
+    function evaluateAnswerForCard(card, sectionKey) {
+      const questionId = card.getAttribute('data-question-id');
+      if (!questionId) return null;
+
+      const sectionState = state[sectionKey];
+      const existingAnswer = sectionState.answers[questionId] || null;
+
+      if (!existingAnswer?.selectedOptionId) {
+        return null;
+      }
+
+      if (existingAnswer.checked) {
+        return existingAnswer;
+      }
+
+      const correctOptionId = card.getAttribute('data-correct-option-id') || '';
+      const weight = Number(card.getAttribute('data-weight') || '1');
+      const tool = card.getAttribute('data-tool') || 'Sin herramienta';
+
+      const isCorrect = existingAnswer.selectedOptionId === correctOptionId;
+
+      const evaluatedAnswer = {
+        ...existingAnswer,
+        checked: true,
+        isCorrect,
+        awardedPoints: isCorrect ? weight : 0,
+        weight,
+        tool,
+      };
+
+      sectionState.answers[questionId] = evaluatedAnswer;
+      return evaluatedAnswer;
+    }
+
+    function finalizeAllSelectedAnswers() {
+      ['general', 'technical'].forEach((sectionKey) => {
+        const section = sectionMap[sectionKey];
+        section.questionCards.forEach((card) => {
+          evaluateAnswerForCard(card, sectionKey);
+        });
+      });
+
+      saveState();
+    }
+
+    function getOptionText(card, optionId) {
+      if (!optionId) return 'Sin respuesta';
+
+      const optionCard = card.querySelector(`[data-option-id="${optionId}"]`);
+      if (!optionCard) return 'Sin respuesta';
+
+      const textNode = optionCard.querySelector('.flex-1');
+      if (textNode) {
+        return textNode.textContent?.trim() || 'Sin respuesta';
+      }
+
+      return optionCard.textContent?.trim() || 'Sin respuesta';
+    }
+
+    function buildIncorrectAnswers() {
+      const items = [];
+
+      [
+        { sectionKey: 'general', label: 'Bloque general', section: sectionMap.general },
+        { sectionKey: 'technical', label: 'Bloque técnico', section: sectionMap.technical },
+      ].forEach(({ sectionKey, label, section }) => {
+        section.questionCards.forEach((card) => {
+          const questionId = card.getAttribute('data-question-id');
+          if (!questionId) return;
+
+          const answer = state[sectionKey].answers[questionId];
+          if (!answer?.checked || answer.isCorrect) return;
+
+          const questionTitle = card.querySelector('h3')?.textContent?.trim() || 'Pregunta';
+          const feedbackText =
+            card.querySelector('[data-feedback-text]')?.textContent?.trim() || '';
+          const correctOptionId = card.getAttribute('data-correct-option-id') || '';
+
+          items.push({
+            sectionLabel: label,
+            tool: card.getAttribute('data-tool') || 'Sin herramienta',
+            question: questionTitle,
+            selectedText: getOptionText(card, answer.selectedOptionId),
+            correctText: getOptionText(card, correctOptionId),
+            feedback: feedbackText,
+          });
+        });
+      });
+
+      return items;
+    }
+
+    function renderIncorrectSummary() {
+      const container = shell.querySelector('[data-incorrect-summary]');
+      if (!container) return;
+
+      const incorrectItems = buildIncorrectAnswers();
+
+      if (incorrectItems.length === 0) {
+        container.innerHTML = `
+          <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+            <p class="text-base font-bold text-emerald-900">Sin respuestas incorrectas registradas</p>
+            <p class="mt-2 text-sm leading-7 text-emerald-800">
+              No hay preguntas incorrectas para mostrar en este intento.
+            </p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = incorrectItems
+        .map(
+          (item) => `
+            <article class="rounded-2xl border border-rose-200 bg-white p-4 shadow-sm">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="inline-flex rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-700">
+                  ${item.sectionLabel}
+                </span>
+                <span class="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+                  ${item.tool}
+                </span>
+              </div>
+
+              <h4 class="mt-4 text-base font-bold text-slate-900">
+                ${item.question}
+              </h4>
+
+              <div class="mt-4 space-y-3 text-sm leading-7">
+                <div>
+                  <p class="font-semibold text-slate-900">Tu respuesta</p>
+                  <p class="text-rose-700">${item.selectedText}</p>
+                </div>
+
+                <div>
+                  <p class="font-semibold text-slate-900">Respuesta correcta</p>
+                  <p class="text-emerald-700">${item.correctText}</p>
+                </div>
+
+                <div>
+                  <p class="font-semibold text-slate-900">Explicación</p>
+                  <p class="text-slate-600">${item.feedback}</p>
+                </div>
+              </div>
+            </article>
+          `,
+        )
+        .join('');
+    }
+
+    function updateProgress(section, currentIndex) {
+      const total = Math.max(section.totalQuestions, 1);
+      const current = Math.min(currentIndex + 1, total);
+      const percent = Math.round((current / total) * 100);
+
+      if (section.progressCurrent) {
+        section.progressCurrent.textContent = String(current);
+      }
+      if (section.progressTotal) {
+        section.progressTotal.textContent = String(section.totalQuestions);
+      }
+      if (section.progressFill) {
+        section.progressFill.style.width = `${percent}%`;
+      }
+      if (section.progressPercent) {
+        section.progressPercent.textContent = `${percent}% completado`;
+      }
+      if (section.progressBar) {
+        section.progressBar.setAttribute('aria-valuenow', String(current));
+        section.progressBar.setAttribute(
+          'aria-valuetext',
+          `${current} de ${section.totalQuestions}`,
+        );
+      }
+    }
+
+    function renderQuestion(card, sectionKey) {
+      const questionId = card.getAttribute('data-question-id');
+      if (!questionId) return;
+
+      const answer = state[sectionKey].answers[questionId] || null;
+
+      const inputs = Array.from(card.querySelectorAll('[data-option-input]'));
+      const checkBtn = card.querySelector('[data-check-button]');
+      const nextBtn = card.querySelector('[data-next-button]');
+      const feedbackPanel = card.querySelector('[data-feedback-panel]');
+      const feedbackIcon = card.querySelector('[data-feedback-icon]');
+      const feedbackTitle = card.querySelector('[data-feedback-title]');
+      const optionCards = Array.from(card.querySelectorAll('[data-option-card]'));
+      const correctOptionId = card.getAttribute('data-correct-option-id') || '';
+
+      inputs.forEach((input) => {
+        input.checked = Boolean(
+          answer?.selectedOptionId && input.value === answer.selectedOptionId,
+        );
+        input.disabled = Boolean(answer?.checked);
+      });
+
+      optionCards.forEach((optionCard) => {
+        optionCard.classList.remove(
+          'border-emerald-400',
+          'bg-emerald-50',
+          'border-rose-400',
+          'bg-rose-50',
+        );
+      });
+
+      if (!answer) {
+        checkBtn?.setAttribute('disabled', 'true');
+        nextBtn?.classList.add('hidden');
+        nextBtn?.setAttribute('disabled', 'true');
+        feedbackPanel?.classList.add('hidden');
+        return;
+      }
+
+      if (!answer.checked) {
+        if (answer.selectedOptionId) {
+          checkBtn?.removeAttribute('disabled');
+          nextBtn?.classList.remove('hidden');
+          nextBtn?.removeAttribute('disabled');
+        } else {
+          checkBtn?.setAttribute('disabled', 'true');
+          nextBtn?.classList.add('hidden');
+          nextBtn?.setAttribute('disabled', 'true');
+        }
+
+        feedbackPanel?.classList.add('hidden');
+        return;
+      }
+
+      inputs.forEach((input) => {
+        const optionCard = card.querySelector(`[data-option-id="${input.value}"]`);
+        if (!optionCard) return;
+
+        if (input.value === correctOptionId) {
+          optionCard.classList.add('border-emerald-400', 'bg-emerald-50');
+        }
+
+        if (!answer.isCorrect && input.value === answer.selectedOptionId) {
+          optionCard.classList.add('border-rose-400', 'bg-rose-50');
+        }
+      });
+
+      checkBtn?.setAttribute('disabled', 'true');
+      nextBtn?.classList.remove('hidden');
+      nextBtn?.removeAttribute('disabled');
+      feedbackPanel?.classList.remove('hidden');
+
+      if (feedbackIcon) {
+        feedbackIcon.textContent = answer.isCorrect ? '✓' : '!';
+        feedbackIcon.className = answer.isCorrect
+          ? 'mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-sm font-bold text-emerald-700'
+          : 'mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-100 text-sm font-bold text-rose-700';
+      }
+
+      if (feedbackTitle) {
+        feedbackTitle.textContent = answer.isCorrect
+          ? 'Respuesta correcta'
+          : 'Respuesta incorrecta';
+      }
+    }
+
+    function renderSection(section) {
+      const sectionState = state[section.sectionKey];
+      const currentIndex = Math.min(
+        Math.max(sectionState.currentIndex, 0),
+        Math.max(section.totalQuestions - 1, 0),
+      );
+
+      section.questionCards.forEach((card, index) => {
+        card.classList.toggle('hidden', index !== currentIndex);
+        renderQuestion(card, section.sectionKey);
+      });
+
+      updateProgress(section, currentIndex);
+    }
+
+    function calculateSectionMetrics(sectionKey) {
+      const answers = Object.values(state[sectionKey].answers || {});
+      const score = answers.reduce(
+        (sum, answer) => sum + Number(answer?.awardedPoints || 0),
+        0,
+      );
+
+      const max = sectionMap[sectionKey].questionCards.reduce((sum, card) => {
+        return sum + Number(card.getAttribute('data-weight') || '1');
+      }, 0);
+
+      return { score, max };
+    }
+
+    function buildToolStats() {
+      const allAnswers = [
+        ...Object.values(state.general.answers || {}),
+        ...Object.values(state.technical.answers || {}),
+      ];
+
+      const stats = {};
+
+      allAnswers.forEach((answer) => {
+        const toolKey = normalizeToolKey(answer?.tool);
+        if (!stats[toolKey]) {
+          stats[toolKey] = {
+            label: getToolLabel(toolKey),
+            score: 0,
+            max: 0,
+          };
+        }
+
+        stats[toolKey].score += Number(answer?.awardedPoints || 0);
+        stats[toolKey].max += Number(answer?.weight || 0);
+      });
+
+      return stats;
+    }
+
+    function renderToolResults() {
+      const container = shell.querySelector('[data-tool-results]');
+      if (!container) return;
+
+      const toolStats = buildToolStats();
+      const entries = Object.entries(toolStats);
+
+      if (entries.length === 0) {
+        container.innerHTML = `
+          <p class="text-sm leading-6 text-slate-500">
+            No hay suficiente información para mostrar resultados por herramienta.
+          </p>
+        `;
+        return;
+      }
+
+      container.innerHTML = entries
+        .map(([toolKey, stats]) => {
+          const percent =
+            stats.max > 0 ? Math.round((stats.score / stats.max) * 100) : 0;
+          const band = getToolBand(percent);
+
+          return `
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p class="text-base font-bold text-slate-900">${stats.label}</p>
+                  <p class="mt-1 text-sm leading-6 text-slate-600">${band}</p>
+                </div>
+                <div class="text-sm font-semibold text-slate-700">
+                  ${stats.score} / ${stats.max}
+                </div>
+              </div>
+
+              <div class="mt-4 h-3 overflow-hidden rounded-full bg-slate-200">
+                <div class="h-full rounded-full bg-sky-600" style="width: ${percent}%"></div>
+              </div>
+
+              <div class="mt-2 text-xs font-medium text-slate-500">
+                ${percent}% de logro
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    function renderRecommendations() {
+      const container = shell.querySelector('[data-recommendations-results]');
+      if (!container) return;
+
+      const toolStats = buildToolStats();
+      const weakTools = Object.entries(toolStats)
+        .filter(([, stats]) => {
+          const percent = stats.max > 0 ? (stats.score / stats.max) * 100 : 0;
+          return percent < 75;
+        })
+        .map(([toolKey]) => toolKey);
+
+      const matchedRecommendations = recommendations.filter((item) =>
+        weakTools.includes(normalizeToolKey(item.tool)),
+      );
+
+      if (matchedRecommendations.length > 0) {
+        container.innerHTML = matchedRecommendations
+          .map((item) => `
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <p class="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+                ${getToolLabel(normalizeToolKey(item.tool))}
+              </p>
+              <p class="mt-3 text-base font-bold text-slate-900">${item.title}</p>
+              ${
+                item.description
+                  ? `<p class="mt-2 text-sm leading-7 text-slate-600">${item.description}</p>`
+                  : ''
+              }
+              ${
+                item.href
+                  ? `
+                    <div class="mt-4">
+                      <a
+                        href="${item.href}"
+                        class="inline-flex rounded-xl bg-sky-700 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-800"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        ${item.label || 'Ver recurso'}
+                      </a>
+                    </div>
+                  `
+                  : ''
+              }
+            </div>
+          `)
+          .join('');
+        return;
+      }
+
+      if (weakTools.length > 0) {
+        container.innerHTML = weakTools
+          .map((toolKey) => {
+            const label = toolStats[toolKey]?.label || getToolLabel(toolKey);
+            return `
+              <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p class="text-base font-bold text-slate-900">${label}</p>
+                <p class="mt-2 text-sm leading-7 text-slate-600">
+                  Tu resultado sugiere que conviene reforzar esta herramienta con videos, ejemplos guiados o práctica breve enfocada.
+                </p>
+              </div>
+            `;
+          })
+          .join('');
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+          <p class="text-base font-bold text-emerald-900">Buen punto de partida</p>
+          <p class="mt-2 text-sm leading-7 text-emerald-800">
+            Tu desempeño muestra una base funcional y técnica bastante sólida. Puedes usar recursos de mejora opcional para seguir afinando tu trabajo.
+          </p>
+        </div>
+      `;
+    }
+
+    function renderResults() {
+      finalizeAllSelectedAnswers();
+
+      const generalMetrics = calculateSectionMetrics('general');
+      const technicalMetrics = calculateSectionMetrics('technical');
+
+      const totalScore = generalMetrics.score + technicalMetrics.score;
+      const totalMax = generalMetrics.max + technicalMetrics.max;
+
+      const generalScoreEl = shell.querySelector('[data-general-score]');
+      const technicalScoreEl = shell.querySelector('[data-technical-score]');
+      const totalScoreEl = shell.querySelector('[data-total-score]');
+
+      const generalBandEl = shell.querySelector('[data-general-band]');
+      const technicalBandEl = shell.querySelector('[data-technical-band]');
+      const totalBandEl = shell.querySelector('[data-total-band]');
+
+      if (generalScoreEl) {
+        generalScoreEl.textContent = `${generalMetrics.score} / ${generalMetrics.max}`;
+      }
+      if (technicalScoreEl) {
+        technicalScoreEl.textContent = `${technicalMetrics.score} / ${technicalMetrics.max}`;
+      }
+      if (totalScoreEl) {
+        totalScoreEl.textContent = `${totalScore} / ${totalMax}`;
+      }
+
+      if (generalBandEl) {
+        generalBandEl.textContent = getBandText(
+          generalMetrics.score,
+          generalMetrics.max,
+          'general',
+        );
+      }
+      if (technicalBandEl) {
+        technicalBandEl.textContent = getBandText(
+          technicalMetrics.score,
+          technicalMetrics.max,
+          'technical',
+        );
+      }
+      if (totalBandEl) {
+        totalBandEl.textContent = getBandText(totalScore, totalMax, 'total');
+      }
+
+      renderToolResults();
+      renderRecommendations();
+      renderIncorrectSummary();
+    }
+
+    function showStage(stage) {
+      Object.values(screens).forEach((screen) => {
+        if (!screen) return;
+        screen.classList.add('hidden');
+      });
+
+      const activeScreen = screens[stage];
+      if (activeScreen) {
+        activeScreen.classList.remove('hidden');
+      }
+    }
+
+    function render() {
+      showStage(state.stage);
+
+      renderSection(sectionMap.general);
+      renderSection(sectionMap.technical);
+
+      if (state.stage === 'results') {
+        renderResults();
+      }
+    }
+
+    function attachSectionEvents(section) {
+      section.questionCards.forEach((card, cardIndex) => {
+        const questionId = card.getAttribute('data-question-id');
+        if (!questionId) return;
+
+        const inputs = Array.from(card.querySelectorAll('[data-option-input]'));
+        const checkBtn = card.querySelector('[data-check-button]');
+        const nextBtn = card.querySelector('[data-next-button]');
+
+        inputs.forEach((input) => {
+          input.addEventListener('change', () => {
+            const sectionState = state[section.sectionKey];
+            const existing = sectionState.answers[questionId] || {};
+
+            sectionState.answers[questionId] = {
+              ...existing,
+              selectedOptionId: input.value,
+              checked: false,
+            };
+
+            saveState();
+            renderQuestion(card, section.sectionKey);
+          });
+        });
+
+        checkBtn?.addEventListener('click', () => {
+          const selectedInput = inputs.find((input) => input.checked);
+          if (!selectedInput) return;
+
+          const sectionState = state[section.sectionKey];
+          const existing = sectionState.answers[questionId] || {};
+
+          sectionState.answers[questionId] = {
+            ...existing,
+            selectedOptionId: selectedInput.value,
+            checked: false,
+          };
+
+          evaluateAnswerForCard(card, section.sectionKey);
+          saveState();
+          renderQuestion(card, section.sectionKey);
+        });
+
+        nextBtn?.addEventListener('click', () => {
+          const selectedInput = inputs.find((input) => input.checked);
+          if (!selectedInput) return;
+
+          const sectionState = state[section.sectionKey];
+          const existing = sectionState.answers[questionId] || {};
+
+          sectionState.answers[questionId] = {
+            ...existing,
+            selectedOptionId: selectedInput.value,
+            checked: false,
+          };
+
+          evaluateAnswerForCard(card, section.sectionKey);
+
+          const isLast = cardIndex === section.questionCards.length - 1;
+
+          if (!isLast) {
+            state[section.sectionKey].currentIndex += 1;
+            state.stage = section.sectionKey;
+          } else if (section.sectionKey === 'general') {
+            state.stage = 'technical';
+            state.technical.currentIndex = 0;
+          } else {
+            state.stage = 'results';
+          }
+
+          saveState();
+          render();
+        });
+      });
+    }
+
+    attachSectionEvents(sectionMap.general);
+    attachSectionEvents(sectionMap.technical);
+
+    const startBtn = shell.querySelector('[data-start-quiz]');
+    const restartBtn = shell.querySelector('[data-restart-quiz]');
+
+    startBtn?.addEventListener('click', () => {
+      state = createDefaultState();
+      state.stage = 'general';
+      saveState();
+      render();
+    });
+
+    restartBtn?.addEventListener('click', () => {
+      try {
+        sessionStorage.removeItem(storageKey);
+      } catch {
+        // noop
+      }
+      state = cloneState(createDefaultState());
+      window.location.reload();
+    });
+
+    render();
+  })();
+</script>

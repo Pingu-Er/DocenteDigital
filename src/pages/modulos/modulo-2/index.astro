@@ -1,0 +1,77 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import TopicCard from '../../../components/module/TopicCard.astro';
+import SectionTitle from '../../../components/module/SectionTitle.astro';
+import InfoBox from '../../../components/module/InfoBox.astro';
+import { module2Topics } from '../../../consts';
+---
+
+<BaseLayout
+  title="DocenteDigital | Módulo 2"
+  description="Herramientas de productividad para uso docente"
+>
+  <SectionTitle
+    eyebrow="Módulo 2"
+    title="Herramientas de productividad para uso docente"
+    description="Este módulo ayuda a reconocer y fortalecer el uso práctico de documentos, hojas de cálculo, presentaciones y formularios dentro del trabajo docente."
+  />
+
+  <section class="grid gap-8 lg:grid-cols-[1.3fr_0.9fr]">
+    <div class="content-card p-8">
+      <h3 class="text-xl font-bold text-slate-900">¿Por qué es importante este módulo?</h3>
+      <div class="mt-4 prose-soft text-slate-700">
+        <p>
+          En la práctica docente, muchas tareas cotidianas dependen del uso de herramientas
+          como Word, Excel, PowerPoint, Canva o Forms. Saber utilizarlas con claridad puede ahorrar tiempo,
+          mejorar la organización y facilitar la presentación de materiales y evidencias.
+        </p>
+        <p>
+          Este módulo no busca reemplazar un curso completo de cada programa, sino ayudarte
+          a identificar qué tanto dominas estas herramientas y qué áreas conviene reforzar.
+        </p>
+      </div>
+    </div>
+
+    <InfoBox title="Ruta sugerida" tone="info">
+      <p>
+        Se recomienda comenzar con el diagnóstico interactivo y después revisar los recursos
+        de la herramienta que más necesites reforzar.
+      </p>
+      <ol class="mt-3 list-decimal pl-6">
+        <li>Diagnóstico interactivo</li>
+        <li>Word / Docs</li>
+        <li>Excel / Sheets</li>
+        <li>Presentaciones</li>
+        <li>Forms</li>
+      </ol>
+    </InfoBox>
+  </section>
+
+  <section class="mt-12">
+    <SectionTitle
+      title="Apartados del módulo"
+      description="Seleccione un apartado para comenzar con el diagnóstico o consultar recursos por herramienta."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {module2Topics.map((topic) => (
+        <TopicCard
+          title={topic.title}
+          description={topic.description}
+          href={topic.href}
+          status={topic.status}
+        />
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-12">
+    <InfoBox title="Enfoque del módulo" tone="success">
+      <p>
+        El contenido está pensado para docentes que necesitan orientación clara, útil y práctica.
+        La intención es detectar fortalezas, identificar áreas de mejora y ofrecer recursos
+        de apoyo sin convertir el módulo en un curso técnico pesado.
+      </p>
+    </InfoBox>
+  </section>
+</BaseLayout>

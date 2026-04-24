@@ -1,0 +1,173 @@
+---
+interface QuestionOption {
+  id: string;
+  text: string;
+}
+
+interface QuestionItem {
+  id: string;
+  herramienta: string;
+  competencia: string;
+  peso: number;
+  pregunta: string;
+  opciones: QuestionOption[];
+  correctOptionId: string;
+  retroalimentacion: string;
+}
+
+interface Props {
+  question: QuestionItem;
+  questionNumber: number;
+  totalQuestions: number;
+  initiallyHidden?: boolean;
+}
+
+const {
+  question,
+  questionNumber,
+  totalQuestions,
+  initiallyHidden = false,
+} = Astro.props;
+
+const cardId = `question-${question.id}`;
+const optionName = `answer-${question.id}`;
+
+const toolTone =
+  question.herramienta.toLowerCase().includes('word')
+    ? 'bg-sky-100 text-sky-700'
+    : question.herramienta.toLowerCase().includes('excel')
+      ? 'bg-emerald-100 text-emerald-700'
+      : question.herramienta.toLowerCase().includes('present')
+        ? 'bg-violet-100 text-violet-700'
+        : 'bg-amber-100 text-amber-700';
+
+const isLastQuestion = questionNumber === totalQuestions;
+---
+
+<article
+  id={cardId}
+  class:list={[
+    'content-card p-6',
+    initiallyHidden && 'hidden',
+  ]}
+  data-question-card
+  data-question-id={question.id}
+  data-tool={question.herramienta}
+  data-competence={question.competencia}
+  data-weight={question.peso}
+  data-correct-option-id={question.correctOptionId}
+>
+  <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+    <div class="flex flex-wrap items-center gap-2">
+      <span class={`rounded-full px-3 py-1 text-xs font-semibold ${toolTone}`}>
+        {question.herramienta}
+      </span>
+
+      <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+        Pregunta {questionNumber} de {totalQuestions}
+      </span>
+
+      {question.peso > 1 && (
+        <span class="rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-700">
+          Mayor peso
+        </span>
+      )}
+    </div>
+
+    <p class="text-sm leading-6 text-slate-500 md:max-w-xs md:text-right">
+      {question.competencia}
+    </p>
+  </div>
+
+  <div class="mt-5">
+    <h3 class="text-xl font-bold leading-8 text-slate-900">
+      {question.pregunta}
+    </h3>
+  </div>
+
+  <fieldset class="mt-6">
+    <legend class="sr-only">Opciones de respuesta</legend>
+
+    <div class="grid gap-3">
+      {question.opciones.map((option, index) => {
+        const letter = ['A', 'B', 'C', 'D'][index] ?? '';
+        const inputId = `${cardId}-${option.id}`;
+
+        return (
+          <label for={inputId} class="block cursor-pointer">
+            <input
+              id={inputId}
+              type="radio"
+              name={optionName}
+              value={option.id}
+              class="peer sr-only"
+              data-option-input
+            />
+
+            <span
+              class="flex items-start gap-4 rounded-2xl border border-slate-200 bg-white px-4 py-4 text-slate-700 shadow-sm transition-all duration-200 hover:border-sky-300 hover:bg-sky-50 peer-checked:border-sky-500 peer-checked:bg-sky-50 peer-checked:ring-2 peer-checked:ring-sky-100"
+              data-option-card
+              data-option-id={option.id}
+            >
+              <span class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-slate-700 peer-checked:bg-sky-600 peer-checked:text-white">
+                {letter}
+              </span>
+
+              <span class="flex-1 leading-7">
+                {option.text}
+              </span>
+            </span>
+          </label>
+        );
+      })}
+    </div>
+  </fieldset>
+
+  <div
+    class="mt-5 hidden rounded-2xl border px-4 py-4"
+    data-feedback-panel
+  >
+    <div class="flex items-start gap-3">
+      <div
+        class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-slate-700"
+        data-feedback-icon
+      >
+        i
+      </div>
+
+      <div>
+        <p class="font-semibold text-slate-900" data-feedback-title>
+          Retroalimentación
+        </p>
+        <p class="mt-1 leading-7 text-slate-700" data-feedback-text>
+          {question.retroalimentacion}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <p class="text-sm leading-6 text-slate-500">
+        Selecciona una opción. Puedes revisar tu respuesta antes de avanzar o continuar directamente.
+      </p>
+
+    <div class="flex flex-col gap-3 sm:flex-row">
+      <button
+        type="button"
+        class="inline-flex items-center justify-center rounded-xl border border-slate-300 px-4 py-2.5 font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+        data-check-button
+        disabled
+      >
+        Revisar respuesta
+      </button>
+
+      <button
+        type="button"
+        class="hidden inline-flex items-center justify-center rounded-xl bg-sky-700 px-4 py-2.5 font-semibold text-white transition hover:bg-sky-800"
+        data-next-button
+      >
+        {isLastQuestion ? 'Ver resultados' : 'Siguiente'}
+      </button>
+    </div>
+  </div>
+</article>

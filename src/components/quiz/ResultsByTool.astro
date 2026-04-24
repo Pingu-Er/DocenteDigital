@@ -1,0 +1,77 @@
+---
+interface ToolResultItem {
+  key: string;
+  label: string;
+  score: number;
+  max: number;
+  percent: number;
+  band: string;
+}
+
+interface Props {
+  title?: string;
+  description?: string;
+  items?: ToolResultItem[];
+}
+
+const {
+  title = 'Desempeño por herramienta',
+  description = 'Este apartado muestra cómo te fue en cada herramienta de manera individual.',
+  items = [],
+} = Astro.props;
+
+const getBarClass = (percent: number) => {
+  if (percent >= 75) return 'bg-emerald-600';
+  if (percent >= 50) return 'bg-amber-500';
+  return 'bg-rose-500';
+};
+---
+
+<section class="content-card p-6">
+  <div class="mb-5">
+    <h3 class="text-xl font-bold text-slate-900">{title}</h3>
+    <p class="mt-2 text-sm leading-7 text-slate-600">
+      {description}
+    </p>
+  </div>
+
+  {items.length > 0 ? (
+    <div class="space-y-4">
+      {items.map((item) => (
+        <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h4 class="text-base font-bold text-slate-900">{item.label}</h4>
+              <p class="mt-1 text-sm leading-6 text-slate-600">
+                {item.band}
+              </p>
+            </div>
+
+            <div class="text-sm font-semibold text-slate-700">
+              {item.score} / {item.max}
+            </div>
+          </div>
+
+          <div class="mt-4 h-3 overflow-hidden rounded-full bg-slate-200">
+            <div
+              class={`h-full rounded-full ${getBarClass(item.percent)}`}
+              style={`width: ${Math.max(0, Math.min(item.percent, 100))}%`}
+            />
+          </div>
+
+          <div class="mt-2 flex items-center justify-between text-xs font-medium text-slate-500">
+            <span>0%</span>
+            <span>{item.percent}% de logro</span>
+            <span>100%</span>
+          </div>
+        </article>
+      ))}
+    </div>
+  ) : (
+    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+      <p class="text-sm leading-7 text-slate-600">
+        Completa el cuestionario para ver tu resultado por herramienta.
+      </p>
+    </div>
+  )}
+</section>

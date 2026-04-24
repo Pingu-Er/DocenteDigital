@@ -1,0 +1,81 @@
+---
+interface SummaryCard {
+  key: string;
+  label: string;
+  score: number;
+  max: number;
+  band: string;
+  tone?: 'sky' | 'violet' | 'emerald';
+}
+
+interface Props {
+  title?: string;
+  description?: string;
+  items?: SummaryCard[];
+}
+
+const {
+  title = 'Resumen general',
+  description = 'Aquí puedes ver tu resultado en la parte general, en la parte técnica y en el total acumulado.',
+  items = [],
+} = Astro.props;
+
+const toneMap = {
+  sky: {
+    eyebrow: 'text-sky-700',
+    badge: 'bg-sky-100 text-sky-700',
+  },
+  violet: {
+    eyebrow: 'text-violet-700',
+    badge: 'bg-violet-100 text-violet-700',
+  },
+  emerald: {
+    eyebrow: 'text-emerald-700',
+    badge: 'bg-emerald-100 text-emerald-700',
+  },
+};
+---
+
+<section class="space-y-6">
+  <div>
+    <h3 class="text-2xl font-bold text-slate-900">{title}</h3>
+    <p class="mt-2 max-w-3xl text-sm leading-7 text-slate-600">
+      {description}
+    </p>
+  </div>
+
+  {items.length > 0 ? (
+    <div class="grid gap-4 md:grid-cols-3">
+      {items.map((item) => {
+        const tone = toneMap[item.tone || 'sky'];
+        return (
+          <article class="content-card p-5">
+            <p class={`text-sm font-semibold uppercase tracking-wide ${tone.eyebrow}`}>
+              {item.label}
+            </p>
+
+            <p class="mt-2 text-3xl font-bold text-slate-900">
+              {item.score} / {item.max}
+            </p>
+
+            <p class="mt-3 text-sm leading-6 text-slate-600">
+              {item.band}
+            </p>
+
+            <div class="mt-4">
+              <span class={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${tone.badge}`}>
+                Resultado calculado
+              </span>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  ) : (
+    <div class="content-card p-5">
+      <p class="text-sm leading-7 text-slate-600">
+        Aún no hay resultados disponibles. Cuando el usuario termine el cuestionario, aquí se mostrará el resumen principal.
+      </p>
+    </div>
+  )}
+</section>

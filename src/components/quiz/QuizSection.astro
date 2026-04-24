@@ -1,0 +1,132 @@
+---
+import SectionTitle from '../module/SectionTitle.astro';
+import ProgressBar from './ProgressBar.astro';
+import QuestionCard from './QuestionCard.astro';
+
+interface QuestionOption {
+  id: string;
+  text: string;
+}
+
+interface QuestionItem {
+  id: string;
+  herramienta: string;
+  competencia: string;
+  peso: number;
+  pregunta: string;
+  opciones: QuestionOption[];
+  correctOptionId: string;
+  retroalimentacion: string;
+}
+
+interface Props {
+  sectionKey: 'general' | 'technical';
+  eyebrow?: string;
+  title: string;
+  description: string;
+  questions: QuestionItem[];
+  hidden?: boolean;
+}
+
+const {
+  sectionKey,
+  eyebrow,
+  title,
+  description,
+  questions,
+  hidden = true,
+} = Astro.props;
+
+const totalQuestions = questions.length;
+const sectionLabel = sectionKey === 'general'
+  ? 'Progreso del bloque general'
+  : 'Progreso del bloque técnico';
+
+const progressDescription = sectionKey === 'general'
+  ? 'Avance de preguntas sobre uso práctico y decisiones funcionales.'
+  : 'Avance de preguntas sobre manejo técnico y operativo de las herramientas.';
+---
+
+<section
+  class:list={[
+    'space-y-8',
+    hidden && 'hidden',
+  ]}
+  data-stage-screen={sectionKey}
+  data-quiz-section-root={sectionKey}
+  data-section-key={sectionKey}
+  data-total-questions={totalQuestions}
+>
+  <SectionTitle
+    eyebrow={eyebrow}
+    title={title}
+    description={description}
+  />
+
+  <div class="grid gap-4 md:grid-cols-3">
+    <div class="content-card p-5">
+      <p class="text-sm font-semibold uppercase tracking-wide text-slate-500">
+        Tipo de bloque
+      </p>
+      <p class="mt-2 text-xl font-bold text-slate-900">
+        {sectionKey === 'general' ? 'Diagnóstico general' : 'Diagnóstico técnico'}
+      </p>
+      <p class="mt-2 text-sm leading-6 text-slate-600">
+        {sectionKey === 'general'
+          ? 'Evalúa criterio de uso, claridad y selección adecuada de herramienta.'
+          : 'Evalúa funciones, acciones y comprensión operativa del software.'}
+      </p>
+    </div>
+
+    <div class="content-card p-5">
+      <p class="text-sm font-semibold uppercase tracking-wide text-slate-500">
+        Preguntas
+      </p>
+      <p class="mt-2 text-xl font-bold text-slate-900">{totalQuestions}</p>
+      <p class="mt-2 text-sm leading-6 text-slate-600">
+        Responde una por una. La siguiente se habilita después de revisar tu respuesta.
+      </p>
+    </div>
+
+    <div class="content-card p-5">
+      <p class="text-sm font-semibold uppercase tracking-wide text-slate-500">
+        Nota
+      </p>
+      <p class="mt-2 text-xl font-bold text-slate-900">
+        Retroalimentación inmediata
+      </p>
+      <p class="mt-2 text-sm leading-6 text-slate-600">
+        Cada reactivo muestra una breve explicación para ayudarte a interpretar mejor tu respuesta.
+      </p>
+    </div>
+  </div>
+
+  <ProgressBar
+    current={1}
+    total={totalQuestions}
+    label={sectionLabel}
+    description={progressDescription}
+  />
+
+  {questions.length > 0 ? (
+    <div class="space-y-6" data-question-list>
+      {questions.map((question, index) => (
+        <QuestionCard
+          question={question}
+          questionNumber={index + 1}
+          totalQuestions={totalQuestions}
+          initiallyHidden={index !== 0}
+        />
+      ))}
+    </div>
+  ) : (
+    <div class="content-card p-6">
+      <p class="text-lg font-semibold text-slate-900">
+        Aún no hay preguntas cargadas en esta sección.
+      </p>
+      <p class="mt-2 leading-7 text-slate-600">
+        Cuando agregues el banco de preguntas correspondiente, este bloque mostrará el cuestionario.
+      </p>
+    </div>
+  )}
+</section>

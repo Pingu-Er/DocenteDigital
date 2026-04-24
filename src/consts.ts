@@ -38,3 +38,36 @@ export const module1Topics = [
     status: 'Disponible',
   },
 ];
+
+export const module2Topics = [
+  {
+    title: 'Diagnóstico interactivo',
+    description: 'Evalúa tu manejo general y técnico de documentos, hojas de cálculo, presentaciones y formularios.',
+    href: `${BASE_PATH}/modulos/modulo-2/diagnostico/`,
+    status: 'Disponible',
+  },
+  {
+    title: 'Word / Docs',
+    description: 'Recursos y videos para reforzar la creación, edición y organización de documentos.',
+    href: `${BASE_PATH}/modulos/modulo-2/word-docs/`,
+    status: 'Disponible',
+  },
+  {
+    title: 'Excel / Sheets',
+    description: 'Recursos para practicar listas, promedios, filtros, fórmulas básicas y visualización de datos.',
+    href: `${BASE_PATH}/modulos/modulo-2/excel-sheets/`,
+    status: 'Disponible',
+  },
+  {
+    title: 'Presentaciones',
+    description: 'Recursos para mejorar estructura visual, claridad, diseño base y uso práctico de diapositivas.',
+    href: `${BASE_PATH}/modulos/modulo-2/presentaciones/`,
+    status: 'Disponible',
+  },
+  {
+    title: 'Forms',
+    description: 'Recursos para crear formularios, cuestionarios y recopilar respuestas de manera organizada.',
+    href: `${BASE_PATH}/modulos/modulo-2/forms/`,
+    status: 'Disponible',
+  },
+];

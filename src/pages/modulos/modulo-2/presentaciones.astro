@@ -1,0 +1,142 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SectionTitle from '../../../components/module/SectionTitle.astro';
+import InfoBox from '../../../components/module/InfoBox.astro';
+
+const playlistImage = '/DocenteDigital/images/module-2/playlist-placeholder.svg';
+
+const playlists = [
+  {
+    title: 'Lista de reproducción: PowerPoint',
+    href: 'https://www.youtube.com/playlist?list=PL6mdiqzGtgKm1-1-8F4oCVNhOGKENuPeA',
+  },
+  {
+    title: 'Lista de reproducción: Canva 1',
+    href: 'https://www.youtube.com/playlist?list=PL4OFixdtbJPsJe5pRhWsPrCaDREHo_l4x',
+  },
+  {
+    title: 'Lista de reproducción: Canva 2',
+    href: 'https://www.youtube.com/playlist?list=PLOSKANd_V6R2Sp6RoYzTCIPpvyLZCZA8W',
+  },
+];
+---
+
+<BaseLayout
+  title="DocenteDigital | Presentaciones"
+  description="Recursos para reforzar presentaciones en PowerPoint y Canva."
+>
+  <SectionTitle
+    eyebrow="Módulo 2"
+    title="Presentaciones: PowerPoint / Canva"
+    description="Este apartado reúne recursos para crear presentaciones claras, visuales y útiles para explicar contenido en clase."
+  />
+
+  <section class="grid gap-8 lg:grid-cols-[1.25fr_0.95fr]">
+    <div class="content-card p-8">
+      <h3 class="text-xl font-bold text-slate-900">¿Qué conviene reforzar aquí?</h3>
+      <div class="mt-4 prose-soft text-slate-700">
+        <p>
+          Las presentaciones ayudan a organizar ideas, explicar procesos, mostrar ejemplos
+          y apoyar visualmente una clase. No deberían usarse como documentos llenos de texto.
+        </p>
+        <p>
+          Conviene reforzar estructura visual, legibilidad, uso de plantillas, imágenes,
+          secuencia de diapositivas, animaciones y transiciones con intención pedagógica.
+        </p>
+      </div>
+    </div>
+
+    <InfoBox title="Ruta sugerida" tone="info">
+      <p>Para estudiar este tema, conviene avanzar en este orden:</p>
+      <ol class="mt-3 list-decimal pl-6">
+        <li>Claridad y legibilidad</li>
+        <li>Plantillas y diseño base</li>
+        <li>Imágenes y elementos visuales</li>
+        <li>Orden de diapositivas</li>
+        <li>Animaciones y transiciones moderadas</li>
+      </ol>
+    </InfoBox>
+  </section>
+
+  <section class="mt-12">
+    <SectionTitle
+      title="Listas de reproducción"
+      description="Consulta los videos sugeridos para reforzar PowerPoint y Canva."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {playlists.map((playlist) => (
+        <a
+          href={playlist.href}
+          target="_blank"
+          rel="noreferrer"
+          class="content-card group block overflow-hidden transition hover:-translate-y-1 hover:shadow-lg"
+        >
+          <div class="flex h-56 items-center justify-center bg-slate-100 p-6">
+            <img
+              src={playlistImage}
+              alt={playlist.title}
+              class="h-full w-full object-contain"
+              loading="lazy"
+            />
+          </div>
+          <div class="p-6">
+            <p class="text-sm font-semibold uppercase tracking-wide text-violet-700">
+              YouTube
+            </p>
+            <h3 class="mt-2 text-xl font-bold text-slate-900 group-hover:text-violet-700">
+              {playlist.title}
+            </h3>
+            <p class="mt-3 leading-7 text-slate-600">
+              Accede a videos para practicar diseño, organización y recursos visuales.
+            </p>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-12">
+    <div class="content-card p-8">
+      <h3 class="text-xl font-bold text-slate-900">Otros lugares útiles para aprender</h3>
+      <div class="mt-4 grid gap-4 md:grid-cols-2">
+        <a class="rounded-2xl border border-slate-200 bg-white p-4 hover:border-violet-300 hover:bg-violet-50" href="https://support.microsoft.com/en-us/powerpoint" target="_blank" rel="noreferrer">
+          <p class="font-bold text-slate-900">Ayuda oficial de PowerPoint</p>
+          <p class="mt-2 text-sm leading-7 text-slate-600">
+            Recursos de Microsoft con artículos, guías, plantillas y videos de entrenamiento.
+          </p>
+        </a>
+
+        <a class="rounded-2xl border border-slate-200 bg-white p-4 hover:border-violet-300 hover:bg-violet-50" href="https://learn.microsoft.com/es-es/training/" target="_blank" rel="noreferrer">
+          <p class="font-bold text-slate-900">Microsoft Learn</p>
+          <p class="mt-2 text-sm leading-7 text-slate-600">
+            Rutas y módulos oficiales para desarrollar habilidades digitales.
+          </p>
+        </a>
+
+        <a class="rounded-2xl border border-slate-200 bg-white p-4 hover:border-violet-300 hover:bg-violet-50" href="https://www.canva.com/es_mx/aprende/" target="_blank" rel="noreferrer">
+          <p class="font-bold text-slate-900">Canva Aprende</p>
+          <p class="mt-2 text-sm leading-7 text-slate-600">
+            Espacio de aprendizaje de Canva con ideas y guías para crear materiales visuales.
+          </p>
+        </a>
+
+        <a class="rounded-2xl border border-slate-200 bg-white p-4 hover:border-violet-300 hover:bg-violet-50" href="https://www.aulaclic.es/index.htm" target="_blank" rel="noreferrer">
+          <p class="font-bold text-slate-900">AulaClic</p>
+          <p class="mt-2 text-sm leading-7 text-slate-600">
+            Tutoriales prácticos para conocer mejor PowerPoint y otras herramientas de oficina.
+          </p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-12">
+    <InfoBox title="Sugerencia de uso docente" tone="success">
+      <p>
+        Practica creando una presentación breve de 5 diapositivas para explicar un tema real.
+        Prioriza títulos claros, poco texto, imágenes pertinentes y una secuencia fácil de seguir.
+      </p>
+    </InfoBox>
+  </section>
+</BaseLayout>
