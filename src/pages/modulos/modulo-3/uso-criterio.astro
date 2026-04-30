@@ -1,0 +1,975 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SectionTitle from '../../../components/module/SectionTitle.astro';
+import InfoBox from '../../../components/module/InfoBox.astro';
+import ExampleCard from '../../../components/module/ExampleCard.astro';
+import VisualActionCard from '../../../components/module/VisualActionCard.astro';
+import HighlightMistakes from '../../../components/module/HighlightMistakes.astro';
+import CommonMistakes from '../../../components/module/CommonMistakes.astro';
+import { BASE_PATH } from '../../../consts';
+
+const evidenceStats = [
+  {
+    value: '40%',
+    label: 'menos tiempo en tareas de escritura profesional',
+    source: 'MIT, experimento con tareas de escritura asistidas por ChatGPT.',
+    meaning: 'La IA puede acelerar tareas de redacción cuando la persona ya sabe qué quiere comunicar y puede evaluar la calidad del resultado.',
+  },
+  {
+    value: '18%',
+    label: 'mejora de calidad en esas tareas de escritura',
+    source: 'MIT, evaluación independiente de productos escritos.',
+    meaning: 'El mayor valor aparece cuando la IA ayuda a estructurar, reformular o mejorar borradores, no cuando sustituye el criterio del autor.',
+  },
+  {
+    value: '+127%',
+    label: 'mejor desempeño durante práctica con IA tipo tutor',
+    source: 'Estudio en matemáticas con estudiantes de secundaria usando un tutor con guardas pedagógicas.',
+    meaning: 'La IA puede favorecer el aprendizaje cuando no entrega respuestas directas, sino pistas, preguntas y acompañamiento gradual.',
+  },
+  {
+    value: '-17%',
+    label: 'menor desempeño posterior cuando la IA solo da respuestas',
+    source: 'Mismo estudio, evaluación posterior sin apoyo de IA.',
+    meaning: 'Cuando la IA funciona como muleta, puede mejorar el resultado inmediato pero debilitar el aprendizaje independiente.',
+  },
+  {
+    value: '21%',
+    label: 'aumento reportado en tasa de graduación',
+    source: 'Caso Georgia State University con analítica predictiva e intervenciones tempranas.',
+    meaning: 'La IA puede ser valiosa cuando detecta patrones de riesgo y activa apoyo humano oportuno.',
+  },
+  {
+    value: '84.6%',
+    label: 'percepción de mayor justicia con rúbricas anonimizadas',
+    source: 'Aplicaciones de calificación apoyada por IA y rúbricas.',
+    meaning: 'La IA puede ayudar en consistencia y revisión masiva, siempre que el docente conserve criterios y supervisión.',
+  },
+];
+
+const aiStrengths = [
+  {
+    title: 'Redactar primeros borradores',
+    text: 'La IA es fuerte cuando se le pide transformar una intención clara en un texto inicial: comunicados, explicaciones, instrucciones, correos, guías o resúmenes preliminares.',
+    why: 'Trabaja bien con patrones de lenguaje, estructuras conocidas y cambios de tono o formato.',
+  },
+  {
+    title: 'Reorganizar información',
+    text: 'Puede convertir notas dispersas en listas, tablas, secuencias, pasos, criterios o esquemas.',
+    why: 'Su fortaleza no siempre está en descubrir la verdad, sino en ordenar y presentar información de forma comprensible.',
+  },
+  {
+    title: 'Generar variaciones',
+    text: 'Puede proponer varias versiones de una explicación, actividad, ejemplo, pregunta o instrucción.',
+    why: 'Esto ayuda cuando el docente necesita alternativas para distintos niveles, tiempos o estilos de aprendizaje.',
+  },
+  {
+    title: 'Adaptar lenguaje',
+    text: 'Puede simplificar una explicación, hacerla más formal, más breve, más clara o más adecuada para cierto grupo.',
+    why: 'Es útil para ajustar la comunicación sin empezar desde cero.',
+  },
+  {
+    title: 'Simular escenarios',
+    text: 'Puede representar preguntas de estudiantes, dudas frecuentes, objeciones o ejemplos de respuestas posibles.',
+    why: 'Esto sirve para anticipar dificultades antes de una clase o actividad.',
+  },
+  {
+    title: 'Apoyar revisión',
+    text: 'Puede detectar inconsistencias, sugerir mejoras, señalar puntos débiles o revisar si un texto cumple ciertos criterios.',
+    why: 'Funciona mejor como segunda lectura, siempre que el docente conserve la decisión final.',
+  },
+];
+
+const aiWeaknesses = [
+  {
+    title: 'Veracidad factual',
+    text: 'Puede producir datos, citas o explicaciones que suenan correctas, pero no están verificadas.',
+    risk: 'Riesgo alto en historia, leyes, salud, estadísticas, referencias académicas y temas recientes.',
+  },
+  {
+    title: 'Razonamiento matemático largo',
+    text: 'Puede cometer errores en pasos intermedios aunque la explicación parezca ordenada.',
+    risk: 'Riesgo alto cuando el procedimiento importa tanto como el resultado.',
+  },
+  {
+    title: 'Decisiones con responsabilidad humana',
+    text: 'No debe tomar decisiones disciplinarias, diagnósticas, legales, psicológicas o de evaluación final.',
+    risk: 'Puede parecer objetiva, pero no conoce todo el contexto ni asume responsabilidad ética.',
+  },
+  {
+    title: 'Contextos locales muy específicos',
+    text: 'Puede ignorar cultura escolar, recursos reales, necesidades del grupo, edad, nivel o historia institucional.',
+    risk: 'Produce soluciones elegantes, pero poco aplicables.',
+  },
+  {
+    title: 'Datos personales o sensibles',
+    text: 'No conviene compartir nombres, diagnósticos, expedientes, conflictos familiares o información privada de estudiantes.',
+    risk: 'Puede haber riesgos de privacidad, seguridad y uso indebido de datos.',
+  },
+  {
+    title: 'Sustituir el aprendizaje',
+    text: 'Si la IA resuelve toda la tarea, el estudiante puede entregar un buen producto sin haber desarrollado la habilidad.',
+    risk: 'El rendimiento visible mejora, pero el aprendizaje real puede debilitarse.',
+  },
+];
+
+const decisionCriteria = [
+  {
+    question: '¿La tarea requiere creatividad, estructura o reformulación?',
+    use: 'Conviene usar IA como apoyo.',
+    reason: 'La IA funciona bien para generar alternativas, ordenar ideas y convertir borradores en productos más claros.',
+  },
+  {
+    question: '¿La tarea requiere datos exactos o información reciente?',
+    use: 'Usar IA solo con verificación.',
+    reason: 'La respuesta debe contrastarse con fuentes confiables, páginas oficiales o documentos revisados por el docente.',
+  },
+  {
+    question: '¿La tarea define una calificación, diagnóstico o decisión delicada?',
+    use: 'No delegar en IA.',
+    reason: 'Puede apoyar con criterios o redacción, pero la decisión debe seguir siendo humana, justificable y contextual.',
+  },
+  {
+    question: '¿La tarea busca que el estudiante practique una habilidad básica?',
+    use: 'Limitar el uso de IA.',
+    reason: 'Si la IA hace el esfuerzo principal, puede impedir que el estudiante practique lo que necesita aprender.',
+  },
+  {
+    question: '¿La tarea incluye datos personales?',
+    use: 'Evitar o anonimizar.',
+    reason: 'Debe protegerse la privacidad. Si se usa IA, conviene eliminar nombres, detalles sensibles o información identificable.',
+  },
+];
+
+const teacherUseCases = [
+  {
+    title: 'Preparar una explicación alternativa',
+    task: 'Un grupo no comprendió un concepto después de la primera explicación.',
+    goodUse: 'Pedir tres formas distintas de explicar el concepto: una con analogía, otra con ejemplo cotidiano y otra con pasos simples.',
+    why: 'La IA ayuda a generar rutas alternativas de explicación, pero el docente elige la que mejor encaja con su grupo.',
+    caution: 'Revisar que el ejemplo no simplifique de más ni introduzca errores conceptuales.',
+  },
+  {
+    title: 'Diseñar una actividad inicial',
+    task: 'Se necesita una actividad breve para introducir un tema.',
+    goodUse: 'Pedir una actividad de 15 minutos con objetivo, materiales, instrucciones y cierre.',
+    why: 'Acelera la planeación inicial y permite comparar opciones antes de elegir.',
+    caution: 'Ajustar a tiempo real, recursos disponibles, edad del grupo y propósito de aprendizaje.',
+  },
+  {
+    title: 'Adaptar instrucciones para estudiantes',
+    task: 'Una consigna está correcta, pero es larga o confusa.',
+    goodUse: 'Pedir que la reformule en pasos claros y en lenguaje adecuado al grado escolar.',
+    why: 'La IA es fuerte transformando texto sin cambiar necesariamente la intención.',
+    caution: 'Verificar que no haya eliminado condiciones importantes de la tarea.',
+  },
+  {
+    title: 'Crear una rúbrica inicial',
+    task: 'Se necesita evaluar un producto, proyecto o exposición.',
+    goodUse: 'Pedir criterios, niveles de desempeño y descriptores iniciales.',
+    why: 'Ayuda a no empezar desde cero y a visualizar dimensiones de evaluación.',
+    caution: 'El docente debe ajustar criterios a los aprendizajes esperados y revisar que sean observables.',
+  },
+  {
+    title: 'Dar retroalimentación más clara',
+    task: 'El docente ya identificó errores en un trabajo, pero necesita redactar comentarios útiles.',
+    goodUse: 'Pedir que convierta observaciones técnicas en retroalimentación clara, respetuosa y accionable.',
+    why: 'La IA puede mejorar tono, estructura y claridad del comentario.',
+    caution: 'No debe inventar errores ni evaluar trabajos completos sin supervisión.',
+  },
+  {
+    title: 'Diferenciar materiales',
+    task: 'Un mismo tema necesita tres niveles de apoyo.',
+    goodUse: 'Pedir una versión básica, intermedia y avanzada de una misma actividad.',
+    why: 'La IA ayuda a generar variaciones rápidas para distintos ritmos de aprendizaje.',
+    caution: 'Revisar que las versiones no bajen expectativas de forma injustificada ni refuercen etiquetas del grupo.',
+  },
+];
+
+const riskLevels = [
+  {
+    level: 'Uso recomendable',
+    color: 'Bajo riesgo',
+    description: 'La IA apoya redacción, organización, lluvia de ideas o transformación de materiales.',
+    examples: 'Borradores de comunicados, esquemas, listas de cotejo iniciales, ideas de actividades, ejemplos alternativos.',
+    condition: 'Debe revisarse antes de usarse, pero no define por sí sola una decisión crítica.',
+  },
+  {
+    level: 'Uso con verificación',
+    color: 'Riesgo medio',
+    description: 'La IA puede ayudar, pero la respuesta contiene información que debe comprobarse.',
+    examples: 'Resúmenes de lecturas, datos históricos, citas, estadísticas, contenidos disciplinares, explicaciones científicas.',
+    condition: 'Requiere fuentes, comparación y revisión conceptual.',
+  },
+  {
+    level: 'Uso limitado',
+    color: 'Riesgo alto',
+    description: 'La IA puede apoyar solo una parte pequeña, porque la tarea busca desarrollar una habilidad.',
+    examples: 'Ensayos, resolución de problemas, análisis de textos, argumentación, interpretación de resultados.',
+    condition: 'Debe evaluarse proceso, borradores, explicación del estudiante y toma de decisiones.',
+  },
+  {
+    level: 'No recomendable',
+    color: 'Riesgo crítico',
+    description: 'La IA no debe sustituir el juicio humano ni manejar datos sensibles sin controles claros.',
+    examples: 'Calificaciones finales automáticas, diagnósticos, decisiones disciplinarias, datos personales, conflictos escolares.',
+    condition: 'El docente o la institución deben conservar la responsabilidad completa.',
+  },
+];
+
+const activityRedesign = [
+  {
+    before: 'Haz un ensayo sobre la Revolución Mexicana.',
+    problem: 'La IA puede producir un ensayo completo y correcto en apariencia.',
+    better: 'Entrega pregunta de investigación, tres fuentes comentadas, esquema, borrador, versión final y reflexión sobre qué cambiaste.',
+    reason: 'El aprendizaje se vuelve visible en el proceso, no solo en el producto final.',
+  },
+  {
+    before: 'Resuelve estos problemas de matemáticas.',
+    problem: 'El estudiante puede pedir respuestas directas y copiar el procedimiento.',
+    better: 'Resuelve, marca el paso más difícil, explica un error común y compara tu procedimiento con una respuesta generada por IA.',
+    reason: 'La IA se convierte en material de contraste, no en sustituto del razonamiento.',
+  },
+  {
+    before: 'Haz una presentación sobre energías renovables.',
+    problem: 'La IA puede generar estructura, texto e imágenes sin comprensión real.',
+    better: 'Incluye una decisión justificada: qué energía conviene más para una comunidad específica y por qué.',
+    reason: 'La tarea exige criterio, contexto local y argumentación.',
+  },
+  {
+    before: 'Resume el capítulo leído.',
+    problem: 'El resumen puede generarse sin lectura.',
+    better: 'Elige tres ideas del capítulo, explica una con tus palabras y relaciona otra con una discusión de clase.',
+    reason: 'La respuesta requiere conexión personal, evidencia de lectura y comprensión situada.',
+  },
+];
+
+const whenNotUse = [
+  'Cuando la respuesta debe ser completamente exacta y no hay tiempo para verificar.',
+  'Cuando se trabaja con información personal o sensible de estudiantes.',
+  'Cuando la actividad busca evaluar una habilidad que la IA haría por completo.',
+  'Cuando el docente no puede explicar o defender el resultado generado.',
+  'Cuando la IA propone algo que no coincide con el contexto real del grupo.',
+  'Cuando el resultado afecta una decisión académica, emocional o institucional delicada.',
+];
+
+const safeUseChecklist = [
+  'Definir con claridad el propósito de uso.',
+  'Indicar nivel, materia, edad, tiempo disponible y recursos.',
+  'Pedir que señale dudas, límites o supuestos.',
+  'Verificar datos importantes en fuentes confiables.',
+  'Ajustar el resultado al grupo real.',
+  'Conservar la decisión pedagógica final.',
+];
+
+const promptExamples = [
+  {
+    title: 'Para generar alternativas',
+    prompt: 'Propón tres formas distintas de explicar el concepto de fracción para estudiantes de primaria: una con objetos cotidianos, una con dibujo y una con situación de reparto. No des una explicación larga; quiero opciones para elegir.',
+  },
+  {
+    title: 'Para revisar una actividad',
+    prompt: 'Revisa esta actividad y dime si el objetivo, las instrucciones y la evidencia de aprendizaje están alineados. Señala posibles confusiones para estudiantes de secundaria.',
+  },
+  {
+    title: 'Para evitar respuestas superficiales',
+    prompt: 'Antes de responder, identifica qué información falta para diseñar bien esta planeación. Después propón una versión inicial y marca qué partes debería ajustar el docente.',
+  },
+  {
+    title: 'Para trabajar pensamiento crítico',
+    prompt: 'Genera una explicación breve sobre este tema, pero incluye tres afirmaciones que deberían verificarse con fuentes externas. Después sugiere cómo comprobarlas.',
+  },
+];
+
+const commonMistakes = [
+  'Usar IA solo porque ahorra tiempo, sin revisar si mejora el aprendizaje.',
+  'Pedir una planeación completa sin proporcionar contexto del grupo.',
+  'Aceptar actividades que se ven bien pero no tienen evidencia clara de aprendizaje.',
+  'Usar IA para calificar o decidir sin criterios previamente definidos.',
+  'Confundir una respuesta extensa con una respuesta útil.',
+  'Permitir IA en una tarea sin explicar qué uso está permitido y qué uso no.',
+];
+
+const finalDecisionQuestions = [
+  '¿La IA está ayudando a pensar mejor o solo está evitando el esfuerzo?',
+  '¿El producto final todavía permite observar aprendizaje real?',
+  '¿Hay datos o afirmaciones que deben verificarse?',
+  '¿El docente puede adaptar y justificar el resultado?',
+  '¿El uso de IA es justo para estudiantes con distinto acceso tecnológico?',
+];
+
+const grayWorkRisks = [
+  {
+    title: 'Trabajo gris',
+    text: 'Ocurre cuando la IA promete ahorrar tiempo, pero genera resultados poco confiables que obligan al docente a revisar, corregir y rehacer demasiado.',
+    example: 'Una planeación generada en segundos puede tomar más tiempo si hay que corregir objetivos, actividades, tiempos, evaluación y nivel del grupo.',
+  },
+  {
+    title: 'Falsa productividad',
+    text: 'Una respuesta rápida puede dar sensación de avance, aunque no resuelva bien la necesidad real.',
+    example: 'Una rúbrica extensa puede parecer completa, pero no evaluar el aprendizaje esperado que realmente importa.',
+  },
+  {
+    title: 'Costo de verificación',
+    text: 'Mientras más delicada sea la tarea, más tiempo debe invertirse en revisar exactitud, pertinencia y consecuencias.',
+    example: 'Un comentario para un estudiante vulnerable requiere más cuidado que una lista de ideas para una actividad.',
+  },
+];
+
+const humanAiModels = [
+  {
+    model: 'Automatización directa',
+    description: 'La IA ejecuta una tarea casi completa con poca intervención humana.',
+    goodFor: 'Tareas mecánicas, repetitivas y de bajo riesgo.',
+    teacherExample: 'Transcribir audio, ordenar respuestas por categoría o convertir una lista en tabla.',
+    caution: 'No debe usarse para decisiones pedagógicas delicadas.',
+  },
+  {
+    model: 'Supervisión humana',
+    description: 'La IA trabaja primero, pero el docente revisa el resultado antes de usarlo.',
+    goodFor: 'Borradores, listas, formatos, resúmenes iniciales o clasificación de información.',
+    teacherExample: 'Generar una primera versión de instrucciones para una actividad y después corregirla.',
+    caution: 'La revisión no debe ser superficial; debe comprobar propósito, nivel y coherencia.',
+  },
+  {
+    model: 'Colaboración humano-IA',
+    description: 'El docente y la IA trabajan por iteraciones: pedir, revisar, ajustar, comparar y decidir.',
+    goodFor: 'Planeaciones, rúbricas, materiales diferenciados, retroalimentación y diseño de actividades.',
+    teacherExample: 'Pedir tres actividades, elegir una, ajustarla al grupo y volver a pedir mejoras concretas.',
+    caution: 'Es el modelo más útil para docencia, pero exige criterio y tiempo de refinamiento.',
+  },
+  {
+    model: 'Soporte cognitivo',
+    description: 'La IA no hace la tarea por completo; ofrece pistas, preguntas, alertas o rutas de análisis.',
+    goodFor: 'Tutoría, práctica guiada, revisión de errores y aprendizaje paso a paso.',
+    teacherExample: 'Usar IA para que el estudiante reciba pistas sin revelar la respuesta final.',
+    caution: 'Debe evitar convertirse en solucionador automático.',
+  },
+];
+
+const guidedAiUse = [
+  {
+    title: 'Cuando la IA da pistas',
+    text: 'Puede ayudar a que el estudiante avance sin recibir la respuesta completa. Este uso conserva parte del esfuerzo cognitivo.',
+    example: '“Dame una pista para resolver este problema, pero no me des el resultado.”',
+  },
+  {
+    title: 'Cuando obliga a explicar',
+    text: 'Puede pedir al estudiante justificar por qué eligió un procedimiento, una fuente o una conclusión.',
+    example: '“Hazme tres preguntas para comprobar si realmente entiendo mi respuesta.”',
+  },
+  {
+    title: 'Cuando ayuda a comparar',
+    text: 'Puede servir para contrastar dos soluciones, detectar errores o revisar si una explicación es clara.',
+    example: '“Compara mi procedimiento con este otro y dime dónde se separan.”',
+  },
+  {
+    title: 'Cuando no sustituye el primer intento',
+    text: 'Conviene que el estudiante primero intente resolver, escribir o explicar antes de pedir apoyo a la IA.',
+    example: '“Revisa mi borrador y dime qué parte necesita mayor claridad, sin reescribirlo completo.”',
+  },
+];
+
+const feedbackComparison = [
+  {
+    aspect: 'Disponibilidad',
+    ai: 'Responde rápido y puede dar muchas versiones en poco tiempo.',
+    teacher: 'Tiene tiempo limitado, pero puede decidir cuándo intervenir con mayor intención pedagógica.',
+  },
+  {
+    aspect: 'Tono',
+    ai: 'Puede ser claro y amable, aunque a veces suena clínico, genérico o demasiado complaciente.',
+    teacher: 'Puede dar retroalimentación más humana, situada y sensible al proceso del estudiante.',
+  },
+  {
+    aspect: 'Precisión técnica',
+    ai: 'Funciona bien en gramática, estructura, claridad y formato.',
+    teacher: 'Detecta mejor matices de contenido, contexto del grupo, esfuerzo real y pertinencia.',
+  },
+  {
+    aspect: 'Confianza',
+    ai: 'Puede sentirse menos intimidante para pedir ayuda inicial.',
+    teacher: 'Tiene autoridad pedagógica y puede acompañar emocionalmente de forma auténtica.',
+  },
+];
+
+const emotionalRiskCases = [
+  'Contención emocional de estudiantes en crisis.',
+  'Orientación psicológica, diagnóstica o terapéutica.',
+  'Manejo de conflictos familiares o escolares delicados.',
+  'Decisiones disciplinarias que afecten la trayectoria del estudiante.',
+  'Comentarios sobre autoestima, identidad, duelo, ansiedad o violencia.',
+];
+---
+
+<BaseLayout
+  title="Módulo 3 | Cuándo conviene usar IA y cuándo no"
+  description="Analiza en qué tareas la inteligencia artificial aporta valor real, cuándo requiere verificación y cuándo no debe sustituir el juicio humano."
+>
+  <div class="mb-8">
+    <a
+      href={`${BASE_PATH}/modulos/modulo-3/`}
+      class="text-sm font-semibold text-sky-700 hover:text-sky-800"
+    >
+      ← Volver al módulo
+    </a>
+  </div>
+
+  <SectionTitle
+    eyebrow="Tema 3"
+    title="Cuándo conviene usar IA y cuándo no"
+    description="La IA no es buena ni mala para todo. Su valor depende de la tarea, del nivel de riesgo, del contexto y de si ayuda realmente a pensar, decidir o aprender mejor."
+  />
+
+  <section class="grid gap-8 lg:grid-cols-[1.25fr_0.95fr]">
+    <div class="content-card p-8">
+      <h3 class="text-xl font-bold text-slate-900">¿Qué aprenderás en este tema?</h3>
+
+      <div class="mt-4 prose-soft text-slate-700">
+        <p>
+          En este apartado revisarás en qué tipo de tareas la IA suele aportar más valor, en cuáles
+          debe usarse con verificación y en qué casos no conviene delegar decisiones o procesos.
+        </p>
+
+        <p>
+          La intención no es promover el uso de IA en todo, ni prohibirla por miedo. La meta es tomar
+          decisiones más precisas: usarla cuando fortalece el trabajo y limitarla cuando debilita el
+          aprendizaje, la seguridad o el criterio profesional.
+        </p>
+      </div>
+    </div>
+
+    <InfoBox title="Idea central" tone="info">
+      <p>
+        La mejor pregunta no es “¿puedo usar IA?”, sino “¿para qué parte de esta tarea conviene usarla,
+        qué riesgo tiene y cómo voy a verificar el resultado?”.
+      </p>
+    </InfoBox>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="1. Lo que los datos sugieren: productividad no siempre es aprendizaje"
+      description="La IA puede mejorar velocidad y calidad en ciertas tareas, pero eso no significa que siempre mejore la comprensión."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {evidenceStats.map((item) => (
+        <div class="content-card p-6">
+          <p class="text-4xl font-black text-sky-700">{item.value}</p>
+          <h3 class="mt-3 text-lg font-bold text-slate-900">{item.label}</h3>
+          <p class="mt-3 text-sm font-semibold text-slate-500">{item.source}</p>
+          <p class="mt-4 leading-7 text-slate-700">{item.meaning}</p>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-8 grid gap-6 lg:grid-cols-2">
+      <InfoBox title="Lectura correcta del dato" tone="success">
+        <p>
+          La IA puede ser excelente para acelerar tareas de escritura, organización, comparación
+          y reformulación. En esos casos, el usuario conserva el criterio y la IA reduce carga operativa.
+        </p>
+      </InfoBox>
+
+      <InfoBox title="Lectura peligrosa del dato" tone="warning">
+        <p>
+          Que una actividad se resuelva más rápido no significa que se aprendió mejor. En educación,
+          el proceso de pensar, equivocarse, corregir y justificar sigue siendo parte del aprendizaje.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+    <section class="mt-14">
+    <SectionTitle
+        title="1.1. Cuidado con el trabajo gris"
+        description="No toda automatización ahorra tiempo. Si la IA genera resultados débiles, el docente puede terminar corrigiendo más de lo que habría tardado en hacerlo directamente."
+    />
+
+    <div class="grid gap-6 md:grid-cols-3">
+        {grayWorkRisks.map((item) => (
+        <ExampleCard title={item.title}>
+            <p>{item.text}</p>
+            <p class="mt-3">
+            <strong>Ejemplo:</strong> {item.example}
+            </p>
+        </ExampleCard>
+        ))}
+    </div>
+
+    <div class="mt-6">
+        <InfoBox title="Criterio práctico" tone="warning">
+        <p>
+            Si revisar una respuesta de IA toma más tiempo que construir una versión propia, entonces
+            la herramienta no está reduciendo trabajo: solo está trasladando el esfuerzo a la corrección.
+        </p>
+        </InfoBox>
+    </div>
+    </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="2. En qué suele ser buena la IA"
+      description="La IA funciona mejor cuando trabaja como asistente de lenguaje, estructura y variación, no como autoridad final."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {aiStrengths.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+          <p class="mt-3">
+            <strong>Por qué funciona:</strong> {item.why}
+          </p>
+        </ExampleCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="3. En qué suele fallar o requerir mayor cuidado"
+      description="Las debilidades de la IA no siempre se ven a simple vista, porque puede redactar con seguridad incluso cuando está equivocada."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {aiWeaknesses.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+          <p class="mt-3">
+            <strong>Riesgo:</strong> {item.risk}
+          </p>
+        </ExampleCard>
+      ))}
+    </div>
+
+    <div class="mt-8">
+      <VisualActionCard
+        title="La diferencia entre apoyo y sustitución"
+        image={`${BASE_PATH}/images/modulo-3/uso-criterio/apoyo-vs-sustitucion.png`}
+        imageAlt="Esquema que compara el uso de IA como apoyo frente al uso de IA como sustitución del aprendizaje."
+      >
+        <p>
+          La IA es más segura cuando apoya una parte del trabajo: ordenar, reformular, comparar,
+          proponer o revisar. El riesgo aumenta cuando sustituye el proceso central que se busca
+          desarrollar.
+        </p>
+
+        <p>
+          Por ejemplo, pedirle que mejore la claridad de una explicación propia puede ser útil.
+          Pedirle que escriba todo el ensayo, la justificación y las conclusiones puede ocultar si
+          realmente hubo comprensión.
+        </p>
+      </VisualActionCard>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="4. Criterios para decidir si conviene usar IA"
+      description="Una decisión práctica puede tomarse revisando propósito, riesgo, verificabilidad, privacidad y aprendizaje esperado."
+    />
+
+    <div class="content-card overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+          <thead class="bg-slate-50">
+            <tr>
+              <th class="px-4 py-4 font-semibold text-slate-900">Pregunta de decisión</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">Recomendación</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">Razón</th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-slate-200 bg-white">
+            {decisionCriteria.map((item) => (
+              <tr>
+                <td class="px-4 py-4 align-top font-semibold text-slate-900">{item.question}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.use}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.reason}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mt-6">
+      <InfoBox title="Criterio rápido" tone="info">
+        <p>
+          La IA conviene más cuando el error es fácil de detectar, el resultado puede revisarse y el
+          usuario conserva la responsabilidad. Conviene menos cuando el error es difícil de ver, afecta
+          a otras personas o sustituye la habilidad que se quiere desarrollar.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+    <section class="mt-14">
+    <SectionTitle
+        title="4.1. Modelos de relación entre docente e IA"
+        description="No todas las tareas requieren el mismo nivel de intervención humana. La decisión depende del riesgo, del propósito y de cuánto juicio pedagógico esté en juego."
+    />
+
+    <div class="content-card overflow-hidden">
+        <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+            <thead class="bg-slate-50">
+            <tr>
+                <th class="px-4 py-4 font-semibold text-slate-900">Modelo</th>
+                <th class="px-4 py-4 font-semibold text-slate-900">Cómo funciona</th>
+                <th class="px-4 py-4 font-semibold text-slate-900">Conviene para</th>
+                <th class="px-4 py-4 font-semibold text-slate-900">Ejemplo docente</th>
+                <th class="px-4 py-4 font-semibold text-slate-900">Cuidado</th>
+            </tr>
+            </thead>
+
+            <tbody class="divide-y divide-slate-200 bg-white">
+            {humanAiModels.map((item) => (
+                <tr>
+                <td class="px-4 py-4 align-top font-semibold text-slate-900">{item.model}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.description}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.goodFor}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.teacherExample}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.caution}</td>
+                </tr>
+            ))}
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+    <div class="mt-6">
+        <InfoBox title="Para docencia, el mejor modelo suele ser colaborativo" tone="success">
+        <p>
+            En la mayoría de tareas docentes, la IA no debería operar sola. Lo más útil es usarla como
+            asistente de borrador, contraste o revisión, mientras el docente conserva la intención,
+            el contexto, la decisión y la responsabilidad final.
+        </p>
+        </InfoBox>
+    </div>
+    </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="5. Casos reales de uso docente"
+      description="Estos ejemplos muestran cómo usar IA sin perder control pedagógico ni convertirla en sustituto del trabajo profesional."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {teacherUseCases.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>
+            <strong>Situación:</strong> {item.task}
+          </p>
+          <p class="mt-3">
+            <strong>Buen uso de IA:</strong> {item.goodUse}
+          </p>
+          <p class="mt-3">
+            <strong>Por qué ayuda:</strong> {item.why}
+          </p>
+          <p class="mt-3">
+            <strong>Cuidado:</strong> {item.caution}
+          </p>
+        </ExampleCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="6. Matriz de riesgo: usar, verificar, limitar o evitar"
+      description="No todas las tareas tienen el mismo nivel de riesgo. Esta matriz ayuda a decidir el grado de control necesario."
+    />
+
+    <div class="content-card overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+          <thead class="bg-slate-50">
+            <tr>
+              <th class="px-4 py-4 font-semibold text-slate-900">Nivel</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">Riesgo</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">Descripción</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">Ejemplos</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">Condición mínima</th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-slate-200 bg-white">
+            {riskLevels.map((item) => (
+              <tr>
+                <td class="px-4 py-4 align-top font-semibold text-slate-900">{item.level}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.color}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.description}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.examples}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.condition}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="7. Replantear actividades para que la IA no reemplace el aprendizaje"
+      description="La IA obliga a diseñar tareas donde el proceso, la argumentación y la toma de decisiones sean visibles."
+    />
+
+    <div class="content-card overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+          <thead class="bg-slate-50">
+            <tr>
+              <th class="px-4 py-4 font-semibold text-slate-900">Actividad tradicional</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">Problema con IA</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">Mejor replanteamiento</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">Por qué mejora</th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-slate-200 bg-white">
+            {activityRedesign.map((item) => (
+              <tr>
+                <td class="px-4 py-4 align-top font-semibold text-slate-900">{item.before}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.problem}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.better}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.reason}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mt-8">
+      <InfoBox title="La clave no es prohibir todo" tone="success">
+        <p>
+          Si la tecnología crece, la respuesta más sostenible es diseñar actividades donde la IA pueda
+          existir, pero donde el estudiante todavía tenga que leer, pensar, decidir, explicar, corregir
+          y justificar.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+<section class="mt-14">
+  <SectionTitle
+    title="7.1. Usar IA como andamiaje, no como respuesta final"
+    description="La IA puede apoyar el aprendizaje cuando guía, pregunta y ayuda a revisar; pero puede perjudicarlo cuando entrega soluciones completas sin esfuerzo del estudiante."
+  />
+
+  <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+    {guidedAiUse.map((item) => (
+      <ExampleCard title={item.title}>
+        <p>{item.text}</p>
+        <p class="mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 leading-7 text-slate-700">
+          {item.example}
+        </p>
+      </ExampleCard>
+    ))}
+  </div>
+
+  <div class="mt-8 grid gap-6 lg:grid-cols-2">
+    <InfoBox title="Uso que fortalece aprendizaje" tone="success">
+      <p>
+        La IA ayuda cuando obliga a explicar, comparar, revisar, justificar o corregir. En ese caso,
+        funciona como apoyo al pensamiento.
+      </p>
+    </InfoBox>
+
+    <InfoBox title="Uso que debilita aprendizaje" tone="warning">
+      <p>
+        La IA perjudica cuando entrega la respuesta final antes de que el estudiante intente,
+        se equivoque, formule hipótesis o comprenda el procedimiento.
+      </p>
+    </InfoBox>
+  </div>
+</section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="8. Cuándo no conviene usar IA"
+      description="Hay situaciones donde la IA puede estorbar más de lo que ayuda, especialmente si se usa sin revisión o sin límites claros."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <HighlightMistakes
+        title="Casos donde conviene evitarla o limitarla mucho"
+        mistakes={whenNotUse}
+      />
+
+      <CommonMistakes
+        title="Lista mínima para un uso seguro"
+        mistakes={safeUseChecklist}
+      />
+    </div>
+  </section>
+
+<section class="mt-14">
+  <SectionTitle
+    title="8.1. Un límite importante: apoyo emocional y decisiones delicadas"
+    description="La IA puede redactar mensajes amables, pero no tiene vínculo real, responsabilidad profesional ni comprensión completa del contexto humano."
+  />
+
+  <div class="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+    <div class="content-card p-8">
+      <h3 class="text-xl font-bold text-slate-900">Por qué este límite importa</h3>
+
+      <div class="mt-4 prose-soft text-slate-700">
+        <p>
+          En educación, algunas situaciones no se resuelven solo con una respuesta bien escrita.
+          Hay momentos donde importan el tono, la historia del estudiante, el vínculo con la familia,
+          el contexto escolar y la posibilidad de pedir apoyo a una persona responsable.
+        </p>
+
+        <p>
+          Una IA puede simular empatía con frases correctas, pero no acompaña de forma humana.
+          Por eso no debe sustituir la intervención del docente, orientación escolar, dirección,
+          familia o profesionales especializados cuando una situación es sensible.
+        </p>
+      </div>
+    </div>
+
+    <HighlightMistakes
+      title="Casos donde no debe sustituir a una persona"
+      mistakes={emotionalRiskCases}
+    />
+  </div>
+
+  <div class="mt-6">
+    <InfoBox title="Regla de seguridad" tone="warning">
+      <p>
+        Si una situación involucra riesgo emocional, violencia, salud mental, seguridad, dignidad
+        o consecuencias importantes para un estudiante, la IA puede ayudar a ordenar ideas o
+        redactar una primera guía, pero nunca debe ser la autoridad final.
+      </p>
+    </InfoBox>
+  </div>
+</section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="9. Ejemplos de instrucciones útiles"
+      description="Un buen uso de IA empieza con una instrucción que limite el riesgo y oriente el tipo de ayuda esperada."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2">
+      {promptExamples.map((item) => (
+        <ExampleCard title={item.title}>
+          <p class="rounded-2xl border border-slate-200 bg-slate-50 p-4 leading-7 text-slate-700">
+            {item.prompt}
+          </p>
+        </ExampleCard>
+      ))}
+    </div>
+  </section>
+
+<section class="mt-14">
+  <SectionTitle
+    title="10. Retroalimentación: qué puede hacer la IA y qué conserva el docente"
+    description="La retroalimentación generada por IA puede ser rápida y estructurada, pero la retroalimentación docente conserva contexto, sensibilidad y responsabilidad pedagógica."
+  />
+
+  <div class="content-card overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+        <thead class="bg-slate-50">
+          <tr>
+            <th class="px-4 py-4 font-semibold text-slate-900">Aspecto</th>
+            <th class="px-4 py-4 font-semibold text-slate-900">Fortaleza de la IA</th>
+            <th class="px-4 py-4 font-semibold text-slate-900">Fortaleza del docente</th>
+          </tr>
+        </thead>
+
+        <tbody class="divide-y divide-slate-200 bg-white">
+          {feedbackComparison.map((item) => (
+            <tr>
+              <td class="px-4 py-4 align-top font-semibold text-slate-900">{item.aspect}</td>
+              <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.ai}</td>
+              <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.teacher}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="mt-8 grid gap-6 lg:grid-cols-2">
+    <InfoBox title="Uso recomendable" tone="success">
+      <p>
+        Usar IA para generar una primera retroalimentación técnica: claridad, estructura,
+        ortografía, tono, organización o alineación con una rúbrica.
+      </p>
+    </InfoBox>
+
+    <InfoBox title="Lo que debe conservar el docente" tone="warning">
+      <p>
+        La decisión final sobre el aprendizaje, el esfuerzo, el avance, la situación personal del
+        estudiante y la pertinencia del comentario.
+      </p>
+    </InfoBox>
+  </div>
+</section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Errores frecuentes al decidir usar IA"
+      description="Muchos problemas aparecen no por usar IA, sino por usarla sin propósito, sin límites o sin revisión."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <HighlightMistakes
+        title="Errores que conviene evitar"
+        mistakes={commonMistakes}
+      />
+
+      <CommonMistakes
+        title="Preguntas finales de decisión"
+        mistakes={finalDecisionQuestions}
+      />
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Actividad breve"
+      description="Aplica los criterios del tema a una tarea real de tu práctica docente."
+    />
+
+    <div class="content-card p-8">
+      <h3 class="text-xl font-bold text-slate-900">Ejercicio de decisión</h3>
+
+      <div class="mt-4 prose-soft text-slate-700">
+        <p>
+          Elige una tarea docente real: planear una clase, revisar trabajos, crear una actividad,
+          diseñar una rúbrica, escribir un comunicado o preparar material de apoyo.
+        </p>
+
+        <p>
+          Después responde:
+        </p>
+
+        <ol>
+          <li>¿Qué parte de la tarea sí podría apoyarse con IA?</li>
+          <li>¿Qué parte no debería delegarse?</li>
+          <li>¿Qué riesgo tendría aceptar la primera respuesta?</li>
+          <li>¿Qué criterio usarías para revisar el resultado?</li>
+          <li>¿Cómo explicarías a tus estudiantes un uso responsable de IA en una tarea similar?</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <InfoBox title="Cierre del tema" tone="success">
+      <p>
+        La IA conviene cuando amplía la capacidad de pensar, organizar, revisar o crear mejores
+        alternativas. No conviene cuando sustituye el aprendizaje, oculta errores, maneja información
+        sensible o toma decisiones que requieren responsabilidad humana. Usarla bien no significa
+        usarla siempre; significa saber cuándo aporta valor real y cuándo debe mantenerse bajo control.
+      </p>
+    </InfoBox>
+  </section>
+</BaseLayout>

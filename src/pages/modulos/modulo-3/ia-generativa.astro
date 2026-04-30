@@ -6,6 +6,137 @@ import ExampleCard from '../../../components/module/ExampleCard.astro';
 import VisualActionCard from '../../../components/module/VisualActionCard.astro';
 import HighlightMistakes from '../../../components/module/HighlightMistakes.astro';
 import { BASE_PATH } from '../../../consts';
+
+const aiStartingMistakes = [
+  'Creer que una respuesta bien redactada es automáticamente correcta. La IA puede escribir con seguridad incluso cuando la información es incompleta, imprecisa o falsa.',
+  'Usarla como reemplazo del criterio docente. La IA puede apoyar la planeación o producción de materiales, pero no conoce por sí sola las necesidades reales del grupo.',
+  'Pedir respuestas demasiado generales. Instrucciones vagas producen respuestas genéricas. La calidad mejora cuando se indica nivel, contexto, propósito y formato.',
+  'No revisar el resultado antes de usarlo. Todo contenido generado para estudiantes debe revisarse, ajustarse y contextualizarse antes de aplicarse.',
+];
+
+const aiEvolutionStages = [
+  {
+    period: 'Modelos estadísticos',
+    idea: 'Al inicio, muchos sistemas trabajaban con probabilidades simples: si aparecían ciertas palabras, era más probable que aparecieran otras después.',
+    example: 'Servían para tareas limitadas, pero entendían poco el significado profundo del lenguaje.',
+  },
+  {
+    period: 'Modelos neuronales',
+    idea: 'Después aparecieron modelos capaces de representar palabras como relaciones matemáticas, lo que permitió reconocer similitudes entre conceptos.',
+    example: 'Por ejemplo, distinguir que “maestro”, “clase” y “estudiante” pertenecen a contextos cercanos.',
+  },
+  {
+    period: 'Transformers',
+    idea: 'Desde 2017, la arquitectura Transformer permitió analizar muchas partes de un texto al mismo tiempo y detectar mejor qué palabras se relacionan entre sí.',
+    example: 'Esto hizo posible que los modelos escalaran y produjeran respuestas mucho más coherentes.',
+  },
+  {
+    period: 'Modelos actuales',
+    idea: 'Hoy, herramientas como ChatGPT o Gemini no solo trabajan con texto: también pueden integrar imágenes, audio, archivos, código o contexto amplio, según la versión disponible.',
+    example: 'Esto permite pedir apoyo para explicar un tema, revisar un documento, analizar una imagen o estructurar materiales docentes.',
+  },
+];
+
+const aiPredictionSteps = [
+  {
+    title: '1. Divide la entrada en partes pequeñas',
+    text: 'Cuando escribes una instrucción, el modelo no la interpreta como una persona leyendo una frase completa. Primero la divide en unidades llamadas tokens, que pueden ser palabras, fragmentos de palabras, signos o partes de una oración.',
+  },
+  {
+    title: '2. Analiza el contexto',
+    text: 'El modelo revisa las palabras anteriores, la instrucción completa y el contexto disponible. No busca una respuesta guardada como si fuera una base de datos, sino que calcula qué continuación tiene más sentido según los patrones aprendidos.',
+  },
+  {
+    title: '3. Predice el siguiente token',
+    text: 'La IA genera una lista de posibles continuaciones y asigna probabilidades. Después elige una opción y repite el proceso una y otra vez hasta construir la respuesta completa.',
+  },
+  {
+    title: '4. Ajusta el estilo de la respuesta',
+    text: 'Si se le pide un tono formal, una explicación sencilla, una tabla o una respuesta para estudiantes de cierta edad, el modelo usa esa información para orientar la forma de la respuesta.',
+  },
+];
+
+const aiTrainingStages = [
+  {
+    title: 'Preentrenamiento',
+    text: 'El modelo aprende patrones generales a partir de grandes cantidades de datos. Durante esta etapa no “memoriza” todo como una libreta, sino que ajusta millones o miles de millones de parámetros internos para representar relaciones entre palabras, ideas, formatos y contextos.',
+  },
+  {
+    title: 'Predicción y corrección interna',
+    text: 'En modelos de lenguaje, una tarea central es predecir el siguiente token. Si el modelo predice mal durante el entrenamiento, se calcula el error y se ajustan sus pesos internos. Repetido a gran escala, este proceso mejora su capacidad para generar respuestas coherentes.',
+  },
+  {
+    title: 'Ajuste con instrucciones',
+    text: 'Después del entrenamiento general, el modelo se ajusta con ejemplos de instrucciones y respuestas esperadas. Aquí aprende a comportarse más como asistente: seguir indicaciones, respetar formatos, adaptar el tono y responder de forma más útil.',
+  },
+  {
+    title: 'Retroalimentación y alineación',
+    text: 'Las respuestas pueden compararse, valorarse y corregirse mediante evaluadores humanos, sistemas automáticos o incluso otros modelos de IA. Esta etapa busca que el modelo no solo complete texto, sino que responda de manera más útil, segura y alineada con lo que se espera de una herramienta pública.',
+  },
+];
+
+const aiTechnicalLayers = [
+  {
+    title: 'Tokens',
+    text: 'La IA no procesa necesariamente palabras completas. Divide el texto en unidades más pequeñas llamadas tokens, que pueden ser palabras, fragmentos de palabras o signos.',
+  },
+  {
+    title: 'Embeddings',
+    text: 'Cada token se convierte en una representación numérica. Esa representación permite que el modelo compare relaciones: por ejemplo, conceptos cercanos, estilos de escritura o estructuras gramaticales.',
+  },
+  {
+    title: 'Atención',
+    text: 'El mecanismo de atención ayuda al modelo a decidir qué partes del contexto son más relevantes para generar la siguiente parte de la respuesta.',
+  },
+  {
+    title: 'Decodificación',
+    text: 'Al responder, el modelo calcula varias continuaciones posibles y selecciona una. Por eso dos respuestas pueden ser distintas aunque la pregunta sea parecida.',
+  },
+];
+
+const aiFeedbackExamples = [
+  {
+    title: 'Valoraciones del usuario',
+    text: 'Botones como “me gusta”, “no me gusta”, reportes o comentarios pueden servir para detectar respuestas útiles, confusas, peligrosas o poco precisas.',
+  },
+  {
+    title: 'Uso real de la herramienta',
+    text: 'En algunos servicios, según la configuración de privacidad y el tipo de cuenta, las conversaciones pueden usarse para mejorar modelos futuros. Por eso no conviene escribir datos sensibles sin revisar antes las políticas y controles de datos.',
+  },
+  {
+    title: 'Evaluación humana o automática',
+    text: 'Equipos humanos o sistemas de IA pueden comparar respuestas y decidir cuál es más clara, segura, precisa o útil. Esa comparación ayuda a ajustar el comportamiento del modelo.',
+  },
+  {
+    title: 'Ejemplo parecido: CAPTCHA',
+    text: 'Un CAPTCHA puede parecer solo una prueba para demostrar que una persona no es un robot, pero históricamente también se usó para ayudar a reconocer texto digitalizado. Es un ejemplo sencillo de cómo acciones humanas pueden convertirse en señales útiles para mejorar sistemas.',
+  },
+];
+
+const aiBehaviorRisks = [
+  {
+    title: 'Puede volverse demasiado complaciente',
+    text: 'Si un modelo aprende que agradar al usuario recibe mejores valoraciones, puede tender a validar demasiado lo que la persona dice, incluso cuando debería corregir, matizar o advertir.',
+  },
+  {
+    title: 'Puede sonar seguro aunque esté equivocado',
+    text: 'Como genera respuestas coherentes por probabilidad, puede producir una explicación fluida sin que eso garantice exactitud.',
+  },
+  {
+    title: 'Puede reforzar una idea mal planteada',
+    text: 'Si la instrucción contiene una suposición incorrecta, la IA puede continuar desde esa suposición en lugar de cuestionarla, a menos que esté bien ajustada para detectar errores de planteamiento.',
+  },
+];
+const aiConcreteExamples = [
+  {
+    tool: 'ChatGPT',
+    example: 'Puede ayudar a redactar, explicar, sintetizar, crear materiales, analizar archivos o trabajar con imágenes, dependiendo del modelo y del plan disponible.',
+  },
+  {
+    tool: 'Gemini',
+    example: 'Puede integrarse con el ecosistema de Google y, en algunas versiones, trabajar con ventanas de contexto largas para analizar documentos extensos, código o información amplia.',
+  },
+];
 ---
 
 <BaseLayout
@@ -53,7 +184,7 @@ import { BASE_PATH } from '../../../consts';
     </InfoBox>
   </section>
 
-  <section class="mt-12">
+  <section class="mt-14">
     <SectionTitle
       title="1. ¿Qué es la IA generativa?"
       description="La IA generativa es un tipo de inteligencia artificial capaz de producir contenido nuevo a partir de una instrucción."
@@ -93,7 +224,7 @@ import { BASE_PATH } from '../../../consts';
     </div>
   </section>
 
-  <section class="mt-12">
+  <section class="mt-14">
     <SectionTitle
       title="2. ¿Cómo responde una IA generativa?"
       description="Una IA generativa trabaja a partir de instrucciones. Mientras mejor sea el contexto, más útil puede ser la respuesta."
@@ -101,7 +232,7 @@ import { BASE_PATH } from '../../../consts';
 
     <VisualActionCard
       title="Flujo básico de una respuesta generada con IA"
-      imageSrc={`${BASE_PATH}/images/modulo-3/ia-generativa/flujo-ia-generativa.png`}
+      image={`${BASE_PATH}/images/modulo-3/ia-generativa/flujo-ia-generativa.png`}
       imageAlt="Esquema del flujo: instrucción del usuario, modelo de IA, respuesta generada y revisión humana."
     >
       <p>
@@ -117,34 +248,208 @@ import { BASE_PATH } from '../../../consts';
     </VisualActionCard>
   </section>
 
-  <section class="mt-12">
+  <section class="mt-14">
+  <SectionTitle
+    title="3. La IA no piensa igual que una persona"
+    description="Este punto es clave para evitar expectativas equivocadas. Una IA puede producir respuestas muy útiles, pero su funcionamiento interno no es igual al razonamiento humano."
+  />
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    <ExampleCard title="Lo que sí hace">
+      <ul class="list-disc pl-5">
+        <li>Reconoce patrones en el lenguaje.</li>
+        <li>Relaciona ideas a partir del contexto que recibe.</li>
+        <li>Genera respuestas coherentes y estructuradas.</li>
+        <li>Adapta el tono, formato o nivel si se le pide con claridad.</li>
+      </ul>
+    </ExampleCard>
+
+    <ExampleCard title="Lo que no debe asumirse">
+      <ul class="list-disc pl-5">
+        <li>No garantiza verdad.</li>
+        <li>No siempre distingue una fuente confiable de una débil.</li>
+        <li>No conoce necesariamente el contexto específico de tu escuela.</li>
+        <li>No reemplaza el juicio pedagógico del docente.</li>
+      </ul>
+    </ExampleCard>
+  </div>
+
+  <div class="mt-8">
+    <InfoBox title="Una explicación más técnica" tone="info">
+      <p>
+        Los modelos actuales de IA generativa funcionan, en gran parte, como sistemas de predicción.
+        Cuando reciben una instrucción, calculan qué fragmento de texto, imagen, código o respuesta
+        tiene más probabilidad de continuar de forma coherente según el contexto recibido y los patrones
+        que aprendieron durante su entrenamiento.
+      </p>
+
+      <p>
+        Esto no significa que “entiendan” como una persona. Significa que han aprendido relaciones
+        complejas entre palabras, ideas, estilos, formatos y ejemplos. Por eso pueden responder con
+        mucha fluidez, pero también pueden equivocarse con seguridad.
+      </p>
+    </InfoBox>
+
+    <div class="mt-10">
+      <SectionTitle
+        title="Un poco más por dentro: tokens, atención y predicción"
+        description="Sin entrar en matemáticas avanzadas, estos conceptos ayudan a entender mejor por qué la IA responde como responde."
+      />
+
+      <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        {aiTechnicalLayers.map((layer) => (
+          <ExampleCard title={layer.title}>
+            <p>{layer.text}</p>
+          </ExampleCard>
+        ))}
+      </div>
+
+      <div class="mt-6">
+        <InfoBox title="Idea técnica clave" tone="info">
+          <p>
+            Una respuesta de IA no aparece porque el sistema “recuerde” una respuesta exacta guardada.
+            En términos simples, el modelo transforma la instrucción en representaciones numéricas,
+            analiza relaciones dentro del contexto y calcula qué continuación es más probable o más adecuada.
+          </p>
+        </InfoBox>
+      </div>
+    </div>
+    
+  </div>
+
+  <div class="mt-10">
     <SectionTitle
-      title="3. La IA no piensa igual que una persona"
-      description="Este punto es clave para evitar expectativas equivocadas."
+      title="Breve evolución de los modelos de IA"
+      description="Para entender por qué las herramientas actuales parecen tan avanzadas, conviene ver cómo evolucionaron los modelos de lenguaje."
     />
 
-    <div class="grid gap-6 lg:grid-cols-2">
-      <ExampleCard title="Lo que sí hace">
-        <ul class="list-disc pl-5">
-          <li>Reconoce patrones en el lenguaje.</li>
-          <li>Relaciona ideas a partir del contexto que recibe.</li>
-          <li>Genera respuestas coherentes y estructuradas.</li>
-          <li>Adapta el tono, formato o nivel si se le pide con claridad.</li>
-        </ul>
-      </ExampleCard>
-
-      <ExampleCard title="Lo que no debe asumirse">
-        <ul class="list-disc pl-5">
-          <li>No garantiza verdad.</li>
-          <li>No siempre distingue una fuente confiable de una débil.</li>
-          <li>No conoce necesariamente el contexto específico de tu escuela.</li>
-          <li>No reemplaza el juicio pedagógico del docente.</li>
-        </ul>
-      </ExampleCard>
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {aiEvolutionStages.map((stage) => (
+        <ExampleCard title={stage.period}>
+          <p>{stage.idea}</p>
+          <p class="mt-3">
+            <strong>Ejemplo:</strong> {stage.example}
+          </p>
+        </ExampleCard>
+      ))}
     </div>
-  </section>
+  </div>
 
-  <section class="mt-12">
+  <div class="mt-10">
+    <VisualActionCard
+      title="Cómo se genera una respuesta, paso a paso"
+      image={`${BASE_PATH}/images/modulo-3/ia-generativa/prediccion-token.png`}
+      imageAlt="Esquema simple de predicción de tokens en un modelo de IA generativa."
+    >
+      <p>
+        Una forma sencilla de entenderlo es pensar que el modelo genera una respuesta por partes.
+        No escribe todo de una sola vez. Va calculando posibles continuaciones, elige una, la agrega
+        al contexto y vuelve a repetir el proceso.
+      </p>
+
+      <div class="mt-5 grid gap-4">
+        {aiPredictionSteps.map((step) => (
+          <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <h4 class="font-bold text-slate-900">{step.title}</h4>
+            <p class="mt-2 leading-7 text-slate-700">{step.text}</p>
+          </div>
+        ))}
+      </div>
+    </VisualActionCard>
+  </div>
+
+  <div class="mt-10">
+    <SectionTitle
+      title="¿Cómo se construyen y retroalimentan estos modelos?"
+      description="Una IA generativa no aparece lista desde el inicio. Primero se entrena, luego se ajusta, se evalúa y finalmente se mejora con distintos tipos de retroalimentación."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {aiTrainingStages.map((stage) => (
+        <ExampleCard title={stage.title}>
+          <p>{stage.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+
+    <div class="mt-8">
+      <SectionTitle
+        title="¿Nuestro uso también puede retroalimentar a la IA?"
+        description="Sí, pero conviene entenderlo con cuidado: no siempre ocurre igual, no siempre es inmediato y depende de la herramienta, la configuración y el tipo de cuenta."
+      />
+
+      <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        {aiFeedbackExamples.map((item) => (
+          <ExampleCard title={item.title}>
+            <p>{item.text}</p>
+          </ExampleCard>
+        ))}
+      </div>
+    </div>
+
+    <div class="mt-8 grid gap-6 lg:grid-cols-[1fr_1fr]">
+      <InfoBox title="Punto clave para docentes" tone="warning">
+        <p>
+          No conviene asumir que todo lo que se escribe en una IA es completamente privado,
+          ni tampoco asumir que el modelo aprende de inmediato durante la conversación.
+          Lo correcto es revisar la configuración de datos, evitar información sensible y usar
+          estas herramientas con criterio institucional.
+        </p>
+      </InfoBox>
+
+      <InfoBox title="Cuidado con la falsa sensación de razón" tone="warning">
+        <p>
+          Algunas IA pueden sonar muy amables, seguras o incluso complacientes. Eso puede hacer que
+          una respuesta parezca correcta solo porque está bien redactada o porque valida lo que el
+          usuario quería escuchar. En educación, una respuesta útil no es la que más halaga, sino la
+          que ayuda a pensar mejor, corregir errores y tomar decisiones más responsables.
+        </p>
+      </InfoBox>
+    </div>
+
+    <div class="mt-8">
+      <SectionTitle
+        title="Cuando la retroalimentación se balancea mal"
+        description="La retroalimentación ayuda a mejorar los modelos, pero también puede producir comportamientos no deseados si se prioriza demasiado agradar al usuario."
+      />
+
+      <div class="grid gap-6 md:grid-cols-3">
+        {aiBehaviorRisks.map((risk) => (
+          <ExampleCard title={risk.title}>
+            <p>{risk.text}</p>
+          </ExampleCard>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-10">
+    <SectionTitle
+      title="Ejemplos actuales para aterrizar la idea"
+      description="Herramientas conocidas como ChatGPT o Gemini ayudan a visualizar cómo estos modelos llegan al usuario final."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2">
+      {aiConcreteExamples.map((item) => (
+        <ExampleCard title={item.tool}>
+          <p>{item.example}</p>
+        </ExampleCard>
+      ))}
+    </div>
+
+    <div class="mt-6">
+      <InfoBox title="No todos los modelos hacen lo mismo" tone="info">
+        <p>
+          Dos herramientas pueden parecer similares porque ambas responden en lenguaje natural,
+          pero pueden diferir en capacidades, actualización, acceso a internet, lectura de archivos,
+          manejo de imágenes, integración con otras aplicaciones, privacidad, costo y límite de uso.
+        </p>
+      </InfoBox>
+    </div>
+  </div>
+</section>
+
+  <section class="mt-14">
     <SectionTitle
       title="4. IA generativa, buscador web y editor de texto no son lo mismo"
       description="Distinguir estas herramientas ayuda a usarlas mejor y a evitar errores de confianza."
@@ -152,7 +457,7 @@ import { BASE_PATH } from '../../../consts';
 
     <VisualActionCard
       title="Diferencia práctica entre herramientas"
-      imageSrc={`${BASE_PATH}/images/modulo-3/ia-generativa/ia-no-es-buscador.png`}
+      image={`${BASE_PATH}/images/modulo-3/ia-generativa/ia-no-es-buscador.png`}
       imageAlt="Comparación visual entre buscador web, IA generativa y editor de texto."
     >
       <div class="overflow-x-auto">
@@ -164,17 +469,20 @@ import { BASE_PATH } from '../../../consts';
               <th class="py-3 pr-4 font-bold">Riesgo principal</th>
             </tr>
           </thead>
+
           <tbody class="divide-y divide-slate-100 text-slate-700">
             <tr>
               <td class="py-3 pr-4 font-semibold">Buscador web</td>
               <td class="py-3 pr-4">Encuentra páginas, documentos, noticias o fuentes existentes.</td>
               <td class="py-3 pr-4">Puede mostrar resultados poco confiables o desactualizados.</td>
             </tr>
+
             <tr>
               <td class="py-3 pr-4 font-semibold">IA generativa</td>
               <td class="py-3 pr-4">Produce explicaciones, borradores, ideas, síntesis y estructuras nuevas.</td>
               <td class="py-3 pr-4">Puede inventar datos, simplificar de más o responder con seguridad aunque esté equivocada.</td>
             </tr>
+
             <tr>
               <td class="py-3 pr-4 font-semibold">Editor de texto</td>
               <td class="py-3 pr-4">Permite escribir, dar formato, corregir y organizar documentos.</td>
@@ -186,7 +494,7 @@ import { BASE_PATH } from '../../../consts';
     </VisualActionCard>
   </section>
 
-  <section class="mt-12">
+  <section class="mt-14">
     <SectionTitle
       title="5. Ejemplos de uso docente"
       description="La IA puede ser útil, pero el tipo de tarea determina cuánto cuidado se necesita."
@@ -210,35 +518,19 @@ import { BASE_PATH } from '../../../consts';
     </div>
   </section>
 
-  <section class="mt-12">
+  <section class="mt-14">
     <SectionTitle
       title="Errores frecuentes al empezar con IA"
       description="Estos errores no impiden usar IA, pero sí reducen la calidad y la confiabilidad del trabajo."
     />
 
     <HighlightMistakes
-      mistakes={[
-        {
-          title: 'Creer que una respuesta bien redactada es automáticamente correcta',
-          description: 'La IA puede escribir con seguridad incluso cuando la información es incompleta, imprecisa o falsa.',
-        },
-        {
-          title: 'Usarla como reemplazo del criterio docente',
-          description: 'La IA puede apoyar la planeación o producción de materiales, pero no conoce por sí sola las necesidades reales del grupo.',
-        },
-        {
-          title: 'Pedir respuestas demasiado generales',
-          description: 'Instrucciones vagas producen respuestas genéricas. La calidad mejora cuando se indica nivel, contexto, propósito y formato.',
-        },
-        {
-          title: 'No revisar el resultado antes de usarlo',
-          description: 'Todo contenido generado para estudiantes debe revisarse, ajustarse y contextualizarse antes de aplicarse.',
-        },
-      ]}
+      title="Errores que conviene evitar"
+      mistakes={aiStartingMistakes}
     />
   </section>
 
-  <section class="mt-12">
+  <section class="mt-14">
     <SectionTitle
       title="Actividad breve"
       description="Antes de avanzar, identifica una tarea docente donde la IA podría ayudarte y analiza el nivel de cuidado que requiere."
@@ -266,7 +558,7 @@ import { BASE_PATH } from '../../../consts';
     </div>
   </section>
 
-  <section class="mt-12">
+  <section class="mt-14">
     <InfoBox title="Cierre del tema" tone="success">
       <p>
         La IA generativa es útil cuando se entiende como una herramienta de apoyo, no como una autoridad.

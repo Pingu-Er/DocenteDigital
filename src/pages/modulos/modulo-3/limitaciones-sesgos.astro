@@ -1,0 +1,824 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SectionTitle from '../../../components/module/SectionTitle.astro';
+import InfoBox from '../../../components/module/InfoBox.astro';
+import ExampleCard from '../../../components/module/ExampleCard.astro';
+import VisualActionCard from '../../../components/module/VisualActionCard.astro';
+import HighlightMistakes from '../../../components/module/HighlightMistakes.astro';
+import CommonMistakes from '../../../components/module/CommonMistakes.astro';
+import { BASE_PATH } from '../../../consts';
+
+const mainLimitations = [
+  {
+    title: 'No verifica la verdad por sí sola',
+    text: 'Una IA generativa puede construir una respuesta coherente sin comprobar automáticamente si cada dato es verdadero. Su prioridad técnica suele ser producir una continuación probable y útil, no demostrar cada afirmación como lo haría una fuente académica.',
+  },
+  {
+    title: 'Puede tener información incompleta o desactualizada',
+    text: 'Algunos modelos tienen un límite de conocimiento o dependen de la información disponible en la conversación. Si no tienen acceso a datos actuales, documentos confiables o búsqueda activa, pueden responder con información incompleta.',
+  },
+  {
+    title: 'Depende mucho del contexto recibido',
+    text: 'Si la instrucción es vaga, ambigua o contiene una suposición incorrecta, la IA puede continuar desde esa base y generar una respuesta aparentemente lógica, pero mal orientada.',
+  },
+  {
+    title: 'Puede fallar en razonamiento largo',
+    text: 'En problemas con muchos pasos, condiciones o cálculos, puede cometer errores intermedios. El texto puede sonar correcto aunque el procedimiento tenga una falla escondida.',
+  },
+];
+
+const errorTypes = [
+  {
+    type: 'Alucinación',
+    cause: 'La IA genera información plausible, pero no necesariamente real.',
+    example: 'Inventar un autor, una fecha, una teoría o un dato histórico que suena convincente.',
+    strategy: 'Pedir fuentes verificables y comprobarlas fuera de la IA antes de usar la información.',
+  },
+  {
+    type: 'Cita falsa o mal atribuida',
+    cause: 'El modelo imita formatos académicos, pero puede combinar autores, títulos o revistas de forma incorrecta.',
+    example: 'Crear una referencia APA que parece válida, pero cuyo artículo no existe.',
+    strategy: 'Buscar la fuente en Google Scholar, bibliotecas, repositorios institucionales o páginas oficiales.',
+  },
+  {
+    type: 'Error de lógica o cálculo',
+    cause: 'El modelo puede seguir patrones de lenguaje sin ejecutar realmente una operación matemática o lógica con precisión.',
+    example: 'Resolver un problema de matemáticas con pasos bien redactados, pero con un resultado incorrecto.',
+    strategy: 'Revisar operaciones, pedir desglose paso a paso y contrastar con una calculadora o método propio.',
+  },
+  {
+    type: 'Respuesta genérica',
+    cause: 'Cuando no recibe suficiente contexto, tiende a producir respuestas amplias que podrían aplicar a casi cualquier situación.',
+    example: 'Una planeación que no considera edad, grupo, tiempo, recursos, nivel o contexto escolar.',
+    strategy: 'Indicar nivel educativo, duración, propósito, materiales, características del grupo y formato esperado.',
+  },
+  {
+    type: 'Suposición incorrecta',
+    cause: 'La IA puede aceptar como válida una idea mal planteada por el usuario y continuar desde ahí.',
+    example: 'Responder una pregunta que parte de un dato falso sin advertir que la base está equivocada.',
+    strategy: 'Pedirle que identifique supuestos, riesgos o posibles errores antes de responder.',
+  },
+];
+
+const biasTypes = [
+  {
+    title: 'Sesgo de representación',
+    text: 'Aparece cuando ciertos grupos, culturas, lenguas o realidades están más presentes que otras en los datos con los que se entrenó el modelo.',
+  },
+  {
+    title: 'Sesgo cultural',
+    text: 'La IA puede responder desde una visión dominante, muchas veces anglófona, occidental o urbana, y dejar fuera matices locales importantes.',
+  },
+  {
+    title: 'Sesgo de género o estereotipo',
+    text: 'Puede asociar profesiones, roles, habilidades o comportamientos con ciertos grupos si esos patrones aparecen repetidamente en los datos.',
+  },
+  {
+    title: 'Sesgo por retroalimentación',
+    text: 'Si muchas personas usan, valoran o corrigen la herramienta de cierta manera, esos patrones pueden influir en futuras mejoras del sistema.',
+  },
+];
+
+const verificationStrategies = [
+  {
+    title: 'Separar idea, dato y decisión',
+    text: 'Una IA puede servir para generar ideas, pero los datos y decisiones importantes deben revisarse con fuentes confiables o criterio profesional.',
+  },
+  {
+    title: 'Pedir incertidumbre',
+    text: 'Puede pedirse que indique qué partes son seguras, cuáles son inferencias y cuáles deberían verificarse.',
+  },
+  {
+    title: 'Solicitar pasos de revisión',
+    text: 'En lugar de pedir solo la respuesta final, conviene pedir que explique el procedimiento, las condiciones usadas y posibles puntos débiles.',
+  },
+  {
+    title: 'Contrastar con fuentes externas',
+    text: 'Cuando se trate de leyes, datos actuales, salud, historia, estadísticas o citas académicas, la información debe compararse con fuentes oficiales o especializadas.',
+  },
+  {
+    title: 'Usar contexto propio',
+    text: 'Mientras más contexto educativo se proporcione, menos genérica será la respuesta: grado, materia, tiempo, recursos, grupo y objetivo.',
+  },
+  {
+    title: 'No delegar el juicio pedagógico',
+    text: 'La IA puede ayudar a redactar, organizar o proponer, pero el docente decide si algo es pertinente para su grupo.',
+  },
+];
+
+const classroomRisks = [
+  {
+    title: 'Confundir producto con aprendizaje',
+    text: 'Un trabajo bien redactado con IA no demuestra automáticamente que el estudiante comprendió el tema.',
+  },
+  {
+    title: 'Reducir el esfuerzo cognitivo',
+    text: 'Si la IA resuelve todo, el estudiante puede saltarse el proceso de ensayo, error, reflexión y corrección.',
+  },
+  {
+    title: 'Evaluar solo el resultado final',
+    text: 'Cuando solo se califica el producto terminado, es más difícil distinguir entre apoyo legítimo y sustitución del aprendizaje.',
+  },
+];
+
+const practicalChecks = [
+  '¿La respuesta incluye datos que deberían comprobarse?',
+  '¿La IA cita fuentes reales o solo menciona nombres y fechas?',
+  '¿La explicación considera el nivel y contexto del grupo?',
+  '¿Hay afirmaciones demasiado generales o absolutas?',
+  '¿El resultado ayuda al aprendizaje o solo entrega una respuesta rápida?',
+  '¿El docente puede justificar por qué usaría ese contenido en clase?',
+];
+
+const frequentMistakes = [
+  'Copiar una respuesta generada sin revisarla.',
+  'Aceptar referencias bibliográficas sin comprobar que existen.',
+  'Usar la IA para temas actuales sin verificar la fecha o fuente.',
+  'Pedir una actividad sin indicar grado, tiempo, materia o propósito.',
+  'Confiar en una explicación matemática solo porque está bien redactada.',
+  'Pensar que la IA es neutral porque “es una máquina”.',
+];
+
+const humanAnalogy = [
+  {
+    title: 'Como una persona que ha leído muchísimo',
+    text: 'La IA puede reconocer patrones, estilos y relaciones porque fue entrenada con grandes cantidades de información. Eso le permite responder con fluidez.',
+  },
+  {
+    title: 'Como alguien que puede completar huecos',
+    text: 'Si falta información, puede inferir lo que parece más probable. El problema es que esa inferencia puede sonar convincente aunque sea incorrecta.',
+  },
+  {
+    title: 'Como alguien demasiado complaciente',
+    text: 'A veces puede validar lo que el usuario plantea en lugar de cuestionarlo. Por eso es importante pedirle que revise supuestos y posibles errores.',
+  },
+  {
+    title: 'Pero sin experiencia humana real',
+    text: 'A diferencia de una persona, no vive el aula, no conoce al grupo y no asume responsabilidad pedagógica. Esa responsabilidad sigue siendo del docente.',
+  },
+];
+
+const aiDetectionTools = [
+  {
+    name: 'Turnitin AI Writing',
+    href: 'https://www.turnitin.com/solutions/topics/ai-writing/',
+    use: 'Se usa sobre todo en instituciones que ya trabajan con Turnitin. Puede señalar partes probablemente generadas o parafraseadas con IA dentro de trabajos escritos.',
+    goodFor: 'Revisión institucional, integración con flujos de entrega y análisis junto con similitud/plagio.',
+    caution: 'No debe usarse como prueba única. Un indicador alto debe iniciar una revisión, no cerrar automáticamente un caso.',
+  },
+  {
+    name: 'GPTZero',
+    href: 'https://gptzero.me/',
+    use: 'Permite analizar texto y, en algunas funciones, revisar escritura en Google Docs, retroalimentación y reportes del proceso de escritura.',
+    goodFor: 'Revisión rápida, retroalimentación de escritura y análisis del proceso cuando se trabaja con documentos digitales.',
+    caution: 'Un resultado de “probable IA” debe contrastarse con borradores, historial, explicación oral y criterios de la tarea.',
+  },
+  {
+    name: 'Copyleaks',
+    href: 'https://copyleaks.com/ai-content-detector',
+    use: 'Combina detección de IA, plagio y revisión de contenido. También ofrece integraciones con plataformas educativas como Moodle, Canvas, Google Classroom o Blackboard.',
+    goodFor: 'Escuelas que necesitan revisión de trabajos dentro de un sistema de gestión de aprendizaje.',
+    caution: 'Su utilidad depende de la política institucional y de cómo se interpreten los reportes.',
+  },
+  {
+    name: 'Originality.ai',
+    href: 'https://originality.ai/',
+    use: 'Ofrece detección de IA, plagio, legibilidad, fact-checking y herramientas para revisar el proceso de escritura en documentos.',
+    goodFor: 'Revisar textos largos, contenido editorial, reportes y trabajos donde también importe verificar originalidad y calidad del texto.',
+    caution: 'Está más orientada a revisión de contenido y publicación; conviene valorar si encaja con el contexto escolar antes de adoptarla.',
+  },
+  {
+    name: 'Winston AI',
+    href: 'https://gowinston.ai/ai-content-detector/',
+    use: 'Analiza texto, archivos, contenido importado desde URL y ofrece funciones complementarias como detección de plagio, revisión de escritura y detección de imágenes generadas por IA.',
+    goodFor: 'Revisión de documentos variados, especialmente cuando se reciben archivos o textos en distintos formatos.',
+    caution: 'Como cualquier detector, entrega una estimación probabilística; no reemplaza una conversación pedagógica ni la revisión del proceso.',
+  },
+  {
+    name: 'QuillBot AI Detector',
+    href: 'https://quillbot.com/ai-content-detector',
+    use: 'Herramienta accesible para una revisión rápida de texto posiblemente generado por IA.',
+    goodFor: 'Primer acercamiento o revisión exploratoria cuando no se cuenta con una herramienta institucional.',
+    caution: 'Debe verse como semáforo inicial, no como dictamen formal.',
+  },
+];
+
+const aiWritingSignals = [
+  {
+    title: 'Cambio brusco de voz o nivel',
+    text: 'El texto aparece con un vocabulario, una estructura o una madurez argumentativa muy distinta a entregas anteriores del mismo estudiante.',
+    action: 'Comparar con trabajos previos y pedir una explicación breve del proceso de escritura.',
+  },
+  {
+    title: 'Texto muy pulido, pero poco situado',
+    text: 'La redacción es correcta, pero evita ejemplos locales, experiencias de clase, datos del grupo o detalles vistos en el curso.',
+    action: 'Solicitar que conecte el texto con una actividad realizada, una lectura específica o una discusión de clase.',
+  },
+  {
+    title: 'Estructura demasiado genérica',
+    text: 'El trabajo sigue una organización impecable pero predecible: introducción amplia, lista de ventajas, lista de retos y cierre general sin postura propia.',
+    action: 'Pedir decisiones justificadas, contraste de fuentes y una conclusión vinculada al contexto del estudiante.',
+  },
+  {
+    title: 'Citas que parecen correctas, pero no se pueden rastrear',
+    text: 'Aparecen autores, años, DOI, libros o artículos con formato académico, pero la fuente no existe o no dice lo que el texto afirma.',
+    action: 'Pedir enlaces, capturas de la fuente consultada o una bibliografía anotada con explicación de uso.',
+  },
+  {
+    title: 'Ausencia de errores normales del proceso',
+    text: 'El trabajo final aparece perfecto, pero no hay borradores, tachaduras, cambios, dudas, esquema previo ni evidencia de revisión.',
+    action: 'Evaluar también el proceso: esquema, primer borrador, correcciones y reflexión final.',
+  },
+  {
+    title: 'Respuestas correctas, pero incapacidad de explicarlas',
+    text: 'El estudiante entrega un resultado adecuado, pero no puede explicar cómo llegó a él, qué descartó o por qué tomó ciertas decisiones.',
+    action: 'Usar defensas breves, preguntas orales o ejercicios complementarios en clase.',
+  },
+];
+
+const aiDetectionEvidence = [
+  {
+    title: 'Historial de versiones',
+    text: 'Google Docs, Word en línea u otras plataformas permiten observar si el texto fue construido poco a poco o pegado casi completo en un solo momento.',
+  },
+  {
+    title: 'Borradores intermedios',
+    text: 'Solicitar esquema, avance parcial y versión corregida ayuda a ver el desarrollo real del pensamiento.',
+  },
+  {
+    title: 'Bitácora de uso de IA',
+    text: 'El estudiante puede declarar qué herramienta usó, para qué la usó, qué prompt escribió, qué aceptó, qué rechazó y qué modificó.',
+  },
+  {
+    title: 'Fuentes verificadas',
+    text: 'Una bibliografía anotada obliga a explicar de dónde salió la información y por qué esa fuente es confiable.',
+  },
+  {
+    title: 'Explicación oral breve',
+    text: 'Una conversación de tres minutos puede revelar si el estudiante comprende su propio trabajo.',
+  },
+  {
+    title: 'Actividad presencial relacionada',
+    text: 'Un ejercicio corto en clase permite contrastar el dominio real con el producto entregado.',
+  },
+];
+
+const aiAssignmentRedesign = [
+  {
+    title: 'Diseñar tareas con proceso visible',
+    text: 'En lugar de pedir solo el producto final, divide la actividad en etapas: pregunta inicial, búsqueda, esquema, borrador, revisión y entrega final.',
+  },
+  {
+    title: 'Pedir decisiones justificadas',
+    text: 'Solicita que el estudiante explique por qué eligió cierta fuente, ejemplo, estructura, procedimiento o solución.',
+  },
+  {
+    title: 'Usar contexto local',
+    text: 'Pide conectar la tarea con una experiencia de clase, un caso de la comunidad, datos del grupo o materiales revisados en el curso.',
+  },
+  {
+    title: 'Convertir la IA en objeto de análisis',
+    text: 'Una buena actividad puede pedir que el estudiante compare una respuesta generada por IA con fuentes reales y detecte errores, omisiones o sesgos.',
+  },
+  {
+    title: 'Evaluar la revisión, no solo la entrega',
+    text: 'La calificación puede incluir qué cambió el estudiante después de recibir una respuesta de IA y cómo justificó esas modificaciones.',
+  },
+  {
+    title: 'Declarar usos permitidos',
+    text: 'Es mejor decir claramente cuándo se permite IA, cuándo debe declararse y cuándo no puede usarse, en lugar de dejar reglas ambiguas.',
+  },
+];
+
+const aiUseLevels = [
+  {
+    level: 'Sin IA',
+    meaning: 'La tarea debe realizarse sin apoyo de herramientas generativas.',
+    example: 'Examen presencial, cálculo básico individual, lectura comentada en clase.',
+  },
+  {
+    level: 'IA como apoyo limitado',
+    meaning: 'Se permite para lluvia de ideas, corrección de estilo o mejora de claridad, pero no para construir todo el contenido.',
+    example: 'Revisar redacción de una reflexión personal ya escrita por el estudiante.',
+  },
+  {
+    level: 'IA declarada',
+    meaning: 'Se permite usar IA, pero el estudiante debe explicar cómo la usó y qué modificó.',
+    example: 'Crear una propuesta inicial de proyecto y después justificar ajustes propios.',
+  },
+  {
+    level: 'IA como objeto de crítica',
+    meaning: 'La actividad consiste en analizar, corregir o contrastar una respuesta generada por IA.',
+    example: 'Pedir a la IA una explicación histórica y luego detectar errores con fuentes confiables.',
+  },
+];
+
+const aiDetectionWarnings = [
+  'No acuses a un estudiante solo por el resultado de un detector.',
+  'No confundas escritura formal con escritura generada por IA.',
+  'No ignores que estudiantes con menor dominio de escritura pueden ser señalados injustamente.',
+  'No uses la detección como sustituto de una política clara de uso de IA.',
+  'No evalúes únicamente el producto final si la tarea podía resolverse completa con IA.',
+];
+---
+
+<BaseLayout
+  title="Módulo 3 | Limitaciones, errores y sesgos de la IA"
+  description="Reconoce errores, sesgos y limitaciones de la inteligencia artificial generativa para usarla con mayor criterio en contextos educativos."
+>
+  <div class="mb-8">
+    <a
+      href={`${BASE_PATH}/modulos/modulo-3/`}
+      class="text-sm font-semibold text-sky-700 hover:text-sky-800"
+    >
+      ← Volver al módulo
+    </a>
+  </div>
+
+  <SectionTitle
+    eyebrow="Tema 2"
+    title="Limitaciones, errores y sesgos de la IA"
+    description="La IA puede ser una herramienta poderosa, pero no es infalible. Comprender por qué se equivoca ayuda a usarla con más cuidado y mejores resultados."
+  />
+
+  <section class="grid gap-8 lg:grid-cols-[1.25fr_0.95fr]">
+    <div class="content-card p-8">
+      <h3 class="text-xl font-bold text-slate-900">¿Qué aprenderás en este tema?</h3>
+
+      <div class="mt-4 prose-soft text-slate-700">
+        <p>
+          En este tema revisarás por qué una IA puede equivocarse aunque escriba con seguridad,
+          por qué puede reproducir sesgos y qué estrategias permiten reducir riesgos al usarla
+          en actividades docentes.
+        </p>
+
+        <p>
+          La intención no es rechazar la IA, sino aprender a tratarla como una herramienta de apoyo
+          que requiere verificación, contexto y criterio pedagógico.
+        </p>
+      </div>
+    </div>
+
+    <InfoBox title="Idea central" tone="warning">
+      <p>
+        Una respuesta clara no siempre es una respuesta correcta. En IA, la fluidez del texto puede
+        ocultar errores de datos, lógica, contexto o enfoque.
+      </p>
+    </InfoBox>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="1. ¿Por qué una IA puede equivocarse?"
+      description="Muchos errores ocurren porque la IA genera respuestas probables, no porque verifique la realidad como una fuente académica."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {mainLimitations.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+
+    <div class="mt-8">
+      <VisualActionCard
+        title="Del texto probable a la verificación"
+        image={`${BASE_PATH}/images/modulo-3/limitaciones-sesgos/error-verificacion.png`}
+        imageAlt="Esquema que muestra cómo una respuesta generada por IA debe pasar por revisión humana."
+      >
+        <p>
+          Una IA puede construir una respuesta que parece ordenada, formal y segura. El problema es
+          que esa forma no garantiza que el contenido sea verdadero, suficiente o adecuado para el aula.
+        </p>
+
+        <p>
+          Por eso, el proceso correcto no termina cuando la IA responde. Termina cuando el docente
+          revisa, contrasta, ajusta y decide si el resultado puede utilizarse.
+        </p>
+      </VisualActionCard>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="2. Errores frecuentes en respuestas generadas por IA"
+      description="Los errores no siempre son evidentes. Algunos se esconden detrás de una redacción muy convincente."
+    />
+
+    <div class="content-card overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+          <thead class="bg-slate-50">
+            <tr>
+              <th class="px-4 py-4 font-semibold text-slate-900">Tipo de error</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">Por qué ocurre</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">Ejemplo en educación</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">Cómo reducir el riesgo</th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-slate-200 bg-white">
+            {errorTypes.map((item) => (
+              <tr>
+                <td class="px-4 py-4 align-top font-semibold text-slate-900">{item.type}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.cause}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.example}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.strategy}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mt-6">
+      <InfoBox title="Especial cuidado con citas y datos actuales" tone="warning">
+        <p>
+          Las referencias académicas, leyes, estadísticas, fechas recientes y datos institucionales
+          deben verificarse fuera de la IA. Una cita en formato correcto puede ser falsa o estar mal
+          atribuida.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="3. Sesgos: la IA no es neutral por ser una máquina"
+      description="Los sesgos aparecen cuando los datos, las decisiones de diseño o el uso social de la herramienta reflejan desigualdades o perspectivas incompletas."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {biasTypes.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+
+    <div class="mt-8">
+      <VisualActionCard
+        title="De los datos a la respuesta"
+        image={`${BASE_PATH}/images/modulo-3/limitaciones-sesgos/sesgo-datos.png`}
+        imageAlt="Esquema que muestra cómo los datos de entrenamiento pueden influir en las respuestas de una IA."
+      >
+        <p>
+          Una IA aprende patrones a partir de datos. Si esos datos representan más algunas voces,
+          culturas, idiomas o experiencias que otras, la respuesta puede inclinarse hacia esas
+          perspectivas dominantes.
+        </p>
+
+        <p>
+          En educación, esto importa porque una explicación aparentemente neutral puede dejar fuera
+          realidades locales, contextos culturales, diversidad lingüística o necesidades específicas
+          del grupo.
+        </p>
+      </VisualActionCard>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="4. Estrategias para usar IA con mayor seguridad"
+      description="No se trata de desconfiar de todo, sino de establecer un método de revisión antes de usar los resultados."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {verificationStrategies.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+
+    <div class="mt-8 grid gap-6 lg:grid-cols-2">
+      <InfoBox title="Una regla práctica" tone="success">
+        <p>
+          Usa la IA para acelerar el borrador, ordenar ideas o proponer alternativas; pero usa tu
+          criterio docente para decidir, adaptar y validar.
+        </p>
+      </InfoBox>
+
+      <InfoBox title="Cuando el riesgo es alto" tone="warning">
+        <p>
+          Si la respuesta afecta evaluación, datos personales, salud, temas legales, inclusión,
+          seguridad o decisiones institucionales, no debe aceptarse sin revisión rigurosa.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="5. Riesgos específicos en el aula"
+      description="El problema no es solo que la IA se equivoque; también puede cambiar la forma en que estudiantes y docentes se relacionan con el aprendizaje."
+    />
+
+    <div class="grid gap-6 md:grid-cols-3">
+      {classroomRisks.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+
+    <div class="mt-6">
+      <InfoBox title="Enfoque docente" tone="info">
+        <p>
+          La evaluación debería valorar también el proceso: cómo se pensó, qué se revisó, qué se corrigió,
+          qué decisiones tomó el estudiante y cómo justificó el uso de IA.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+<section class="mt-14">
+    <SectionTitle
+        title="6. Identificar posible uso de IA sin caer en acusaciones automáticas"
+        description="Detectar IA no significa perseguir estudiantes. Significa reunir indicios, revisar el proceso y rediseñar actividades para que el aprendizaje siga siendo visible."
+    />
+
+    <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+        <div class="content-card p-8">
+        <h3 class="text-xl font-bold text-slate-900">Una idea necesaria: los detectores no son jueces</h3>
+
+        <div class="mt-4 prose-soft text-slate-700">
+            <p>
+            Hoy existen herramientas que estiman la probabilidad de que un texto haya sido generado
+            o modificado con IA. Pueden ser útiles como apoyo, pero no deben convertirse en una prueba
+            única para sancionar.
+            </p>
+
+            <p>
+            La razón es técnica y pedagógica: estos sistemas trabajan con patrones estadísticos.
+            Pueden detectar señales reales, pero también pueden equivocarse, especialmente cuando
+            el texto es corto, muy formal, muy corregido, traducido o escrito por estudiantes con estilos
+            lingüísticos distintos.
+            </p>
+        </div>
+        </div>
+
+        <InfoBox title="Criterio docente" tone="warning">
+        <p>
+            Un detector puede iniciar una revisión; no debe cerrarla. La evidencia más fuerte suele estar
+            en el proceso: borradores, historial de versiones, fuentes consultadas, explicación del estudiante
+            y coherencia con el trabajo realizado durante el curso.
+        </p>
+        </InfoBox>
+    </div>
+
+    <div class="mt-10">
+        <SectionTitle
+        title="Herramientas actuales para revisar probabilidad de uso de IA"
+        description="Estas herramientas existen hoy, pero deben usarse como apoyo diagnóstico, no como sentencia automática."
+        />
+
+        <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {aiDetectionTools.map((tool) => (
+            <ExampleCard title={tool.name}>
+            <p>{tool.use}</p>
+
+            <p class="mt-3">
+                <strong>Puede servir para:</strong> {tool.goodFor}
+            </p>
+
+            <p class="mt-3">
+                <strong>Cuidado:</strong> {tool.caution}
+            </p>
+
+            <a
+                href={tool.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="mt-4 inline-flex text-sm font-semibold text-sky-700 hover:text-sky-800"
+            >
+                Revisar herramienta →
+            </a>
+            </ExampleCard>
+        ))}
+        </div>
+    </div>
+
+    <div class="mt-10">
+        <SectionTitle
+        title="Señales que pueden justificar una revisión"
+        description="Ninguna señal aislada demuestra uso de IA. Lo importante es observar patrones y contrastarlos con el proceso del estudiante."
+        />
+
+        <div class="content-card overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+            <thead class="bg-slate-50">
+                <tr>
+                <th class="px-4 py-4 font-semibold text-slate-900">Señal observable</th>
+                <th class="px-4 py-4 font-semibold text-slate-900">Por qué puede importar</th>
+                <th class="px-4 py-4 font-semibold text-slate-900">Qué hacer antes de concluir</th>
+                </tr>
+            </thead>
+
+            <tbody class="divide-y divide-slate-200 bg-white">
+                {aiWritingSignals.map((signal) => (
+                <tr>
+                    <td class="px-4 py-4 align-top font-semibold text-slate-900">{signal.title}</td>
+                    <td class="px-4 py-4 align-top leading-7 text-slate-700">{signal.text}</td>
+                    <td class="px-4 py-4 align-top leading-7 text-slate-700">{signal.action}</td>
+                </tr>
+                ))}
+            </tbody>
+            </table>
+        </div>
+        </div>
+
+        <div class="mt-6">
+        <InfoBox title="Importante" tone="info">
+            <p>
+            La mejor pregunta no es solamente “¿esto lo hizo la IA?”, sino “¿el estudiante puede explicar,
+            defender, corregir y contextualizar lo que entregó?”.
+            </p>
+        </InfoBox>
+        </div>
+    </div>
+
+    <div class="mt-10">
+        <VisualActionCard
+        title="De la vigilancia al proceso"
+        image={`${BASE_PATH}/images/modulo-3/limitaciones-sesgos/deteccion-proceso-ia.png`}
+        imageAlt="Esquema sobre cómo pasar de detectar IA a revisar el proceso de aprendizaje."
+        >
+        <p>
+            Una estrategia más sólida es documentar cómo se construyó el trabajo. Si solo se revisa
+            el producto final, la IA se vuelve difícil de distinguir. Si se revisa el proceso, el aprendizaje
+            vuelve a ser visible.
+        </p>
+
+        <div class="mt-5 grid gap-4 md:grid-cols-2">
+            {aiDetectionEvidence.map((item) => (
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <h4 class="font-bold text-slate-900">{item.title}</h4>
+                <p class="mt-2 leading-7 text-slate-700">{item.text}</p>
+            </div>
+            ))}
+        </div>
+        </VisualActionCard>
+    </div>
+
+    <div class="mt-10">
+        <SectionTitle
+        title="Replantear tareas en lugar de luchar contra la IA"
+        description="Como la IA seguirá creciendo, la respuesta más fuerte no es prohibir todo, sino diseñar actividades donde pensar, revisar y justificar sigan siendo necesarios."
+        />
+
+        <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {aiAssignmentRedesign.map((item) => (
+            <ExampleCard title={item.title}>
+            <p>{item.text}</p>
+            </ExampleCard>
+        ))}
+        </div>
+    </div>
+
+    <div class="mt-10">
+        <SectionTitle
+        title="Cuatro niveles claros de uso de IA en una tarea"
+        description="Una política sencilla reduce confusiones. El estudiante debe saber si la IA está prohibida, permitida, limitada o integrada como parte de la actividad."
+        />
+
+        <div class="content-card overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+            <thead class="bg-slate-50">
+                <tr>
+                <th class="px-4 py-4 font-semibold text-slate-900">Nivel</th>
+                <th class="px-4 py-4 font-semibold text-slate-900">Qué significa</th>
+                <th class="px-4 py-4 font-semibold text-slate-900">Ejemplo de aplicación</th>
+                </tr>
+            </thead>
+
+            <tbody class="divide-y divide-slate-200 bg-white">
+                {aiUseLevels.map((item) => (
+                <tr>
+                    <td class="px-4 py-4 align-top font-semibold text-slate-900">{item.level}</td>
+                    <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.meaning}</td>
+                    <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.example}</td>
+                </tr>
+                ))}
+            </tbody>
+            </table>
+        </div>
+        </div>
+    </div>
+
+    <div class="mt-8 grid gap-6 lg:grid-cols-2">
+        <CommonMistakes
+        title="Evidencias más útiles que un detector aislado"
+        mistakes={[
+            'Borradores progresivos.',
+            'Historial de edición.',
+            'Bibliografía anotada.',
+            'Bitácora de uso de IA.',
+            'Explicación oral breve.',
+            'Actividad relacionada hecha en clase.',
+        ]}
+        />
+
+        <HighlightMistakes
+        title="Errores que el docente debe evitar"
+        mistakes={aiDetectionWarnings}
+        />
+    </div>
+
+    <div class="mt-8">
+        <InfoBox title="Cierre práctico" tone="success">
+        <p>
+            La IA obliga a mover la evaluación del producto terminado hacia el proceso, la argumentación
+            y la toma de decisiones. El objetivo no es que el estudiante aprenda a esconder el uso de IA,
+            sino que aprenda a usarla con responsabilidad, declararla cuando corresponda y demostrar
+            comprensión real.
+        </p>
+        </InfoBox>
+    </div>
+    </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Lista rápida de revisión"
+      description="Antes de utilizar una respuesta generada por IA, conviene hacer una revisión mínima."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <CommonMistakes
+        title="Preguntas de verificación"
+        mistakes={practicalChecks}
+      />
+
+      <HighlightMistakes
+        title="Errores que conviene evitar"
+        mistakes={frequentMistakes}
+      />
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Un símil útil: la IA como un lector rápido, no como un experto responsable"
+      description="Compararla con una persona puede ayudar a entender sus fortalezas y límites, siempre que no olvidemos que no tiene experiencia humana real."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {humanAnalogy.map((item) => (
+        <ExampleCard title={item.title}>
+          <p>{item.text}</p>
+        </ExampleCard>
+      ))}
+    </div>
+
+    <div class="mt-6">
+      <InfoBox title="Cierre conceptual" tone="warning">
+        <p>
+          La IA puede parecer experta porque responde rápido, con orden y con seguridad. Pero en educación
+          no basta con que algo suene bien: debe ser pertinente, verificable, justo y útil para el aprendizaje.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Actividad breve"
+      description="Practica la revisión crítica de una respuesta generada por IA antes de usarla en clase."
+    />
+
+    <div class="content-card p-8">
+      <h3 class="text-xl font-bold text-slate-900">Ejercicio de análisis</h3>
+
+      <div class="mt-4 prose-soft text-slate-700">
+        <p>
+          Elige una respuesta generada por IA relacionada con tu materia o con una actividad docente.
+          Puede ser una explicación, una lista de actividades, una rúbrica o una planeación breve.
+        </p>
+
+        <p>
+          Después revisa:
+        </p>
+
+        <ol>
+          <li>¿Qué afirmaciones deberían verificarse?</li>
+          <li>¿La respuesta considera el nivel y contexto de tus estudiantes?</li>
+          <li>¿Hay datos, citas o ejemplos que podrían ser falsos o incompletos?</li>
+          <li>¿Qué cambiarías antes de usarla en clase?</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <InfoBox title="Cierre del tema" tone="success">
+      <p>
+        Usar IA con criterio no significa desconfiar de todo, sino reconocer sus límites. La IA puede
+        apoyar el trabajo docente, pero sus respuestas deben revisarse, contextualizarse y ajustarse
+        antes de convertirse en material educativo o en una decisión pedagógica.
+      </p>
+    </InfoBox>
+  </section>
+</BaseLayout>

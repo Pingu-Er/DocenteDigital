@@ -1,0 +1,636 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SectionTitle from '../../../components/module/SectionTitle.astro';
+import InfoBox from '../../../components/module/InfoBox.astro';
+import ExampleCard from '../../../components/module/ExampleCard.astro';
+import HighlightMistakes from '../../../components/module/HighlightMistakes.astro';
+import CommonMistakes from '../../../components/module/CommonMistakes.astro';
+import { BASE_PATH } from '../../../consts';
+
+const comparisonPdf = `${BASE_PATH}/docs/comparativa-chatgpt-gemini-claude-docente.pdf`;
+
+const toolOverview = [
+  {
+    tool: 'ChatGPT',
+    bestFor: 'Trabajo versátil: redactar, idear, analizar archivos, crear materiales, trabajar con imágenes, revisar textos y desarrollar instrucciones por iteración.',
+    expectedResponse: 'Suele responder de forma directa, conversacional y accionable. Tiende a ser útil cuando se necesita avanzar rápido de una idea inicial a un borrador funcional.',
+    notIdeal: 'No conviene aceptar sin revisión datos, fuentes, citas o decisiones delicadas. Puede sonar muy seguro incluso cuando algo requiere verificación.',
+    teacherNote: 'Buena opción para docentes que necesitan una herramienta general para planear, redactar, adaptar y mejorar materiales de forma progresiva.',
+  },
+  {
+    tool: 'Gemini',
+    bestFor: 'Trabajo conectado con Google: Gmail, Drive, Docs, Calendar, YouTube, archivos, búsqueda, documentos extensos y tareas dentro del ecosistema de Google.',
+    expectedResponse: 'Suele ser útil cuando la tarea depende de documentos, archivos, información organizada en Google Workspace o síntesis de materiales diversos.',
+    notIdeal: 'Puede depender mucho de permisos, configuración, cuenta, plan y disponibilidad de funciones. También requiere verificar fuentes y datos actuales.',
+    teacherNote: 'Buena opción para docentes que ya trabajan con Drive, Docs, Presentaciones, Classroom, Gmail o recursos de Google.',
+  },
+  {
+    tool: 'Claude',
+    bestFor: 'Redacción larga, análisis cuidadoso, revisión de documentos, tono formal, razonamiento escrito, organización de ideas complejas y creación de artefactos o contenidos estructurados.',
+    expectedResponse: 'Suele entregar respuestas más extensas, matizadas y ordenadas. Puede ser especialmente útil cuando se busca calidad de redacción, claridad argumentativa o revisión profunda.',
+    notIdeal: 'Puede ser menos conveniente si la prioridad principal es integración directa con Google, generación visual nativa o tareas rápidas de bajo esfuerzo.',
+    teacherNote: 'Buena opción para docentes que necesitan trabajar documentos largos, rúbricas detalladas, retroalimentación escrita o materiales con tono académico.',
+  },
+];
+
+const practicalCriteria = [
+  {
+    criterion: 'Facilidad para empezar',
+    chatgpt: 'Alta. Sirve bien como primera herramienta general.',
+    gemini: 'Alta si el usuario ya usa Google.',
+    claude: 'Alta, aunque destaca más cuando se trabaja con textos y documentos largos.',
+  },
+  {
+    criterion: 'Planeaciones y actividades',
+    chatgpt: 'Muy útil para generar versiones iniciales y ajustar por iteraciones.',
+    gemini: 'Muy útil si se apoya en archivos de Drive o documentos institucionales.',
+    claude: 'Muy útil para estructurar actividades con mayor detalle y coherencia.',
+  },
+  {
+    criterion: 'Rúbricas',
+    chatgpt: 'Bueno para crear borradores y niveles de desempeño.',
+    gemini: 'Bueno si parte de documentos existentes o criterios en Drive.',
+    claude: 'Muy fuerte para descriptores claros, tono formal y criterios bien redactados.',
+  },
+  {
+    criterion: 'Retroalimentación a estudiantes',
+    chatgpt: 'Bueno para generar varias versiones de comentario.',
+    gemini: 'Bueno si se trabaja desde documentos o evidencias en Google.',
+    claude: 'Muy fuerte para comentarios cuidadosos, claros y menos mecánicos.',
+  },
+  {
+    criterion: 'Investigación y síntesis',
+    chatgpt: 'Bueno con búsqueda, deep research y análisis de archivos.',
+    gemini: 'Muy fuerte dado que se integra con Google, Drive, documentos y búsqueda. Tiene mejor acceso a diferentes recursos.',
+    claude: 'Muy fuerte para lectura profunda y síntesis escrita de documentos largos.',
+  },
+  {
+    criterion: 'Material visual o multimodal',
+    chatgpt: 'Fuerte si se requiere análisis o generación de imágenes, según el plan disponible.',
+    gemini: 'Fuerte si se trabaja con imágenes, video, archivos o recursos del ecosistema Google.',
+    claude: 'Útil para analizar o estructurar, pero no sería mi primera opción si la prioridad es generar imágenes.',
+  },
+  {
+    criterion: 'Trabajo administrativo',
+    chatgpt: 'Bueno para comunicados, formatos, correos, tablas y documentos.',
+    gemini: 'Muy útil si el trabajo vive en Gmail, Docs, Drive o Calendar.',
+    claude: 'Bueno para documentos formales, políticas, reportes y textos extensos.',
+  },
+];
+
+const experienceLevels = [
+  {
+    level: 'Usuario inicial',
+    recommendation: 'Empezar con ChatGPT o Gemini.',
+    reason: 'ChatGPT funciona bien como herramienta general; Gemini puede sentirse más natural para quien ya usa Google en su trabajo diario.',
+    example: 'Pedir una planeación breve, mejorar instrucciones de una actividad o redactar un comunicado escolar.',
+  },
+  {
+    level: 'Usuario intermedio',
+    recommendation: 'Elegir según el flujo de trabajo.',
+    reason: 'Si la tarea vive en Google, Gemini puede ahorrar pasos. Si la tarea requiere mucha redacción o revisión, Claude puede dar mejores borradores. Si se necesita versatilidad, ChatGPT sigue siendo muy práctico.',
+    example: 'Diseñar una rúbrica, ajustar una actividad para tres niveles o analizar un documento institucional.',
+  },
+  {
+    level: 'Usuario avanzado',
+    recommendation: 'Combinar herramientas con intención.',
+    reason: 'No hace falta usar una sola IA. Una herramienta puede servir para investigar, otra para redactar y otra para revisar coherencia o tono.',
+    example: 'Usar Gemini para reunir información de Drive, Claude para estructurar un documento largo y ChatGPT para convertirlo en material visual o guía breve.',
+  },
+];
+
+const teacherTaskChoices = [
+  {
+    task: 'Elaborar una planeación de clase',
+    firstChoice: 'ChatGPT o Claude',
+    why: 'ChatGPT ayuda a iterar rápido; Claude suele cuidar mejor la estructura escrita y la coherencia entre propósito, actividad y cierre.',
+    howToUse: 'Pedir primero una versión inicial, luego ajustar por grado, duración, recursos, evidencias y forma de evaluación.',
+    caution: 'No aceptar una planeación si no se adapta al grupo real.',
+  },
+  {
+    task: 'Crear una rúbrica',
+    firstChoice: 'Claude o ChatGPT',
+    why: 'Claude suele redactar descriptores más matizados; ChatGPT ayuda a generar versiones rápidas y ajustar criterios por nivel.',
+    howToUse: 'Pedir criterios observables, niveles claros y ejemplos de evidencia por cada nivel.',
+    caution: 'Revisar que la rúbrica evalúe el aprendizaje esperado y no solo la presentación del producto.',
+  },
+  {
+    task: 'Revisar trabajos o generar retroalimentación',
+    firstChoice: 'Claude para tono y profundidad; ChatGPT para variaciones rápidas',
+    why: 'Claude suele producir comentarios más cuidadosos; ChatGPT puede generar varias formas de decir lo mismo con distinto tono.',
+    howToUse: 'Dar criterios claros y pedir retroalimentación accionable, no una calificación automática.',
+    caution: 'No subir información sensible ni delegar la calificación final.',
+  },
+  {
+    task: 'Analizar documentos institucionales',
+    firstChoice: 'Gemini si están en Google Drive; Claude o ChatGPT si se cargan como archivos',
+    why: 'Gemini puede ser práctico dentro de Workspace; Claude y ChatGPT son fuertes para lectura, resumen y reorganización de documentos.',
+    howToUse: 'Pedir resumen ejecutivo, puntos críticos, acuerdos, pendientes y posibles implicaciones para docentes.',
+    caution: 'Verificar que no omita condiciones importantes del documento original.',
+  },
+  {
+    task: 'Diseñar material didáctico',
+    firstChoice: 'ChatGPT o Gemini',
+    why: 'ChatGPT es versátil para texto, imágenes y estructura; Gemini puede ayudar cuando el material se conecta con documentos, presentaciones o recursos de Google.',
+    howToUse: 'Pedir objetivos, explicación breve, ejemplo, actividad y cierre en un mismo formato.',
+    caution: 'Revisar precisión conceptual y adecuación a edad o nivel.',
+  },
+  {
+    task: 'Investigar un tema para clase',
+    firstChoice: 'Gemini o ChatGPT con búsqueda; Claude para síntesis profunda',
+    why: 'Gemini y ChatGPT pueden apoyar con búsqueda y fuentes; Claude puede ayudar a convertir la información en una explicación más clara y coherente.',
+    howToUse: 'Pedir fuentes, comparar perspectivas y después construir una explicación docente propia.',
+    caution: 'Nunca usar citas, autores o datos sin comprobarlos.',
+  },
+  {
+    task: 'Organizar tareas administrativas',
+    firstChoice: 'Gemini si depende de Google; ChatGPT si se necesita construir formatos',
+    why: 'Gemini puede integrarse mejor con herramientas de Google; ChatGPT puede convertir instrucciones sueltas en formatos, tablas o comunicados.',
+    howToUse: 'Pedir listas, formatos, correos, calendarios tentativos o criterios de seguimiento.',
+    caution: 'Evitar datos personales o información sensible de estudiantes.',
+  },
+  {
+    task: 'Crear una actividad interactiva sencilla',
+    firstChoice: 'Claude o ChatGPT',
+    why: 'Claude puede destacar con artefactos y contenido estructurado; ChatGPT puede ayudar a diseñar instrucciones, dinámicas y materiales complementarios.',
+    howToUse: 'Pedir una actividad con reglas, objetivo, instrucciones, evidencia de aprendizaje y variante de dificultad.',
+    caution: 'Probar la actividad antes de llevarla al grupo.',
+  },
+];
+
+const responseProfiles = [
+  {
+    tool: 'ChatGPT',
+    whatToExpect: 'Respuestas ágiles, útiles para dialogar, pedir cambios, hacer versiones y pasar de una idea a un producto funcional.',
+    bestPromptStyle: 'Pedir contexto, formato y restricciones. Funciona muy bien con iteraciones: “ajusta”, “resume”, “hazlo más formal”, “dame otra versión”.',
+    sampleUse: '“Ayúdame a convertir esta idea de clase en una actividad de 40 minutos con inicio, desarrollo, cierre y evidencia de aprendizaje.”',
+  },
+  {
+    tool: 'Gemini',
+    whatToExpect: 'Respuestas útiles cuando la tarea se conecta con archivos, Google Workspace, búsqueda o recursos ya guardados en el ecosistema Google.',
+    bestPromptStyle: 'Indicar de qué documento, archivo, correo o material debe partir. Funciona bien cuando se le pide sintetizar y organizar información existente.',
+    sampleUse: '“A partir de este documento de Drive, identifica acuerdos, pendientes y acciones para la próxima reunión docente.”',
+  },
+  {
+    tool: 'Claude',
+    whatToExpect: 'Respuestas más analíticas, cuidadosas y largas. Tiende a funcionar bien cuando se necesita revisar, mejorar o estructurar contenido complejo.',
+    bestPromptStyle: 'Dar criterios de calidad, tono esperado y propósito. Funciona bien con documentos largos, rúbricas, retroalimentación y análisis detallado.',
+    sampleUse: '“Revisa esta rúbrica y mejora los descriptores para que sean observables, claros y adecuados para secundaria.”',
+  },
+];
+
+const decisionRoutes = [
+  {
+    need: 'Quiero algo rápido para empezar',
+    choose: 'ChatGPT',
+    reason: 'Suele ser práctico para lluvia de ideas, borradores y ajustes sucesivos.',
+  },
+  {
+    need: 'Trabajo casi todo en Google',
+    choose: 'Gemini',
+    reason: 'Puede integrarse mejor con Gmail, Drive, Docs, Calendar y otros servicios de Google, según configuración y cuenta.',
+  },
+  {
+    need: 'Tengo un documento largo o una rúbrica compleja',
+    choose: 'Claude',
+    reason: 'Suele destacar en análisis escrito, coherencia de textos largos y tono formal.',
+  },
+  {
+    need: 'Necesito investigar con fuentes',
+    choose: 'Gemini o ChatGPT',
+    reason: 'Ambas pueden apoyar investigación con búsqueda o herramientas relacionadas; aun así, las fuentes deben verificarse.',
+  },
+  {
+    need: 'Necesito retroalimentación cuidadosa',
+    choose: 'Claude o ChatGPT',
+    reason: 'Claude puede cuidar mejor el matiz; ChatGPT permite generar varias versiones y ajustar el tono con rapidez.',
+  },
+  {
+    need: 'Necesito analizar archivos de clase',
+    choose: 'Depende del origen del archivo',
+    reason: 'Gemini si están en Google; ChatGPT o Claude si se cargarán y analizarán directamente en la conversación.',
+  },
+];
+
+const workflowExamples = [
+  {
+    title: 'Planeación semanal',
+    steps: [
+      'Usar ChatGPT para generar una primera estructura de sesión.',
+      'Usar Claude para revisar coherencia entre objetivos, actividades y evaluación.',
+      'Usar Gemini si la planeación depende de documentos guardados en Drive.',
+    ],
+  },
+  {
+    title: 'Rúbrica de proyecto',
+    steps: [
+      'Usar Claude para redactar criterios y niveles de desempeño.',
+      'Usar ChatGPT para generar una versión más breve o una tabla editable.',
+      'Usar Gemini si la rúbrica debe alinearse con documentos institucionales en Google.',
+    ],
+  },
+  {
+    title: 'Investigación para clase',
+    steps: [
+      'Usar Gemini o ChatGPT para reunir información inicial y fuentes.',
+      'Verificar las fuentes fuera de la IA.',
+      'Usar Claude para convertir la información en una explicación clara y ordenada.',
+    ],
+  },
+  {
+    title: 'Retroalimentación a estudiantes',
+    steps: [
+      'Usar ChatGPT para generar varias versiones de comentario.',
+      'Usar Claude para cuidar tono, claridad y profundidad.',
+      'El docente decide qué comentario es justo, pertinente y humano.',
+    ],
+  },
+];
+
+const pdfContents = [
+  'Comparativa más amplia entre ChatGPT, Gemini y Claude.',
+  'Criterios técnicos simplificados: contexto, velocidad, multimodalidad, alineación y estilo de respuesta.',
+  'Ejemplos de selección por tarea docente.',
+  'Advertencias sobre planes, límites, privacidad y verificación.',
+  'Matriz de decisión para elegir herramienta según necesidad.',
+];
+
+const commonMistakes = [
+  'Elegir una herramienta solo porque está de moda.',
+  'Usar siempre la misma IA para cualquier tarea.',
+  'Confundir una respuesta más larga con una respuesta más confiable.',
+  'Pedir una planeación completa sin dar contexto del grupo.',
+  'Usar IA para calificar sin criterios previos y sin revisión humana.',
+  'Compartir datos personales o sensibles por comodidad.',
+];
+
+const finalChecks = [
+  '¿La herramienta elegida se ajusta a la tarea real?',
+  '¿Necesito redacción, análisis, búsqueda, archivos, imagen o integración con Google?',
+  '¿La respuesta requiere verificación externa?',
+  '¿Estoy usando IA como apoyo o como sustituto del juicio docente?',
+  '¿El resultado final puede explicarse y defenderse pedagógicamente?',
+];
+---
+
+<BaseLayout
+  title="Módulo 3 | Comparación general de herramientas de IA"
+  description="Compara ChatGPT, Gemini y Claude desde criterios prácticos de uso docente."
+>
+  <div class="mb-8">
+    <a
+      href={`${BASE_PATH}/modulos/modulo-3/`}
+      class="text-sm font-semibold text-sky-700 hover:text-sky-800"
+    >
+      ← Volver al módulo
+    </a>
+  </div>
+
+  <SectionTitle
+    eyebrow="Tema 4"
+    title="Comparación general de herramientas de IA"
+    description="ChatGPT, Gemini y Claude pueden parecer similares, pero no siempre conviene usarlas para lo mismo. La elección debe depender de la tarea, el contexto, los archivos disponibles y el tipo de respuesta que se necesita."
+  />
+
+  <section class="grid gap-8 lg:grid-cols-[1.25fr_0.95fr]">
+    <div class="content-card p-8">
+      <h3 class="text-xl font-bold text-slate-900">¿Qué aprenderás en este tema?</h3>
+
+      <div class="mt-4 prose-soft text-slate-700">
+        <p>
+          En este apartado compararás tres herramientas de IA generativa desde un enfoque práctico:
+          qué suelen hacer mejor, qué tipo de respuesta puedes esperar y en qué tareas docentes
+          conviene elegir una sobre otra.
+        </p>
+
+        <p>
+          La idea no es declarar una ganadora absoluta. En la práctica docente, una herramienta puede
+          ser mejor para redactar, otra para trabajar con documentos y otra para analizar con mayor
+          profundidad. El criterio consiste en elegir según la tarea.
+        </p>
+      </div>
+    </div>
+
+    <InfoBox title="Idea central" tone="info">
+      <p>
+        La mejor herramienta no siempre es la más potente en términos técnicos, sino la que resuelve
+        mejor la necesidad concreta: planear, revisar, investigar, sintetizar, crear material o trabajar
+        con documentos.
+      </p>
+    </InfoBox>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="1. Lectura rápida: fortalezas principales"
+      description="Esta comparación resume el comportamiento esperado de cada herramienta en tareas docentes comunes."
+    />
+
+    <div class="grid gap-6 md:grid-cols-3">
+      {toolOverview.map((tool) => (
+        <ExampleCard title={tool.tool}>
+          <p>
+            <strong>Conviene para:</strong> {tool.bestFor}
+          </p>
+
+          <p class="mt-3">
+            <strong>Qué esperar:</strong> {tool.expectedResponse}
+          </p>
+
+          <p class="mt-3">
+            <strong>No es ideal cuando:</strong> {tool.notIdeal}
+          </p>
+
+          <p class="mt-3">
+            <strong>Nota docente:</strong> {tool.teacherNote}
+          </p>
+        </ExampleCard>
+      ))}
+    </div>
+
+    <div class="mt-8">
+      <InfoBox title="Importante" tone="warning">
+        <p>
+          Las funciones disponibles pueden cambiar según país, cuenta, institución, plan de pago,
+          permisos de privacidad y actualizaciones de cada plataforma. Por eso, esta comparación
+          debe leerse como una guía práctica, no como una regla fija.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="2. Comparación por criterios prácticos"
+      description="Esta tabla ayuda a elegir herramienta según el tipo de trabajo que el docente quiere realizar."
+    />
+
+    <div class="content-card overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+          <thead class="bg-slate-50">
+            <tr>
+              <th class="px-4 py-4 font-semibold text-slate-900">Criterio</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">ChatGPT</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">Gemini</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">Claude</th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-slate-200 bg-white">
+            {practicalCriteria.map((item) => (
+              <tr>
+                <td class="px-4 py-4 align-top font-semibold text-slate-900">{item.criterion}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.chatgpt}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.gemini}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.claude}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="3. Elegir según experiencia del usuario"
+      description="Un docente que apenas empieza no necesita el mismo flujo de trabajo que alguien que ya usa IA para planeación, revisión y producción de materiales."
+    />
+
+    <div class="grid gap-6 md:grid-cols-3">
+      {experienceLevels.map((item) => (
+        <ExampleCard title={item.level}>
+          <p>
+            <strong>Recomendación:</strong> {item.recommendation}
+          </p>
+
+          <p class="mt-3">
+            <strong>Por qué:</strong> {item.reason}
+          </p>
+
+          <p class="mt-3">
+            <strong>Ejemplo:</strong> {item.example}
+          </p>
+        </ExampleCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="4. Qué herramienta escoger según la tarea docente"
+      description="La elección debe partir del trabajo real: planeación, rúbricas, retroalimentación, investigación, materiales o administración."
+    />
+
+    <div class="content-card overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+          <thead class="bg-slate-50">
+            <tr>
+              <th class="px-4 py-4 font-semibold text-slate-900">Tarea docente</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">Primera opción práctica</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">Por qué</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">Cómo usarla mejor</th>
+              <th class="px-4 py-4 font-semibold text-slate-900">Cuidado</th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-slate-200 bg-white">
+            {teacherTaskChoices.map((item) => (
+              <tr>
+                <td class="px-4 py-4 align-top font-semibold text-slate-900">{item.task}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.firstChoice}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.why}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.howToUse}</td>
+                <td class="px-4 py-4 align-top leading-7 text-slate-700">{item.caution}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="5. Qué tipo de respuesta puedes esperar"
+      description="La misma instrucción puede generar estilos de respuesta diferentes. Conocer esos perfiles ayuda a elegir mejor."
+    />
+
+    <div class="grid gap-6 md:grid-cols-3">
+      {responseProfiles.map((item) => (
+        <ExampleCard title={item.tool}>
+          <p>{item.whatToExpect}</p>
+
+          <p class="mt-3">
+            <strong>Cómo conviene pedirle:</strong> {item.bestPromptStyle}
+          </p>
+
+          <p class="mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 leading-7 text-slate-700">
+            {item.sampleUse}
+          </p>
+        </ExampleCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="6. Ruta rápida de decisión"
+      description="Cuando no sepas cuál elegir, parte de la necesidad principal."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {decisionRoutes.map((item) => (
+        <ExampleCard title={item.need}>
+          <p>
+            <strong>Elegir:</strong> {item.choose}
+          </p>
+
+          <p class="mt-3">
+            <strong>Razón:</strong> {item.reason}
+          </p>
+        </ExampleCard>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="7. Guía comparativa completa en PDF"
+      description="Este recurso complementa la página con una comparación más visual y detallada de ChatGPT, Gemini y Claude."
+    />
+
+    <div class="content-card p-6 md:p-8">
+      <div class="mb-6 rounded-2xl border border-sky-100 bg-sky-50/70 p-5 text-slate-700">
+        <p class="font-semibold text-slate-900">¿Qué encontrará en este documento?</p>
+
+        <div class="mt-3 grid gap-3 md:grid-cols-2">
+          {pdfContents.map((item) => (
+            <div class="rounded-2xl border border-sky-100 bg-white/70 px-4 py-3">
+              <p class="leading-7">{item}</p>
+            </div>
+          ))}
+        </div>
+
+        <p class="mt-4 leading-7">
+          Está pensado como material de consulta rápida para decidir qué herramienta conviene usar
+          según la tarea docente, sin saturar esta página con detalles técnicos extensos.
+        </p>
+      </div>
+
+      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <iframe
+          src={`${comparisonPdf}#view=FitH`}
+          title="Guía comparativa de herramientas de IA para docentes"
+          class="h-[720px] w-full"
+          loading="lazy"
+        ></iframe>
+      </div>
+
+      <div class="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-600">
+        Si el visor no aparece correctamente en algún navegador, el documento puede abrirse en una
+        pestaña aparte desde
+        <a
+          href={comparisonPdf}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="font-semibold text-sky-700 hover:text-sky-800"
+        >
+          este enlace
+        </a>.
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="8. Usar más de una herramienta sin perder orden"
+      description="En trabajos más complejos, puede ser útil combinar herramientas, siempre que el docente conserve el control del proceso."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2">
+      {workflowExamples.map((item) => (
+        <ExampleCard title={item.title}>
+          <ol class="list-decimal space-y-2 pl-5">
+            {item.steps.map((step) => (
+              <li>{step}</li>
+            ))}
+          </ol>
+        </ExampleCard>
+      ))}
+    </div>
+
+    <div class="mt-8">
+      <InfoBox title="Criterio de uso combinado" tone="info">
+        <p>
+          Combinar herramientas no significa complicar el trabajo. Significa usar cada una donde aporta
+          más valor: una para reunir información, otra para estructurar, otra para revisar y el docente
+          para decidir.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Errores frecuentes al comparar herramientas"
+      description="La elección de una IA no debe basarse solo en popularidad, costumbre o apariencia de la interfaz."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <HighlightMistakes
+        title="Errores que conviene evitar"
+        mistakes={commonMistakes}
+      />
+
+      <CommonMistakes
+        title="Preguntas antes de elegir"
+        mistakes={finalChecks}
+      />
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="Actividad breve"
+      description="Aplica la comparación a una tarea real de tu práctica docente."
+    />
+
+    <div class="content-card p-8">
+      <h3 class="text-xl font-bold text-slate-900">Ejercicio de elección</h3>
+
+      <div class="mt-4 prose-soft text-slate-700">
+        <p>
+          Elige una tarea real que quieras realizar con apoyo de IA: una planeación, una rúbrica,
+          una retroalimentación, una investigación, un material didáctico o una actividad para clase.
+        </p>
+
+        <p>
+          Después responde:
+        </p>
+
+        <ol>
+          <li>¿Qué herramienta elegirías primero: ChatGPT, Gemini o Claude?</li>
+          <li>¿Por qué esa herramienta se ajusta mejor a la tarea?</li>
+          <li>¿Qué parte del resultado tendrías que verificar?</li>
+          <li>¿Qué parte no deberías delegar completamente?</li>
+          <li>¿Usarías una segunda herramienta para mejorar el resultado? ¿Para qué?</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <InfoBox title="Cierre del tema" tone="success">
+      <p>
+        Comparar herramientas de IA no consiste en buscar una ganadora universal. En el trabajo docente,
+        la mejor elección depende de la tarea: ChatGPT puede ser más versátil para iniciar y transformar,
+        Gemini puede ser más práctico si el trabajo vive en Google, y Claude puede ser más fuerte cuando
+        se requiere análisis escrito, tono cuidado o documentos largos. El criterio docente sigue siendo
+        la herramienta principal.
+      </p>
+    </InfoBox>
+  </section>
+</BaseLayout>
