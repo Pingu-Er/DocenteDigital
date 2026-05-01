@@ -1,0 +1,971 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SectionTitle from '../../../components/module/SectionTitle.astro';
+import InfoBox from '../../../components/module/InfoBox.astro';
+import ExampleCard from '../../../components/module/ExampleCard.astro';
+import HighlightMistakes from '../../../components/module/HighlightMistakes.astro';
+import PromptComparisonCard from '../../../components/module/PromptComparisonCard.astro';
+import { BASE_PATH } from '../../../consts';
+import VideoCarousel from '../../../components/module/VideoCarousel.astro';
+
+const verificationItems = [
+  {
+    title: 'Fechas y cronologías',
+    risk: 'La IA puede mezclar periodos, actualizar mal un dato o presentar una fecha aproximada como exacta.',
+    example: 'Fechas históricas, cambios normativos, convocatorias, calendarios escolares.',
+  },
+  {
+    title: 'Cifras y estadísticas',
+    risk: 'Un número puede sonar plausible sin estar respaldado. Las cifras requieren fuente verificable.',
+    example: 'Porcentajes, encuestas, tasas de aprendizaje, datos de uso de tecnología.',
+  },
+  {
+    title: 'Leyes, normas y reglamentos',
+    risk: 'La IA puede resumir una norma inexistente, antigua o aplicable a otro país.',
+    example: 'Normativa educativa, protección de datos, reglamentos institucionales.',
+  },
+  {
+    title: 'Citas y bibliografía',
+    risk: 'Puede inventar autores, títulos, editoriales, DOI o artículos con apariencia académica.',
+    example: 'Referencias APA, citas textuales, marcos teóricos, antecedentes.',
+  },
+  {
+    title: 'Conceptos disciplinares',
+    risk: 'Una explicación clara puede contener errores conceptuales si no se revisa con conocimiento experto.',
+    example: 'Matemáticas, historia, biología, gramática, electrónica, pedagogía.',
+  },
+  {
+    title: 'Criterios de evaluación',
+    risk: 'Una rúbrica puede parecer completa, pero evaluar aspectos que no corresponden al aprendizaje esperado.',
+    example: 'Rúbricas, listas de cotejo, criterios de desempeño, escalas.',
+  },
+  {
+    title: 'Contenido sensible',
+    risk: 'No debe delegarse sin revisión humana. Puede afectar bienestar, inclusión, privacidad o trato justo.',
+    example: 'Apoyo emocional, disciplina, salud, orientación personal, conflictos familiares.',
+  },
+  {
+    title: 'Información actual',
+    risk: 'Modelos, precios, herramientas, leyes, planes y políticas cambian con frecuencia.',
+    example: 'Planes de IA, versiones de software, lineamientos institucionales.',
+  },
+];
+
+const statementTypes = [
+  {
+    type: 'Dato',
+    meaning: 'Afirmación comprobable.',
+    example: '“La rúbrica tiene cuatro niveles de desempeño.”',
+    risk: 'Puede ser falso, impreciso o estar desactualizado.',
+  },
+  {
+    type: 'Inferencia',
+    meaning: 'Conclusión derivada de información disponible.',
+    example: '“El estudiante necesita reforzar argumentación porque no justifica sus respuestas.”',
+    risk: 'Puede estar mal razonada o basarse en evidencia incompleta.',
+  },
+  {
+    type: 'Opinión',
+    meaning: 'Valoración o juicio subjetivo.',
+    example: '“Esta actividad es más interesante que una exposición.”',
+    risk: 'Puede presentarse como verdad si no se marca como opinión.',
+  },
+  {
+    type: 'Supuesto',
+    meaning: 'Condición que la IA asumió sin confirmación.',
+    example: '“El grupo tiene acceso a internet y puede usar celulares.”',
+    risk: 'Puede hacer inviable o injusta una propuesta.',
+  },
+  {
+    type: 'Recomendación',
+    meaning: 'Sugerencia de acción.',
+    example: '“Conviene usar una actividad grupal antes de la explicación.”',
+    risk: 'Puede no aplicar al contexto real del docente.',
+  },
+  {
+    type: 'Alucinación',
+    meaning: 'Información inventada o incorrecta que parece real.',
+    example: '“Un autor, cita o estadística que no existe.”',
+    risk: 'Puede pasar desapercibida porque suele estar bien redactada.',
+  },
+];
+
+const verificationPrompts = [
+  {
+    title: 'Separar tipos de afirmaciones',
+    prompt:
+      'Revisa tu respuesta anterior y separa su contenido en: datos verificables, inferencias, opiniones, supuestos y recomendaciones.',
+  },
+  {
+    title: 'Detectar afirmaciones que requieren fuente',
+    prompt:
+      'Identifica todas las afirmaciones que deberían comprobarse con una fuente externa antes de usar este texto en material docente.',
+  },
+  {
+    title: 'Declarar límites de información',
+    prompt:
+      'Indica qué partes de tu respuesta no puedes confirmar con la información proporcionada y qué datos necesitarías para responder con mayor precisión.',
+  },
+  {
+    title: 'Auditar supuestos',
+    prompt:
+      'Lista los supuestos que hiciste sobre el grupo, el nivel educativo, los recursos disponibles, el tiempo de clase y el objetivo de aprendizaje.',
+  },
+  {
+    title: 'Buscar contradicciones',
+    prompt:
+      'Antes de corregir la respuesta, identifica si hay contradicciones internas, criterios ambiguos o instrucciones que se oponen entre sí.',
+  },
+  {
+    title: 'Revisión pedagógica',
+    prompt:
+      'Evalúa la respuesta con estos criterios: pertinencia pedagógica, claridad, nivel del grupo, riesgo de dependencia de IA y evidencia de aprendizaje.',
+  },
+];
+
+const sourceChecklist = [
+  '¿La fuente existe realmente?',
+  '¿El autor, institución o medio es identificable?',
+  '¿La fecha es visible y pertinente?',
+  '¿La fuente respalda la afirmación exacta que se está usando?',
+  '¿La cita fue interpretada correctamente?',
+  '¿La información sigue vigente?',
+  '¿Hay otra fuente confiable que confirme o contradiga el dato?',
+  '¿La fuente es primaria, oficial, académica o solo una opinión secundaria?',
+];
+
+const externalSources = [
+  {
+    type: 'Fuente oficial',
+    use: 'Cuando se revisan normas, programas, convocatorias, políticas o información institucional.',
+    examples: 'SEP, universidades, organismos públicos, documentación oficial.',
+  },
+  {
+    type: 'Fuente académica',
+    use: 'Cuando se trabaja marco teórico, conceptos disciplinares, investigación o evidencia.',
+    examples: 'Artículos, libros, repositorios académicos, revistas indexadas.',
+  },
+  {
+    type: 'Documentación técnica',
+    use: 'Cuando se revisan herramientas digitales, IA, software, APIs o procedimientos.',
+    examples: 'Documentación de OpenAI, Google, Anthropic, Microsoft, plataformas educativas.',
+  },
+  {
+    type: 'Fuente periodística confiable',
+    use: 'Cuando se necesita contexto actual, siempre que no sustituya fuentes primarias.',
+    examples: 'Medios reconocidos, entrevistas, reportajes con fuentes claras.',
+  },
+  {
+    type: 'Blog técnico o educativo',
+    use: 'Puede servir para ejemplos, tendencias o experiencias, pero no como evidencia definitiva.',
+    examples: 'Blogs de especialistas, comunidades técnicas, experiencias docentes documentadas.',
+  },
+];
+
+const correctionTypes = [
+  {
+    title: 'Corrección factual',
+    description: 'Se usa cuando un dato, fecha, concepto, cita o afirmación es incorrecta.',
+    prompt:
+      'Corrige la respuesta considerando que este dato era incorrecto: [dato]. Reescribe solo las partes afectadas y señala qué otros puntos podrían depender de ese error.',
+  },
+  {
+    title: 'Corrección de tono',
+    description: 'Se usa cuando el contenido es útil, pero suena acusatorio, frío, informal o condescendiente.',
+    prompt:
+      'Mantén la intención del texto, pero cambia el tono para que sea profesional, respetuoso y directo. Evita frases que puedan sonar culpabilizantes.',
+  },
+  {
+    title: 'Corrección de formato',
+    description: 'Se usa cuando la respuesta tiene contenido aprovechable, pero no es fácil de revisar o aplicar.',
+    prompt:
+      'Reorganiza la respuesta en una tabla con las columnas: punto, explicación, evidencia necesaria y acción recomendada.',
+  },
+  {
+    title: 'Corrección de profundidad',
+    description: 'Se usa cuando la respuesta es superficial o solo define sin explicar causas, límites o ejemplos.',
+    prompt:
+      'Amplía la explicación del punto 2. Incluye causa, consecuencia, ejemplo aplicado y error común. No repitas la introducción.',
+  },
+  {
+    title: 'Corrección de sesgo',
+    description: 'Se usa cuando la respuesta contiene generalizaciones, estereotipos o supuestos no declarados.',
+    prompt:
+      'Revisa si la respuesta contiene sesgos, estereotipos, suposiciones injustificadas o lenguaje excluyente. Después genera una versión corregida.',
+  },
+];
+
+const technicalGlossary = [
+  {
+    title: 'Alucinación',
+    level: 'Básico',
+    explanation:
+      'Información inventada o incorrecta que aparece redactada con seguridad. No siempre es absurda; muchas veces parece académica o institucional.',
+    relevance:
+      'Es crítica al revisar citas, fechas, autores, normativas, estadísticas y explicaciones disciplinares.',
+  },
+  {
+    title: 'Logits',
+    level: 'Avanzado',
+    explanation:
+      'Valores internos que representan qué tan probable es cada posible siguiente token antes de convertirlo en una respuesta final.',
+    relevance:
+      'Ayuda a entender que la IA no “elige la verdad”, sino una continuación probable dentro de su espacio de opciones.',
+  },
+  {
+    title: 'Grounding / Anclaje',
+    level: 'Intermedio',
+    explanation:
+      'Estrategia para forzar que la respuesta dependa de una fuente o documento dado, no de conocimiento general del modelo.',
+    relevance:
+      'Útil para analizar reglamentos, lecturas, programas, rúbricas institucionales o documentos de clase.',
+  },
+  {
+    title: 'RAG',
+    level: 'Avanzado',
+    explanation:
+      'Generación aumentada por recuperación. El sistema busca información en documentos o bases externas y después genera una respuesta con ese contexto.',
+    relevance:
+      'Permite reducir alucinaciones si las fuentes recuperadas son confiables y se citan correctamente.',
+  },
+  {
+    title: 'Lost in the Middle',
+    level: 'Avanzado ligero',
+    explanation:
+      'Fenómeno donde los modelos pueden atender mejor la información del inicio y del final de un contexto largo, y perder detalles ubicados en medio.',
+    relevance:
+      'Importa cuando se pegan lecturas largas, documentos institucionales o varios textos en una sola solicitud.',
+  },
+  {
+    title: 'Prompt injection',
+    level: 'Avanzado',
+    explanation:
+      'Intento de introducir instrucciones maliciosas o contradictorias dentro del material que la IA debe analizar.',
+    relevance:
+      'Es importante cuando se trabaja con documentos externos, páginas web, formularios o textos generados por otras personas.',
+  },
+  {
+    title: 'Instruction drift',
+    level: 'Avanzado ligero',
+    explanation:
+      'Pérdida gradual de las instrucciones iniciales en conversaciones largas.',
+    relevance:
+      'Explica por qué una IA puede empezar siguiendo criterios claros y después ignorarlos si la conversación se extiende demasiado.',
+  },
+  {
+    title: 'AT-CoT',
+    level: 'Avanzado',
+    explanation:
+      'Estrategia donde se pide detectar primero tipos de ambigüedad o contradicción antes de responder.',
+    relevance:
+      'Útil al analizar documentos con información incompleta, versiones distintas o criterios incompatibles.',
+  },
+];
+
+const detectorCautions = [
+  'No usar el detector como juez absoluto.',
+  'Considerar posibles falsos positivos y falsos negativos.',
+  'Revisar proceso, borradores, historial de versiones y defensa oral.',
+  'Pedir bitácora de uso de IA cuando la actividad permita apoyo de herramientas.',
+  'Evitar acusaciones automáticas basadas solo en porcentaje.',
+  'Diseñar tareas que evalúen proceso, decisiones y justificación, no solo producto final.',
+];
+
+const finalChecklist = [
+  '¿La respuesta distingue datos, inferencias, opiniones y supuestos?',
+  '¿Las cifras, fechas o citas fueron verificadas externamente?',
+  '¿Las fuentes existen y respaldan exactamente lo que se afirma?',
+  '¿La respuesta declara límites o zonas de incertidumbre?',
+  '¿El resultado corresponde al nivel del grupo?',
+  '¿La actividad, rúbrica o explicación conserva coherencia pedagógica?',
+  '¿Hay sesgos, estereotipos o supuestos no revisados?',
+  '¿El tono es adecuado para estudiantes, familias o colegas?',
+  '¿El documento base fue usado correctamente, sin agregar información externa no solicitada?',
+  '¿El docente adaptó el resultado al contexto real antes de usarlo?',
+];
+
+const verificationMistakes = [
+  'Aceptar una respuesta solo porque está bien redactada.',
+  'Usar citas generadas sin comprobar que existen.',
+  'Pedir fuentes, pero no revisar si respaldan la afirmación exacta.',
+  'Confundir una inferencia razonable con un dato comprobado.',
+  'Permitir que la IA complete vacíos de contexto sin declarar supuestos.',
+  'Usar una rúbrica generada sin revisar si evalúa el aprendizaje esperado.',
+  'Pedir una síntesis de documentos largos sin anclaje ni fragmentos de evidencia.',
+];
+
+const weakVerificationPrompt = `Actúa como experto en educación.
+
+Revisa esta planeación sobre inteligencia artificial y dime si está bien. También dime si hay algo que debería mejorar antes de usarla con docentes.`;
+
+const improvedVerificationPrompt = `Actúa como auditor pedagógico y revisor crítico de contenido generado con IA.
+
+Contexto:
+Voy a revisar una planeación sobre inteligencia artificial generativa para docentes de educación básica. No quiero una aprobación general; necesito detectar riesgos antes de usarla.
+
+Tarea:
+Audita la planeación en cinco niveles.
+
+Formato de salida:
+Entrega una tabla con estas columnas:
+1. Elemento revisado.
+2. Tipo de afirmación: dato, inferencia, supuesto, recomendación u opinión.
+3. Riesgo detectado.
+4. Evidencia necesaria.
+5. Corrección recomendada.
+
+Criterios de revisión:
+- Exactitud conceptual.
+- Pertinencia para docentes.
+- Riesgo de simplificar la IA como herramienta mágica.
+- Claridad de instrucciones.
+- Evidencia observable de aprendizaje.
+- Supuestos sobre recursos digitales del grupo.
+
+Restricciones:
+No digas solamente “está bien” o “es adecuada”. Si no puedes comprobar algo con la información dada, márcalo como supuesto o dato pendiente de verificación.
+
+Cierre:
+Al final, escribe una lista breve de elementos que el docente debe revisar antes de aplicar la planeación.`;
+
+const weakDocumentPrompt = `Analiza este reglamento escolar y resume las partes importantes para los docentes.
+
+También dime qué acciones deberían tomar los profesores para cumplirlo correctamente.`;
+
+const improvedDocumentPrompt = `Actúa como analista de documentos institucionales.
+
+Instrucción principal:
+Responde únicamente con base en el reglamento proporcionado. No agregues normas externas ni recomendaciones que no puedan sostenerse en el texto.
+
+Procedimiento:
+1. Primero extrae los fragmentos exactos del reglamento que mencionan responsabilidades docentes.
+2. Después clasifica cada fragmento según el tema: evaluación, disciplina, comunicación, privacidad o procedimiento administrativo.
+3. Luego redacta una síntesis práctica para docentes.
+4. Si una acción recomendada no aparece explícitamente en el reglamento, márcala como inferencia y no como obligación.
+
+Formato:
+Entrega una tabla con las columnas: fragmento del reglamento, tema, implicación docente, tipo de afirmación y punto que requiere confirmación institucional.
+
+Cierre:
+Si la respuesta no se encuentra en el documento, escribe: “Información no disponible en el reglamento proporcionado”.`;
+
+const weakCorrectionPrompt = `Corrige esta rúbrica y hazla más clara.
+
+La rúbrica es para evaluar un proyecto de investigación de estudiantes de secundaria. Quiero que sea justa y fácil de usar.`;
+
+const improvedCorrectionPrompt = `Actúa como evaluador pedagógico especializado en rúbricas analíticas.
+
+Contexto:
+Tengo una rúbrica para evaluar un proyecto de investigación de estudiantes de secundaria. La rúbrica ya existe, pero sospecho que algunos criterios son ambiguos.
+
+Tarea:
+Corrige la rúbrica sin cambiar el propósito original de evaluación.
+
+Procedimiento:
+1. Identifica criterios ambiguos.
+2. Señala niveles de desempeño que se parecen demasiado entre sí.
+3. Detecta si algún criterio evalúa presentación estética en lugar de investigación.
+4. Propón una versión corregida de los descriptores problemáticos.
+5. Indica qué partes deberían validarse con el docente titular antes de aplicarse.
+
+Formato:
+Entrega dos tablas:
+- Tabla 1: problema detectado, por qué es un problema y corrección propuesta.
+- Tabla 2: versión corregida de los criterios y niveles afectados.
+
+Restricciones:
+No agregues criterios nuevos sin justificarlo. No uses adjetivos vagos como “bueno”, “regular” o “completo” sin conducta observable.`;
+
+const longContextPrompt = `DOCUMENTO 1: Planeación original
+[pegar texto]
+
+DOCUMENTO 2: Rúbrica institucional
+[pegar texto]
+
+DOCUMENTO 3: Observaciones del grupo
+[pegar texto]
+
+INSTRUCCIÓN PRINCIPAL:
+Compara principalmente el DOCUMENTO 2 con el DOCUMENTO 1. Usa el DOCUMENTO 3 solo para señalar ajustes de contexto.
+
+RECORDATORIO FINAL:
+No respondas con una síntesis general. Indica en qué parte la planeación no coincide con la rúbrica institucional y cita el documento usado en cada observación.`;
+
+const activityPrompt = `Tarea:
+Audita la siguiente respuesta generada por IA antes de usarla como material docente.
+
+Debes:
+1. Marcar datos verificables.
+2. Marcar inferencias.
+3. Marcar supuestos.
+4. Detectar posibles alucinaciones.
+5. Señalar fuentes necesarias.
+6. Proponer una versión corregida.
+7. Indicar qué parte todavía requiere decisión docente.
+
+Respuesta a auditar:
+[pegar aquí la respuesta generada por IA]`;
+
+const reinforcementVideos = [
+  {
+    videoId: '8Wqgr7Ry3dk',
+    title: 'Curso esencial de Prompt Engineering',
+    description:
+      'Un recorrido exhaustivo por los fundamentos de la creación de instrucciones. Ideal para comprender desde cero cómo estructurar peticiones efectivas, evitando respuestas genéricas mediante el uso de roles y contexto. Créditos a: EDteam.',
+  },
+  {
+    videoId: 'BRy7Z3ZoQZk',
+    title: 'Estructura lógica y el método de Google',
+    description:
+      'Una explicación profunda sobre cómo la inteligencia artificial procesa nuestras palabras. Desglosa la importancia de dar propósito, usar ejemplos claros y armar cadenas de pensamiento para obtener resultados precisos. Créditos a: Xavier Mitjana.',
+  },
+  {
+    videoId: 'njAo0_41beU',
+    title: 'Transformación y refinamiento de prompts',
+    description:
+      'Aprende una estrategia práctica para no conformarte con la primera respuesta. Este material muestra cómo iterar, descomponer y afinar instrucciones paso a paso utilizando un "prompt creador de prompts". Créditos a: Migue Baena IA.',
+  },
+];
+---
+
+<BaseLayout
+  title="Módulo 4 | Verificación, contraste y corrección"
+  description="Cómo auditar respuestas generadas con IA, distinguir datos de supuestos, contrastar fuentes y corregir resultados antes de usarlos."
+>
+  <div class="mb-8">
+    <a
+      href={`${BASE_PATH}/modulos/modulo-4/`}
+      class="text-sm font-semibold text-sky-700 hover:text-sky-800"
+    >
+      ← Volver al módulo 4
+    </a>
+  </div>
+
+  <SectionTitle
+    eyebrow="Tema 4"
+    title="Verificación, contraste y corrección"
+    description="Una respuesta de IA no está lista porque suena bien. Está lista cuando fue revisada, contrastada, corregida y adaptada al contexto real."
+  />
+
+  <section class="grid gap-8 lg:grid-cols-[1.25fr_0.85fr]">
+    <div class="content-card p-8 prose-soft text-slate-700">
+      <p>
+        La verificación no es un paso opcional al final del trabajo. Es parte del uso profesional
+        de la IA. Un texto generado puede tener buena redacción, tono seguro y estructura clara,
+        pero aun así contener datos falsos, supuestos no declarados, fuentes inventadas o
+        recomendaciones poco pertinentes.
+      </p>
+
+      <p>
+        En este tema se trabaja la auditoría del resultado: separar datos de inferencias, revisar
+        citas, contrastar fuentes, corregir errores y decidir qué partes pueden usarse, cuáles deben
+        ajustarse y cuáles no deberían delegarse a una herramienta automática.
+      </p>
+    </div>
+
+    <InfoBox title="Propósito del tema" tone="info">
+      <p>
+        Aprender a revisar respuestas generadas con IA antes de convertirlas en material docente,
+        instrumento de evaluación, comunicación institucional o apoyo para la toma de decisiones.
+      </p>
+    </InfoBox>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="1. Por qué verificar es parte del prompting"
+      description="La IA genera texto plausible, no garantía de verdad. Por eso, pedir bien también implica pedir revisión."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-3">
+      <ExampleCard title="Fluidez no significa verdad">
+        <p>
+          Una respuesta puede sonar académica y estar redactada con seguridad, pero contener
+          fechas, autores o conceptos incorrectos. La forma del texto no valida el contenido.
+        </p>
+      </ExampleCard>
+
+      <ExampleCard title="Completitud no significa exactitud">
+        <p>
+          La IA tiende a entregar una respuesta completa. Si falta información, puede llenar huecos
+          con una secuencia probable. Ese relleno puede convertirse en una alucinación.
+        </p>
+      </ExampleCard>
+
+      <ExampleCard title="Verificar mantiene el control humano">
+        <p>
+          La IA puede apoyar revisión y contraste, pero el docente conserva la decisión final:
+          qué se usa, qué se corrige y qué se descarta.
+        </p>
+      </ExampleCard>
+    </div>
+
+    <div class="mt-6">
+      <InfoBox title="Idea técnica" tone="warning">
+        <p>
+          A nivel técnico, los modelos generan continuaciones probables de texto. Conceptos como
+          tokens, logits y ventana de contexto ayudan a entender por qué una respuesta puede ser
+          coherente en lenguaje y débil en evidencia.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="2. Qué debe verificarse siempre"
+      description="Algunos elementos no admiten aproximaciones. Si aparecen en una respuesta, deben auditarse."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {verificationItems.map((item) => (
+        <div class="content-card p-6">
+          <h3 class="text-lg font-bold text-slate-900">{item.title}</h3>
+
+          <p class="mt-3 leading-7 text-slate-700">{item.risk}</p>
+
+          <div class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <p class="text-sm font-semibold text-slate-900">Ejemplo</p>
+            <p class="mt-2 text-sm leading-6 text-slate-700">{item.example}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="3. Dato, inferencia, opinión, supuesto, recomendación y alucinación"
+      description="Antes de corregir una respuesta, hay que saber qué tipo de afirmación contiene."
+    />
+
+    <div class="content-card overflow-hidden p-0">
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse text-left text-sm">
+          <thead class="bg-slate-50 text-slate-900">
+            <tr>
+              <th class="border-b border-slate-200 px-5 py-4 font-bold">Tipo</th>
+              <th class="border-b border-slate-200 px-5 py-4 font-bold">Qué significa</th>
+              <th class="border-b border-slate-200 px-5 py-4 font-bold">Ejemplo</th>
+              <th class="border-b border-slate-200 px-5 py-4 font-bold">Riesgo</th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-slate-200">
+            {statementTypes.map((item) => (
+              <tr class="align-top">
+                <td class="px-5 py-4 font-semibold text-slate-900">{item.type}</td>
+                <td class="px-5 py-4 leading-6 text-slate-700">{item.meaning}</td>
+                <td class="px-5 py-4 leading-6 text-slate-700">{item.example}</td>
+                <td class="px-5 py-4 leading-6 text-slate-700">{item.risk}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="4. Cómo pedir verificación a la IA"
+      description="La verificación mejora cuando se pide con estructura. No basta con preguntar “¿está bien?”"
+    />
+
+    <PromptComparisonCard
+      title="Auditoría de una planeación generada con IA"
+      context="El prompt débil parece razonable, pero pide una opinión general. El prompt mejorado obliga a clasificar afirmaciones, detectar riesgos y proponer correcciones verificables."
+      weakPrompt={weakVerificationPrompt}
+      improvedPrompt={improvedVerificationPrompt}
+      weakIssues={[
+        'Pide una revisión general, no una auditoría con criterios.',
+        'No obliga a separar dato, inferencia, supuesto, recomendación u opinión.',
+        'No exige evidencia necesaria para validar afirmaciones.',
+        'Puede recibir una respuesta complaciente: “sí, está bien, solo ajusta detalles”.',
+        'No orienta la revisión hacia riesgos pedagógicos concretos.',
+      ]}
+      improvements={[
+        'Define rol de auditor, no solo de asistente.',
+        'Pide una tabla de revisión con categorías claras.',
+        'Incluye criterios de exactitud, pertinencia y riesgo pedagógico.',
+        'Obliga a marcar información no comprobable como supuesto o pendiente.',
+        'Cierra con acciones concretas para el docente.',
+      ]}
+      verification={[
+        'Revisar si la auditoría realmente detecta riesgos y no solo redacta observaciones generales.',
+        'Confirmar los datos externos con fuentes confiables.',
+        'Ajustar la planeación según el nivel digital real del grupo.',
+      ]}
+    />
+
+    <div class="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {verificationPrompts.map((item) => (
+        <div class="content-card p-6">
+          <h3 class="text-lg font-bold text-slate-900">{item.title}</h3>
+
+          <div class="mt-4 rounded-2xl border border-sky-100 bg-sky-50/70 p-4">
+            <p class="text-sm leading-6 text-slate-700">{item.prompt}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="5. Verificación de fuentes y citas"
+      description="Pedir fuentes no sirve si después no se comprueba que existan y respalden la afirmación."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+      <InfoBox title="Criterio estricto" tone="warning">
+        <p>
+          Una referencia con formato APA no es automáticamente real. La IA puede fabricar autor,
+          título, revista, editorial, año, DOI o URL. Una fuente solo cuenta si puede localizarse y
+          si realmente sostiene la idea que se está usando.
+        </p>
+      </InfoBox>
+
+      <div class="content-card p-6">
+        <h3 class="text-lg font-bold text-slate-900">Lista de verificación de fuentes</h3>
+
+        <div class="mt-4 grid gap-3">
+          {sourceChecklist.map((item) => (
+            <div class="rounded-2xl border border-sky-100 bg-sky-50/70 p-4">
+              <div class="flex gap-3">
+                <span class="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white text-sm font-bold text-sky-700">
+                  ✓
+                </span>
+                <p class="leading-7 text-slate-700">{item}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="6. Contraste con fuentes externas"
+      description="Contrastar no significa buscar cualquier página. La fuente debe corresponder al tipo de afirmación que se está revisando."
+    />
+
+    <div class="content-card overflow-hidden p-0">
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse text-left text-sm">
+          <thead class="bg-slate-50 text-slate-900">
+            <tr>
+              <th class="border-b border-slate-200 px-5 py-4 font-bold">Tipo de fuente</th>
+              <th class="border-b border-slate-200 px-5 py-4 font-bold">Cuándo usarla</th>
+              <th class="border-b border-slate-200 px-5 py-4 font-bold">Ejemplos</th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-slate-200">
+            {externalSources.map((item) => (
+              <tr class="align-top">
+                <td class="px-5 py-4 font-semibold text-slate-900">{item.type}</td>
+                <td class="px-5 py-4 leading-6 text-slate-700">{item.use}</td>
+                <td class="px-5 py-4 leading-6 text-slate-700">{item.examples}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mt-6">
+      <InfoBox title="Flujo recomendado" tone="info">
+        <p>
+          Use la IA para ordenar la pregunta, no para cerrar la verdad. Primero identifique qué
+          debe comprobarse, después consulte fuentes externas y finalmente use la IA para comparar,
+          sintetizar o detectar contradicciones.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="7. Anclaje documental"
+      description="Cuando la respuesta debe depender de un documento, la instrucción tiene que impedir que la IA complete huecos con conocimiento externo."
+    />
+
+    <PromptComparisonCard
+      title="Análisis de reglamento escolar"
+      context="El prompt inicial pide un resumen útil, pero permite que la IA agregue recomendaciones que quizá no aparecen en el reglamento. El prompt mejorado exige evidencia textual y clasificación del tipo de afirmación."
+      weakPrompt={weakDocumentPrompt}
+      improvedPrompt={improvedDocumentPrompt}
+      weakIssues={[
+        'Pide “partes importantes” sin definir criterio de importancia.',
+        'Permite agregar acciones docentes que no necesariamente están en el documento.',
+        'No exige fragmentos de evidencia.',
+        'No distingue obligación explícita de inferencia.',
+        'Puede convertir una interpretación en una norma institucional falsa.',
+      ]}
+      improvements={[
+        'Limita la respuesta al documento proporcionado.',
+        'Pide extracción de fragmentos antes de sintetizar.',
+        'Clasifica temas y tipo de afirmación.',
+        'Distingue obligación textual de inferencia.',
+        'Incluye una respuesta estándar cuando la información no aparece.',
+      ]}
+      verification={[
+        'Confirmar que los fragmentos citados existen en el reglamento.',
+        'Revisar con coordinación o dirección los puntos ambiguos.',
+        'No aplicar acciones disciplinarias basadas solo en inferencias de IA.',
+      ]}
+    />
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="8. Manejo de contexto largo"
+      description="En documentos extensos, no conviene esconder la instrucción crítica en medio del texto."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+      <div class="content-card p-6">
+        <h3 class="text-lg font-bold text-slate-900">Problema técnico</h3>
+
+        <div class="mt-4 prose-soft text-slate-700">
+          <p>
+            En contextos largos puede aparecer el fenómeno conocido como <strong>Lost in the Middle</strong>:
+            el modelo atiende mejor lo que aparece al inicio y al final, y puede perder detalles
+            ubicados en la zona intermedia.
+          </p>
+
+          <p>
+            Para reducir ese riesgo, conviene segmentar documentos, usar identificadores y repetir
+            la instrucción crítica al final. No sirve decir “presta atención a la mitad”; es mejor
+            indicar “usa principalmente el Documento 2”.
+          </p>
+        </div>
+      </div>
+
+      <div class="content-card p-6">
+        <h3 class="text-lg font-bold text-slate-900">Estructura recomendada</h3>
+
+        <pre class="mt-4 overflow-x-auto whitespace-pre-wrap rounded-2xl border border-slate-200 bg-slate-950 p-5 text-sm leading-7 text-slate-100"><code>{longContextPrompt}</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="9. Corrección de respuestas"
+      description="Corregir no siempre significa rehacer. Muchas veces basta con señalar el tipo exacto de fallo."
+    />
+
+    <PromptComparisonCard
+      title="Corrección de rúbrica ambigua"
+      context="El prompt débil pide claridad, pero no define qué debe revisarse. El prompt mejorado separa ambigüedad, niveles de desempeño, pertinencia y corrección observable."
+      weakPrompt={weakCorrectionPrompt}
+      improvedPrompt={improvedCorrectionPrompt}
+      weakIssues={[
+        'Pide “hacerla más clara” sin criterios de revisión.',
+        'No indica qué tipo de ambigüedad debe buscarse.',
+        'No diferencia problemas de criterio, nivel o descriptor.',
+        'Puede generar una rúbrica más bonita, pero no más justa.',
+        'No pide preservar el propósito original de evaluación.',
+      ]}
+      improvements={[
+        'Define rol especializado.',
+        'Indica el propósito de la corrección.',
+        'Establece procedimiento de auditoría.',
+        'Pide tablas separadas para problema y versión corregida.',
+        'Evita adjetivos vagos sin conducta observable.',
+      ]}
+      verification={[
+        'Revisar si los criterios siguen alineados al producto original.',
+        'Validar la rúbrica con el docente titular antes de aplicarla.',
+        'Comprobar que los niveles realmente distingan desempeño.',
+      ]}
+    />
+
+    <div class="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {correctionTypes.map((item) => (
+        <div class="content-card p-6">
+          <h3 class="text-lg font-bold text-slate-900">{item.title}</h3>
+          <p class="mt-3 leading-7 text-slate-700">{item.description}</p>
+
+          <div class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <p class="text-sm font-semibold text-slate-900">Prompt de corrección</p>
+            <p class="mt-2 text-sm leading-6 text-slate-700">{item.prompt}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="10. Uso responsable de detectores de IA"
+      description="Los detectores pueden servir como señal inicial, pero no deben tratarse como prueba definitiva."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-[1fr_1fr]">
+      <InfoBox title="Uso aceptable" tone="info">
+        <p>
+          Un detector puede ayudar a iniciar una revisión cuando hay dudas, pero debe combinarse
+          con evidencia del proceso: borradores, historial de versiones, explicación oral, bibliografía
+          anotada o bitácora de uso de IA.
+        </p>
+      </InfoBox>
+
+      <HighlightMistakes
+        title="Riesgos al usar detectores"
+        mistakes={detectorCautions}
+      />
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="11. Glosario técnico para profundizar"
+      description="Estos conceptos ayudan a entender por qué la verificación no es un trámite, sino una condición de uso responsable."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {technicalGlossary.map((item) => (
+        <details class="content-card p-6">
+          <summary class="cursor-pointer">
+            <p class="text-sm font-semibold uppercase tracking-wide text-sky-700">
+              {item.level}
+            </p>
+            <h3 class="mt-1 text-lg font-bold text-slate-900">{item.title}</h3>
+          </summary>
+
+          <div class="mt-4 space-y-4 text-slate-700">
+            <div>
+              <p class="text-sm font-semibold text-slate-900">Qué significa</p>
+              <p class="mt-1 leading-7">{item.explanation}</p>
+            </div>
+
+            <div>
+              <p class="text-sm font-semibold text-slate-900">Por qué importa</p>
+              <p class="mt-1 leading-7">{item.relevance}</p>
+            </div>
+          </div>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="12. Errores frecuentes de verificación"
+      description="Estos errores convierten una respuesta aparentemente útil en un riesgo académico, pedagógico o institucional."
+    />
+
+    <HighlightMistakes
+      title="Errores que conviene evitar"
+      mistakes={verificationMistakes}
+    />
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="13. Checklist de verificación final"
+      description="Antes de usar una respuesta generada con IA, revise estos puntos mínimos."
+    />
+
+    <div class="content-card p-6 md:p-8">
+      <div class="grid gap-4 md:grid-cols-2">
+        {finalChecklist.map((item) => (
+          <div class="rounded-2xl border border-sky-100 bg-sky-50/70 p-4 text-slate-700">
+            <div class="flex gap-3">
+              <span class="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white text-sm font-bold text-sky-700">
+                ✓
+              </span>
+              <p class="leading-7">{item}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="14. Actividad final"
+      description="Audite una respuesta generada por IA antes de convertirla en material docente."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+      <div class="content-card p-6">
+        <h3 class="text-lg font-bold text-slate-900">Instrucción de práctica</h3>
+
+        <pre class="mt-4 whitespace-pre-wrap rounded-2xl border border-slate-200 bg-slate-950 p-5 text-sm leading-7 text-slate-100"><code>{activityPrompt}</code></pre>
+      </div>
+
+      <div class="content-card p-6">
+        <h3 class="text-lg font-bold text-slate-900">Producto esperado</h3>
+
+        <ol class="mt-4 list-decimal space-y-3 pl-6 leading-7 text-slate-700">
+          <li>Una lista de afirmaciones verificables.</li>
+          <li>Una lista de supuestos detectados.</li>
+          <li>Una tabla de fuentes necesarias.</li>
+          <li>Una versión corregida de la respuesta.</li>
+          <li>Una nota final con decisiones que siguen siendo responsabilidad docente.</li>
+        </ol>
+
+        <div class="mt-5 rounded-2xl border border-amber-100 bg-amber-50/80 p-5 text-slate-700">
+          <p class="font-semibold text-slate-900">Criterio de cierre</p>
+          <p class="mt-2 leading-7">
+            La actividad no termina cuando la IA corrige el texto. Termina cuando el docente decide
+            qué partes son pertinentes, cuáles requieren fuente y cuáles no deben usarse.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<section class="mt-14">
+  <SectionTitle
+    title="Videos de refuerzo"
+    description="Estos recursos complementan el módulo con explicaciones visuales sobre estructura de prompts, lógica de instrucciones, ejemplos y refinamiento."
+  />
+
+  <div class="content-card p-6 md:p-8">
+    <div class="mb-6 rounded-2xl border border-sky-100 bg-sky-50/70 p-5 text-slate-700">
+      <p class="mt-2 leading-7">
+        Estos tres recursos visuales ofrecen una ruta de aprendizaje progresiva que va desde
+        los fundamentos técnicos hasta la aplicación avanzada en la redacción de instrucciones.
+        En conjunto, refuerzan la comprensión de que la inteligencia artificial no “adivina”
+        intenciones, sino que depende de una estructura lógica: contexto, rol, tarea y formato.
+      </p>
+
+      <p class="mt-2 leading-7">
+        También ayudan a perder el miedo al ensayo y error, mostrando de forma práctica que
+        para evitar trabajo gris se necesita especificidad, uso de ejemplos y dominio del ciclo de
+        iteración y refinamiento continuo.
+      </p>
+    </div>
+
+    <VideoCarousel
+      title="Videos recomendados sobre prompting"
+      videos={reinforcementVideos}
+    />
+  </div>
+</section>
+
+  <section class="mt-14 grid gap-8 lg:grid-cols-2">
+    <InfoBox title="Concepto para recordar" tone="success">
+      <p>
+        Verificar no significa desconfiar sin criterio. Significa distinguir qué puede usarse, qué
+        debe comprobarse y qué requiere juicio humano antes de llegar al aula.
+      </p>
+    </InfoBox>
+
+    <InfoBox title="Cierre del módulo" tone="info">
+      <p>
+        Con esta etapa se completa el ciclo del Módulo 4: pedir con precisión, aplicar estrategias,
+        refinar respuestas y verificar resultados. El siguiente paso es consolidar un banco de
+        prompts docentes verificados, no como lista de comandos, sino como herramienta de trabajo
+        adaptable y responsable.
+      </p>
+    </InfoBox>
+  </section>
+</BaseLayout>

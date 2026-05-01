@@ -1,0 +1,706 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SectionTitle from '../../../components/module/SectionTitle.astro';
+import InfoBox from '../../../components/module/InfoBox.astro';
+import ExampleCard from '../../../components/module/ExampleCard.astro';
+import HighlightMistakes from '../../../components/module/HighlightMistakes.astro';
+import PromptComparisonCard from '../../../components/module/PromptComparisonCard.astro';
+import { BASE_PATH } from '../../../consts';
+
+const baseStrategies = [
+  {
+    title: 'Prompt estructurado',
+    use: 'Cuando la tarea tiene varias condiciones o requiere una salida formal.',
+    why:
+      'Reduce ambigüedad porque separa propósito, contexto, tarea, formato, criterios y restricciones.',
+    example:
+      'Propósito + contexto + tarea + formato + criterios + restricciones + verificación.',
+  },
+  {
+    title: 'Prompt por rol',
+    use: 'Cuando necesitas una perspectiva específica: pedagógica, técnica, evaluativa o editorial.',
+    why:
+      'El rol orienta el vocabulario, el enfoque y el tipo de análisis, pero no garantiza exactitud.',
+    example:
+      'Actúa como diseñador instruccional especializado en evaluación formativa.',
+  },
+  {
+    title: 'Prompt con audiencia',
+    use: 'Cuando la respuesta debe adaptarse a estudiantes, docentes, familias o personal administrativo.',
+    why:
+      'La audiencia modifica tono, profundidad, ejemplos y vocabulario.',
+    example:
+      'Explica el tema para docentes que ya usan herramientas digitales básicas, pero apenas comienzan con IA.',
+  },
+  {
+    title: 'Prompt con formato',
+    use: 'Cuando necesitas una salida fácil de revisar: tabla, rúbrica, checklist, guion o secuencia.',
+    why:
+      'El formato actúa como molde. Evita respuestas largas que parecen completas pero no son utilizables.',
+    example:
+      'Entrega una tabla con columnas: fase, instrucción docente, evidencia y criterio de revisión.',
+  },
+  {
+    title: 'Prompt con criterios',
+    use: 'Cuando la respuesta debe cumplir condiciones de calidad observables.',
+    why:
+      'Sin criterios, la IA decide por sí misma qué significa “bueno”, “claro” o “completo”.',
+    example:
+      'Evalúa claridad, pertinencia pedagógica, viabilidad, nivel del grupo y verificabilidad.',
+  },
+  {
+    title: 'Prompt con restricciones',
+    use: 'Cuando hay límites reales: tiempo, recursos, nivel, seguridad, datos o tono.',
+    why:
+      'Las restricciones reducen respuestas inviables, exageradas o desconectadas del contexto.',
+    example:
+      'No uses actividades que dependan de internet. No inventes fuentes. Evita criterios vagos.',
+  },
+  {
+    title: 'Prompt con ejemplos',
+    use: 'Cuando necesitas replicar un estilo, tono, estructura o criterio de evaluación.',
+    why:
+      'Los ejemplos muestran el patrón esperado con más precisión que una descripción abstracta.',
+    example:
+      'Usa estos tres ejemplos de retroalimentación como referencia de tono y extensión.',
+  },
+];
+
+const teacherUseCases = [
+  {
+    title: 'Planeaciones',
+    description:
+      'Útil para estructurar sesiones, ordenar actividades y proponer evidencias de aprendizaje.',
+    mustInclude:
+      'grado, materia, duración, propósito, inicio, desarrollo, cierre, materiales, evaluación y adaptación.',
+    verify:
+      'que la actividad sea viable, que evalúe lo que promete y que no dependa de recursos inexistentes.',
+  },
+  {
+    title: 'Rúbricas',
+    description:
+      'Útil para convertir criterios de evaluación en niveles observables y comparables.',
+    mustInclude:
+      'producto a evaluar, criterios, niveles de desempeño, escala, descriptores y uso esperado.',
+    verify:
+      'que los niveles sean distinguibles y que los criterios no sean ambiguos.',
+  },
+  {
+    title: 'Retroalimentación',
+    description:
+      'Útil para redactar comentarios respetuosos, específicos y orientados a la mejora.',
+    mustInclude:
+      'logro observado, aspecto a mejorar, siguiente acción y tono adecuado.',
+    verify:
+      'que el comentario no sea genérico, humillante ni excesivamente automático.',
+  },
+  {
+    title: 'Adaptación de material',
+    description:
+      'Útil para ajustar una explicación o actividad a distintos niveles, ritmos o barreras.',
+    mustInclude:
+      'nivel del grupo, dificultad detectada, objetivo, versión simplificada y apoyos.',
+    verify:
+      'que la adaptación no reduzca el aprendizaje a una versión pobre o meramente decorativa.',
+  },
+  {
+    title: 'Explicación de temas',
+    description:
+      'Útil para preparar explicaciones con analogías, ejemplos, errores comunes y cierre conceptual.',
+    mustInclude:
+      'nivel de profundidad, audiencia, ejemplos, analogía, contraejemplo y síntesis.',
+    verify:
+      'que la explicación sea correcta y que las analogías no distorsionen el concepto.',
+  },
+  {
+    title: 'Creación de actividades',
+    description:
+      'Útil para generar dinámicas, ejercicios, debates, prácticas guiadas o actividades de cierre.',
+    mustInclude:
+      'objetivo, duración, materiales, instrucciones, producto esperado y evidencia.',
+    verify:
+      'que la actividad tenga sentido pedagógico y no sea solo entretenida.',
+  },
+  {
+    title: 'Investigación y síntesis',
+    description:
+      'Útil para organizar preguntas, comparar posturas, sintetizar lecturas o preparar marcos iniciales.',
+    mustInclude:
+      'alcance, tipo de fuentes, criterios de confiabilidad y afirmaciones verificables.',
+    verify:
+      'que las fuentes existan, estén actualizadas y respalden realmente lo que se afirma.',
+  },
+  {
+    title: 'Análisis de documentos',
+    description:
+      'Útil para extraer ideas, contrastar fragmentos, resumir reglamentos o revisar textos institucionales.',
+    mustInclude:
+      'documento base, pregunta específica, fragmentos de evidencia y límite de uso.',
+    verify:
+      'que la respuesta se base en el documento y no agregue información externa sin aviso.',
+  },
+];
+
+const intermediateStrategies = [
+  {
+    title: 'Zero-shot',
+    translation: 'Pedir sin ejemplos',
+    explanation:
+      'Funciona cuando la tarea es común o cuando basta una respuesta inicial. Puede ser limitado si se necesita un estilo muy específico.',
+    prompt:
+      'Actúa como asesor pedagógico. Explica qué es una rúbrica analítica para docentes que empiezan a diseñar instrumentos de evaluación.',
+  },
+  {
+    title: 'Few-shot',
+    translation: 'Dar ejemplos del resultado esperado',
+    explanation:
+      'Sirve para fijar tono, estructura o criterio. Es útil en retroalimentación, evaluación y respuestas que deben mantener consistencia.',
+    prompt:
+      'Usa estos tres ejemplos de retroalimentación como referencia de tono. Después redacta un comentario nuevo para el caso indicado.',
+  },
+  {
+    title: 'Comparación',
+    translation: 'Pedir contraste entre opciones',
+    explanation:
+      'Ayuda a tomar decisiones. La IA no solo genera una propuesta, sino que muestra ventajas, límites y riesgos.',
+    prompt:
+      'Compara estas dos actividades y evalúa cuál es más viable según tiempo, recursos, claridad y evidencia de aprendizaje.',
+  },
+  {
+    title: 'Transformación',
+    translation: 'Convertir un material a otro nivel o formato',
+    explanation:
+      'Permite adaptar textos técnicos, instrucciones largas o materiales complejos sin rehacer todo desde cero.',
+    prompt:
+      'Transforma esta explicación técnica en una versión para docentes de secundaria, conservando precisión pero reduciendo jerga.',
+  },
+  {
+    title: 'Alternativas',
+    translation: 'Pedir varias rutas de solución',
+    explanation:
+      'Evita depender de una sola respuesta. Es útil cuando el docente todavía está decidiendo enfoque, tono o nivel.',
+    prompt:
+      'Propón tres versiones de esta actividad: una básica, una intermedia y una avanzada. Después indica cuándo conviene cada una.',
+  },
+  {
+    title: 'Anclaje documental',
+    translation: 'Responder con base en un texto dado',
+    explanation:
+      'Reduce invención cuando se trabaja con reglamentos, lecturas o documentos institucionales.',
+    prompt:
+      'Responde solo con base en el documento proporcionado. Antes de sintetizar, extrae los fragmentos que sustentan tu respuesta.',
+  },
+];
+
+const greyWorkCauses = [
+  'El prompt no define contexto ni propósito.',
+  'La tarea es demasiado amplia para una sola respuesta.',
+  'No se solicita un formato concreto.',
+  'No hay criterios de calidad observables.',
+  'No se indican restricciones reales del aula o institución.',
+  'No se pide verificar supuestos, datos o límites.',
+  'La respuesta se acepta solo porque está bien redactada.',
+];
+
+const greyWorkSignals = [
+  'La respuesta podría servir para cualquier materia, grupo o nivel.',
+  'Usa frases correctas pero poco aplicables.',
+  'No incluye decisiones pedagógicas claras.',
+  'Propone actividades inviables por tiempo, recursos o nivel.',
+  'No distingue entre datos, sugerencias y supuestos.',
+  'Obliga al docente a reescribir casi todo.',
+];
+
+const weakPlanningPrompt =
+  'Hazme una planeación sobre inteligencia artificial para docentes.';
+
+const improvedPlanningPrompt = `Actúa como diseñador instruccional especializado en formación docente.
+
+Contexto:
+Estoy preparando una sesión de 60 minutos para docentes de educación básica que ya usan herramientas digitales simples, pero apenas comienzan a trabajar con inteligencia artificial generativa.
+
+Propósito:
+Que comprendan la diferencia entre usar IA como apoyo para organizar ideas y usarla como sustituto del criterio docente.
+
+Tarea:
+Diseña una planeación breve para una sesión introductoria.
+
+Formato:
+Entrega una tabla con las columnas: momento, duración, actividad, instrucción del facilitador, evidencia de aprendizaje y riesgo a cuidar.
+
+Criterios:
+La sesión debe ser práctica, directa y centrada en decisiones docentes reales.
+
+Restricciones:
+No uses actividades que requieran cuentas de pago. No presentes la IA como solución automática. Evita lenguaje infantil o excesivamente técnico.
+
+Verificación:
+Al final, indica qué partes de la planeación deberían ajustarse según el nivel real del grupo.`;
+
+const weakFeedbackPrompt =
+  'Escribe un comentario positivo para un estudiante que hizo mal su trabajo.';
+
+const improvedFeedbackPrompt = `Actúa como docente que ofrece retroalimentación formativa.
+
+Contexto:
+El estudiante entregó una actividad incompleta, pero sí intentó justificar sus respuestas. Se busca corregir sin desmotivar.
+
+Tarea:
+Redacta una retroalimentación breve.
+
+Formato:
+Organiza el comentario en tres partes:
+1. Logro observado.
+2. Aspecto específico a mejorar.
+3. Siguiente acción concreta.
+
+Criterios:
+Debe ser respetuosa, directa y útil. Evita frases genéricas como “échale ganas” o “puedes mejorar”.
+
+Restricciones:
+No humilles al estudiante. No exageres el logro. No digas que el trabajo está bien si todavía requiere corrección.
+
+Verificación:
+Indica si el comentario podría sonar demasiado duro o demasiado complaciente.`;
+
+const weakResearchPrompt =
+  'Investiga sobre IA en la educación y dame fuentes.';
+
+const improvedResearchPrompt = `Actúa como asistente de investigación académica.
+
+Contexto:
+Necesito preparar una introducción breve sobre el uso de inteligencia artificial generativa en educación docente.
+
+Tarea:
+Propón una ruta inicial de investigación, no una conclusión final.
+
+Formato:
+Entrega:
+1. Tres preguntas de investigación.
+2. Cinco palabras clave de búsqueda.
+3. Tipos de fuentes recomendadas.
+4. Riesgos de información desactualizada.
+5. Afirmaciones que deberán verificarse con fuentes externas.
+
+Restricciones:
+No inventes citas. No presentes bibliografía como real si no puedes verificarla. Si mencionas autores, marca que deben comprobarse.
+
+Verificación:
+Separa claramente ideas preliminares, posibles fuentes y datos que requieren confirmación.`;
+
+const practicePrompt = `Tarea:
+Convierte el siguiente prompt débil en un prompt profesional.
+
+Prompt débil:
+"Hazme una actividad sobre ciudadanía digital."
+
+Tu versión mejorada debe incluir:
+- propósito,
+- contexto,
+- audiencia,
+- tarea,
+- formato,
+- criterios,
+- restricciones,
+- verificación final.`;
+---
+
+<BaseLayout
+  title="Módulo 4 | Prompting práctico"
+  description="Estrategias prácticas para aplicar prompts a planeaciones, rúbricas, retroalimentación, investigación, análisis de documentos y creación de actividades."
+>
+  <div class="mb-8">
+    <a
+      href={`${BASE_PATH}/modulos/modulo-4/`}
+      class="text-sm font-semibold text-sky-700 hover:text-sky-800"
+    >
+      ← Volver al módulo 4
+    </a>
+  </div>
+
+  <SectionTitle
+    eyebrow="Tema 2"
+    title="Prompting práctico"
+    description="Aplicar prompting no consiste en copiar plantillas, sino en adaptar instrucciones a tareas reales: planear, evaluar, explicar, investigar, transformar y revisar."
+  />
+
+  <section class="grid gap-8 lg:grid-cols-[1.25fr_0.85fr]">
+    <div class="content-card p-8 prose-soft text-slate-700">
+      <p>
+        En el tema anterior se explicó la anatomía de un prompt. Ahora esa estructura se usa
+        en situaciones concretas. La pregunta central ya no es “qué elementos tiene un buen
+        prompt”, sino cómo se combinan esos elementos para resolver una tarea docente real.
+      </p>
+
+      <p>
+        Un prompt práctico debe reducir trabajo gris: respuestas correctas en apariencia, pero
+        tan genéricas que obligan al docente a corregirlas casi desde cero. Para evitarlo, la
+        solicitud debe indicar contexto, formato, criterios, restricciones y puntos de verificación.
+      </p>
+    </div>
+
+    <InfoBox title="Propósito del tema" tone="info">
+      <p>
+        Aplicar estrategias de prompting a tareas docentes frecuentes, entendiendo qué cambia
+        en la respuesta cuando se agrega rol, audiencia, formato, ejemplos, criterios o anclaje
+        documental.
+      </p>
+    </InfoBox>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="1. De la estructura a la práctica"
+      description="Un mismo esquema de prompt no sirve igual para todas las tareas. La estructura debe adaptarse al tipo de producto que se espera."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-3">
+      <ExampleCard title="No se pide igual una planeación">
+        <p>
+          Una planeación necesita duración, propósito, secuencia, recursos, evidencia de
+          aprendizaje y criterios de aplicación.
+        </p>
+      </ExampleCard>
+
+      <ExampleCard title="No se pide igual una rúbrica">
+        <p>
+          Una rúbrica necesita criterios, niveles de desempeño, descriptores observables y una
+          escala clara.
+        </p>
+      </ExampleCard>
+
+      <ExampleCard title="No se pide igual una síntesis">
+        <p>
+          Una síntesis necesita fuente, alcance, criterio de selección, límites y verificación de
+          afirmaciones.
+        </p>
+      </ExampleCard>
+    </div>
+
+    <div class="mt-6">
+      <InfoBox title="Regla práctica" tone="warning">
+        <p>
+          Antes de escribir el prompt, define el tipo de producto que necesitas. Si no sabes si
+          quieres una tabla, una guía, una explicación, una rúbrica o una lista de revisión, la IA
+          decidirá por ti.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="2. Estrategias base de prompting práctico"
+      description="Estas estrategias son las más útiles para tareas docentes. No son trucos aislados: funcionan mejor cuando se combinan."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {baseStrategies.map((strategy) => (
+        <div class="content-card p-6">
+          <h3 class="text-lg font-bold text-slate-900">{strategy.title}</h3>
+
+          <div class="mt-4 space-y-4 text-slate-700">
+            <div>
+              <p class="text-sm font-semibold text-sky-800">Cuándo usar</p>
+              <p class="mt-1 leading-7">{strategy.use}</p>
+            </div>
+
+            <div>
+              <p class="text-sm font-semibold text-sky-800">Por qué funciona</p>
+              <p class="mt-1 leading-7">{strategy.why}</p>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p class="text-sm font-semibold text-slate-900">Ejemplo</p>
+              <p class="mt-2 text-sm leading-6">{strategy.example}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="3. Casos docentes donde el prompt debe cambiar"
+      description="Cada tarea exige información distinta. Esta tabla sirve como mapa rápido para evitar solicitudes incompletas."
+    />
+
+    <div class="content-card overflow-hidden p-0">
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse text-left text-sm">
+          <thead class="bg-slate-50 text-slate-900">
+            <tr>
+              <th class="border-b border-slate-200 px-5 py-4 font-bold">Tarea</th>
+              <th class="border-b border-slate-200 px-5 py-4 font-bold">Para qué sirve</th>
+              <th class="border-b border-slate-200 px-5 py-4 font-bold">Debe incluir</th>
+              <th class="border-b border-slate-200 px-5 py-4 font-bold">Qué verificar</th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-slate-200">
+            {teacherUseCases.map((item) => (
+              <tr class="align-top">
+                <td class="px-5 py-4 font-semibold text-slate-900">{item.title}</td>
+                <td class="px-5 py-4 leading-6 text-slate-700">{item.description}</td>
+                <td class="px-5 py-4 leading-6 text-slate-700">{item.mustInclude}</td>
+                <td class="px-5 py-4 leading-6 text-slate-700">{item.verify}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="4. Planeaciones: del pedido general a la instrucción útil"
+      description="Una planeación generada por IA solo sirve si está conectada con tiempo, nivel, propósito, recursos y evidencia de aprendizaje."
+    />
+
+    <PromptComparisonCard
+      title="Planeación introductoria sobre IA"
+      context="El docente necesita una sesión breve para introducir inteligencia artificial generativa sin venderla como solución automática."
+      weakPrompt={weakPlanningPrompt}
+      improvedPrompt={improvedPlanningPrompt}
+      weakIssues={[
+        'No define nivel del grupo ni duración.',
+        'No aclara si la sesión es conceptual, práctica o evaluativa.',
+        'No pide evidencia de aprendizaje.',
+        'No marca restricciones de acceso, tono o recursos.',
+        'Puede producir una planeación genérica y poco aplicable.',
+      ]}
+      improvements={[
+        'Define rol, contexto y propósito de la sesión.',
+        'Solicita una tabla con campos directamente utilizables.',
+        'Incluye criterios de calidad y restricciones pedagógicas.',
+        'Evita depender de herramientas de pago.',
+        'Pide una verificación final para adaptar al grupo real.',
+      ]}
+      verification={[
+        'Confirmar que las actividades caben en 60 minutos.',
+        'Revisar que no se simplifique la IA como “herramienta mágica”.',
+        'Ajustar ejemplos según el nivel digital real de los docentes.',
+      ]}
+    />
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="5. Retroalimentación: precisión sin perder cuidado"
+      description="La IA puede ayudar a redactar comentarios, pero el docente debe controlar tono, justicia, especificidad y efecto emocional."
+    />
+
+    <PromptComparisonCard
+      title="Retroalimentación formativa"
+      context="La solicitud inicial es peligrosa porque pide un comentario positivo sin distinguir entre reconocer esfuerzo y ocultar errores."
+      weakPrompt={weakFeedbackPrompt}
+      improvedPrompt={improvedFeedbackPrompt}
+      weakIssues={[
+        'Usa “hizo mal” sin describir el problema real.',
+        'Pide que el comentario sea positivo, pero no necesariamente formativo.',
+        'Puede producir frases vacías o demasiado complacientes.',
+        'No pide una siguiente acción concreta.',
+      ]}
+      improvements={[
+        'Define el contexto de desempeño del estudiante.',
+        'Separa logro, mejora y acción siguiente.',
+        'Controla el tono sin negar el problema.',
+        'Evita frases genéricas.',
+        'Incluye revisión del equilibrio entre firmeza y cuidado.',
+      ]}
+      verification={[
+        'Revisar que el comentario no exagere el logro.',
+        'Asegurar que la acción propuesta sea realizable.',
+        'Adaptar el lenguaje al vínculo real con el estudiante.',
+      ]}
+    />
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="6. Investigación y síntesis: ordenar no es verificar"
+      description="La IA puede ayudar a organizar una búsqueda, pero no debe inventar fuentes ni cerrar conclusiones sin contraste externo."
+    />
+
+    <PromptComparisonCard
+      title="Ruta inicial de investigación"
+      context="Cuando se pide “investiga y dame fuentes”, la IA puede mezclar ideas útiles con bibliografía dudosa. La instrucción debe pedir organización y verificación explícita."
+      weakPrompt={weakResearchPrompt}
+      improvedPrompt={improvedResearchPrompt}
+      weakIssues={[
+        'Pide investigación sin definir alcance.',
+        'Solicita fuentes sin exigir verificación.',
+        'Puede generar bibliografía inexistente.',
+        'No distingue ideas preliminares de datos confirmados.',
+      ]}
+      improvements={[
+        'Convierte la tarea en una ruta inicial, no en conclusión final.',
+        'Pide preguntas, palabras clave y tipos de fuentes.',
+        'Prohíbe inventar citas.',
+        'Separa afirmaciones verificables de ideas preliminares.',
+      ]}
+      verification={[
+        'Buscar las fuentes reales en sitios académicos o institucionales.',
+        'Confirmar fecha, autoría y pertinencia.',
+        'No usar citas generadas sin comprobarlas.',
+      ]}
+    />
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="7. Técnicas intermedias: cuándo usar cada una"
+      description="Estas técnicas ayudan cuando un prompt básico ya no basta, pero no deben usarse como decoración."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {intermediateStrategies.map((strategy) => (
+        <div class="content-card p-6">
+          <p class="text-sm font-semibold uppercase tracking-wide text-sky-700">
+            {strategy.title}
+          </p>
+
+          <h3 class="mt-1 text-lg font-bold text-slate-900">
+            {strategy.translation}
+          </h3>
+
+          <p class="mt-3 leading-7 text-slate-700">
+            {strategy.explanation}
+          </p>
+
+          <div class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <p class="text-sm font-semibold text-slate-900">Prompt modelo</p>
+            <p class="mt-2 text-sm leading-6 text-slate-700">{strategy.prompt}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="8. Nota técnica: zero-shot, few-shot y anclaje"
+      description="Estos conceptos pueden sonar técnicos, pero explican por qué algunas instrucciones funcionan mejor que otras."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-3">
+      <details class="content-card p-6">
+        <summary class="cursor-pointer text-lg font-bold text-slate-900">
+          Zero-shot
+        </summary>
+
+        <div class="mt-4 prose-soft text-slate-700">
+          <p>
+            Es pedir una tarea sin dar ejemplos. Sirve para solicitudes comunes o primeras
+            versiones. Su límite es que el modelo decide el patrón de salida según lo más probable,
+            no necesariamente según el estilo que el docente necesita.
+          </p>
+        </div>
+      </details>
+
+      <details class="content-card p-6">
+        <summary class="cursor-pointer text-lg font-bold text-slate-900">
+          Few-shot
+        </summary>
+
+        <div class="mt-4 prose-soft text-slate-700">
+          <p>
+            Consiste en dar ejemplos del resultado esperado. Es útil para retroalimentación,
+            rúbricas o estilos específicos. El riesgo es que la IA copie demasiado los ejemplos o
+            repita estructuras sin adaptarlas.
+          </p>
+        </div>
+      </details>
+
+      <details class="content-card p-6">
+        <summary class="cursor-pointer text-lg font-bold text-slate-900">
+          Anclaje documental
+        </summary>
+
+        <div class="mt-4 prose-soft text-slate-700">
+          <p>
+            Consiste en pedir que la respuesta dependa de un documento dado. Es útil para
+            reglamentos, lecturas, planes o textos institucionales. Debe incluir una regla clara:
+            si la información no aparece en el documento, la IA debe decirlo.
+          </p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="9. Trabajo gris"
+      description="El trabajo gris es el producto que parece útil, pero exige tanta corrección que termina robando tiempo."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <HighlightMistakes
+        title="Causas frecuentes del trabajo gris"
+        mistakes={greyWorkCauses}
+      />
+
+      <HighlightMistakes
+        title="Señales de que la respuesta no sirve todavía"
+        mistakes={greyWorkSignals}
+      />
+    </div>
+
+    <div class="mt-6">
+      <InfoBox title="Criterio práctico" tone="warning">
+        <p>
+          Si una respuesta generada puede aplicarse igual a cualquier grupo, cualquier materia o
+          cualquier escuela, probablemente todavía es demasiado genérica. En ese caso no falta
+          “pedir más texto”; falta pedir mejores condiciones.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="10. Actividad breve"
+      description="Transforme una solicitud vaga en un prompt aplicable, verificable y adaptado al contexto."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+      <div class="content-card p-6">
+        <h3 class="text-lg font-bold text-slate-900">Instrucción de práctica</h3>
+
+        <pre class="mt-4 whitespace-pre-wrap rounded-2xl border border-slate-200 bg-slate-950 p-5 text-sm leading-7 text-slate-100"><code>{practicePrompt}</code></pre>
+      </div>
+
+      <div class="content-card p-6">
+        <h3 class="text-lg font-bold text-slate-900">Criterios para revisar la versión final</h3>
+
+        <ol class="mt-4 list-decimal space-y-3 pl-6 leading-7 text-slate-700">
+          <li>La tarea debe ser específica y no solo pedir “una actividad”.</li>
+          <li>El contexto debe indicar nivel, duración y condiciones de uso.</li>
+          <li>El formato debe facilitar la revisión del resultado.</li>
+          <li>Los criterios deben describir qué cuenta como una buena actividad.</li>
+          <li>Las restricciones deben evitar propuestas inviables o superficiales.</li>
+          <li>La verificación debe obligar a revisar supuestos, riesgos y ajustes necesarios.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14 grid gap-8 lg:grid-cols-2">
+    <InfoBox title="Concepto para recordar" tone="success">
+      <p>
+        Prompting práctico no es llenar una plantilla por costumbre. Es decidir qué necesita la
+        IA para producir una respuesta que el docente pueda revisar, ajustar y usar con criterio.
+      </p>
+    </InfoBox>
+
+    <InfoBox title="Siguiente tema" tone="info">
+      <p>
+        En el siguiente apartado se trabajará la iteración: cómo tomar una primera respuesta,
+        detectar sus fallas, pedir mejoras, comparar versiones y refinar el resultado sin volver a
+        empezar desde cero.
+      </p>
+    </InfoBox>
+  </section>
+</BaseLayout>

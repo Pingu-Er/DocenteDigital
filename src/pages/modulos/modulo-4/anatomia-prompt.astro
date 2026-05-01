@@ -1,0 +1,496 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SectionTitle from '../../../components/module/SectionTitle.astro';
+import InfoBox from '../../../components/module/InfoBox.astro';
+import ExampleCard from '../../../components/module/ExampleCard.astro';
+import HighlightMistakes from '../../../components/module/HighlightMistakes.astro';
+import PromptComparisonCard from '../../../components/module/PromptComparisonCard.astro';
+import { BASE_PATH } from '../../../consts';
+
+const promptComponents = [
+  {
+    title: 'Propósito',
+    question: '¿Para qué se necesita la respuesta?',
+    explanation:
+      'Define la meta final. Sin propósito, la IA puede producir texto correcto en apariencia, pero desconectado de la intención real.',
+    example:
+      'Quiero diseñar una actividad breve para introducir el tema de fracciones antes de una evaluación diagnóstica.',
+  },
+  {
+    title: 'Contexto',
+    question: '¿En qué situación se usará?',
+    explanation:
+      'Ubica a la IA en una realidad concreta: nivel educativo, materia, duración, recursos, grupo, limitaciones y condiciones de uso.',
+    example:
+      'Es para estudiantes de 5.º grado, en una clase de 50 minutos, sin acceso a internet y con materiales impresos.',
+  },
+  {
+    title: 'Rol',
+    question: '¿Desde qué perspectiva debe responder?',
+    explanation:
+      'Orienta el enfoque, el vocabulario y el tipo de análisis. No vuelve experta a la IA, pero sí reduce respuestas demasiado generales.',
+    example:
+      'Actúa como asesor pedagógico especializado en diseño de actividades para educación básica.',
+  },
+  {
+    title: 'Tarea',
+    question: '¿Qué acción exacta debe realizar?',
+    explanation:
+      'Debe formularse con verbos concretos: analiza, compara, adapta, sintetiza, transforma, revisa, diseña o verifica.',
+    example:
+      'Diseña una dinámica inicial de 20 minutos para activar conocimientos previos.',
+  },
+  {
+    title: 'Audiencia',
+    question: '¿Quién recibirá el resultado?',
+    explanation:
+      'Ajusta tono, profundidad, vocabulario, ejemplos y nivel de detalle. No se explica igual para docentes, estudiantes o familias.',
+    example:
+      'La explicación debe estar dirigida a docentes que ya usan herramientas digitales básicas, pero apenas comienzan con IA.',
+  },
+  {
+    title: 'Formato esperado',
+    question: '¿Cómo debe entregarse la respuesta?',
+    explanation:
+      'Convierte la salida en algo revisable. Una tabla, rúbrica, checklist o secuencia evita respuestas extensas pero poco utilizables.',
+    example:
+      'Entrega el resultado en una tabla con las columnas: fase, instrucción docente, propósito y evidencia de aprendizaje.',
+  },
+  {
+    title: 'Criterios de calidad',
+    question: '¿Qué debe cumplir una buena respuesta?',
+    explanation:
+      'Indican qué significa hacerlo bien: claridad, precisión, pertinencia, nivel adecuado, verificabilidad y utilidad práctica.',
+    example:
+      'Debe ser claro, aplicable en aula, sin tecnicismos innecesarios y con instrucciones observables.',
+  },
+  {
+    title: 'Restricciones',
+    question: '¿Qué debe evitar la IA?',
+    explanation:
+      'Marcan límites. Sirven para evitar actividades inviables, fuentes inventadas, exceso de teoría, tono inadecuado o supuestos peligrosos.',
+    example:
+      'No propongas actividades que dependan de internet. No inventes fuentes. No uses criterios vagos como “bueno” o “completo”.',
+  },
+  {
+    title: 'Ejemplos',
+    question: '¿Qué patrón debe imitar?',
+    explanation:
+      'Los ejemplos ayudan a fijar estilo, tono, estructura y nivel de detalle. Son útiles cuando se busca consistencia.',
+    example:
+      'Usa este estilo de retroalimentación: “Identificaste la idea central; ahora fortalece tu respuesta con un ejemplo propio”.',
+  },
+  {
+    title: 'Verificación esperada',
+    question: '¿Qué debe revisar o declarar al final?',
+    explanation:
+      'Evita tratar la respuesta como producto final. Obliga a identificar supuestos, límites, datos verificables o riesgos de uso.',
+    example:
+      'Al final, indica qué datos deben verificarse y qué supuestos hiciste sobre el grupo.',
+  },
+];
+
+const promptLevels = [
+  {
+    level: 'Prompt básico',
+    description: 'Pregunta directa con poca información.',
+    result: 'Respuesta general, útil solo como punto de partida.',
+  },
+  {
+    level: 'Prompt estructurado',
+    description: 'Incluye propósito, contexto, tarea y formato.',
+    result: 'Respuesta más pertinente y fácil de revisar.',
+  },
+  {
+    level: 'Prompt profesional',
+    description: 'Incluye criterios, restricciones, ejemplos y verificación.',
+    result: 'Respuesta más controlable, auditable y adaptable.',
+  },
+];
+
+const mistakes = [
+  'Pedir una tarea amplia sin indicar propósito, nivel, contexto ni formato.',
+  'Usar un rol decorativo sin explicar qué se espera de esa perspectiva.',
+  'Mezclar demasiadas tareas en una sola instrucción sin orden ni prioridad.',
+  'Pedir “algo completo” o “bien hecho” sin definir criterios de calidad.',
+  'Agregar restricciones contradictorias, por ejemplo “muy técnico” y “para principiantes” sin aclarar el equilibrio.',
+  'Pegar documentos largos sin separar instrucciones, materiales y formato de salida.',
+  'Aceptar la primera respuesta como producto final sin pedir verificación o revisión de supuestos.',
+];
+
+const anatomyChecklist = [
+  '¿La tarea está formulada con un verbo claro?',
+  '¿El contexto incluye nivel, materia, tiempo o condiciones relevantes?',
+  '¿La audiencia está definida?',
+  '¿El formato de salida es específico?',
+  '¿Los criterios de calidad son observables?',
+  '¿Las restricciones evitan errores concretos?',
+  '¿El prompt separa instrucciones y material de entrada?',
+  '¿Se pide identificar supuestos o elementos que deben verificarse?',
+];
+
+const weakPrompt =
+  'Haz una rúbrica para evaluar una exposición.';
+
+const improvedPrompt = `Actúa como asesor pedagógico especializado en evaluación formativa.
+
+Contexto:
+Estoy evaluando una exposición oral de estudiantes de secundaria sobre el impacto social de la Revolución Industrial.
+
+Tarea:
+Diseña una rúbrica analítica para valorar la exposición.
+
+Criterios a evaluar:
+1. Comprensión histórica.
+2. Argumentación y explicación de causas y consecuencias.
+3. Uso de fuentes.
+4. Claridad oral.
+5. Organización de la presentación.
+
+Formato:
+Entrega una tabla. Las filas deben ser los criterios y las columnas los niveles de desempeño: Excelente, Adecuado, En proceso y Requiere apoyo.
+
+Restricciones:
+Evita descripciones vagas como “lo hace bien” o “le falta mejorar”. Cada nivel debe describir conductas observables.
+
+Verificación:
+Al final, indica si algún criterio podría ser ambiguo y qué debería ajustar el docente antes de usar la rúbrica.`;
+
+const promptTemplate = `Propósito:
+[¿Para qué necesito esta respuesta?]
+
+Contexto:
+[Nivel educativo, materia, duración, recursos, condiciones del grupo]
+
+Rol:
+[Desde qué perspectiva debe responder la IA]
+
+Tarea:
+[Acción concreta que debe realizar]
+
+Audiencia:
+[Quién usará o recibirá el resultado]
+
+Formato:
+[Tabla, lista, rúbrica, secuencia, checklist, guion, etc.]
+
+Criterios:
+[Qué debe cumplir una buena respuesta]
+
+Restricciones:
+[Qué debe evitar o no asumir]
+
+Material de entrada:
+[Texto, documento, datos o fragmentos a analizar]
+
+Verificación:
+[Qué datos, supuestos o límites debe señalar al final]`;
+---
+
+<BaseLayout
+  title="Módulo 4 | Anatomía de un buen prompt"
+  description="Componentes esenciales para construir instrucciones claras, útiles y verificables al trabajar con inteligencia artificial generativa."
+>
+  <div class="mb-8">
+    <a
+      href={`${BASE_PATH}/modulos/modulo-4/`}
+      class="text-sm font-semibold text-sky-700 hover:text-sky-800"
+    >
+      ← Volver al módulo 4
+    </a>
+  </div>
+
+  <SectionTitle
+    eyebrow="Tema 1"
+    title="Anatomía de un buen prompt"
+    description="Un prompt no es solo una pregunta. Es una instrucción diseñada para orientar a la IA con propósito, contexto, tarea, formato, criterios y límites claros."
+  />
+
+  <section class="grid gap-8 lg:grid-cols-[1.25fr_0.85fr]">
+    <div class="content-card p-8 prose-soft text-slate-700">
+      <p>
+        En este módulo, un prompt se entiende como una instrucción profesional para trabajar
+        con inteligencia artificial generativa. Su función no es adivinar lo que el usuario quiso
+        decir, sino reducir ambigüedad y dirigir la respuesta hacia un resultado útil, revisable y
+        pertinente.
+      </p>
+
+      <p>
+        Una instrucción débil obliga a la IA a completar huecos con patrones generales. Por eso
+        suelen aparecer respuestas correctas en apariencia, pero genéricas, poco aplicables o
+        difíciles de verificar. Una instrucción estructurada no garantiza perfección, pero sí mejora
+        el control sobre el resultado.
+      </p>
+    </div>
+
+    <InfoBox title="Propósito del tema" tone="info">
+      <p>
+        Identificar los componentes de un prompt bien construido y comprender por qué cada
+        elemento cambia la calidad, profundidad y utilidad de la respuesta generada.
+      </p>
+    </InfoBox>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="1. Qué es un prompt"
+      description="No es una frase mágica ni una simple consulta. Es una instrucción que define qué debe hacer la IA, con qué información y bajo qué condiciones."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-3">
+      {promptLevels.map((item) => (
+        <div class="content-card p-6">
+          <h3 class="text-lg font-bold text-slate-900">{item.level}</h3>
+          <p class="mt-3 leading-7 text-slate-700">{item.description}</p>
+          <div class="mt-4 rounded-2xl border border-sky-100 bg-sky-50/70 p-4 text-sm leading-6 text-slate-700">
+            <strong class="text-slate-900">Resultado probable:</strong> {item.result}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="2. Por qué la forma de pedir cambia la respuesta"
+      description="La IA no trabaja con intención humana oculta. Responde a partir del texto recibido, el contexto disponible y los patrones que logra activar."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-[1fr_1fr]">
+      <ExampleCard title="Lo que ocurre con una instrucción vaga">
+        <p>
+          Si el prompt dice únicamente “haz una planeación”, la IA no sabe el grado, el tiempo,
+          la materia, el enfoque, los recursos ni el criterio de evaluación. Ante esos vacíos,
+          produce una respuesta promedio: ordenada, pero poco conectada con una situación real.
+        </p>
+      </ExampleCard>
+
+      <ExampleCard title="Lo que ocurre con una instrucción estructurada">
+        <p>
+          Cuando el prompt define propósito, contexto, audiencia, formato y criterios, la IA tiene
+          menos espacio para asumir. La respuesta puede seguir fallando, pero será más específica,
+          más fácil de revisar y más cercana al producto que se necesita.
+        </p>
+      </ExampleCard>
+    </div>
+
+    <div class="mt-6">
+      <InfoBox title="Idea técnica sin rodeos" tone="warning">
+        <p>
+          Más texto no significa mejor prompt. Una instrucción larga puede fallar si introduce
+          contradicciones, repite condiciones o esconde lo importante en medio de información
+          innecesaria. La precisión pesa más que la extensión.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="3. Componentes de un buen prompt"
+      description="Estos elementos no siempre aparecen todos, pero conocerlos permite decidir qué necesita cada tarea."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {promptComponents.map((component, index) => (
+        <div class="content-card p-6">
+          <div class="mb-4 flex items-center gap-3">
+            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-sky-100 text-sm font-bold text-sky-700">
+              {index + 1}
+            </div>
+            <h3 class="text-lg font-bold text-slate-900">{component.title}</h3>
+          </div>
+
+          <p class="text-sm font-semibold text-slate-600">{component.question}</p>
+          <p class="mt-3 leading-7 text-slate-700">{component.explanation}</p>
+
+          <div class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <p class="text-sm font-semibold text-slate-900">Ejemplo</p>
+            <p class="mt-2 text-sm leading-6 text-slate-700">{component.example}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="4. Prompt débil, prompt mejorado y análisis"
+      description="La diferencia no está en adornar la instrucción, sino en hacer explícitas las condiciones que la IA necesita para producir una respuesta útil."
+    />
+
+    <PromptComparisonCard
+      title="Rúbrica para exposición oral"
+      context="El docente necesita evaluar una exposición de secundaria. El prompt inicial parece suficiente, pero no define criterios, niveles ni tipo de evidencia."
+      weakPrompt={weakPrompt}
+      improvedPrompt={improvedPrompt}
+      weakIssues={[
+        'No indica nivel educativo ni tema específico.',
+        'No define criterios de evaluación.',
+        'No solicita niveles de desempeño.',
+        'No exige descripciones observables.',
+        'No pide revisar ambigüedades antes de usar la rúbrica.',
+      ]}
+      improvements={[
+        'Define un rol útil para orientar la respuesta.',
+        'Agrega contexto disciplinar y nivel educativo.',
+        'Establece criterios concretos de evaluación.',
+        'Solicita un formato tabular claro.',
+        'Incluye restricciones de vocabulario evaluativo.',
+        'Agrega una cláusula de verificación al final.',
+      ]}
+      verification={[
+        'Revisar si los niveles de desempeño son distinguibles entre sí.',
+        'Ajustar los criterios al objetivo real de la exposición.',
+        'Verificar que la rúbrica evalúe aprendizaje y no solo presentación estética.',
+      ]}
+    />
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="5. Cómo separar instrucciones y material de entrada"
+      description="Cuando se pegan textos, documentos o fragmentos, la IA necesita distinguir qué debe obedecer y qué debe analizar."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+      <InfoBox title="Uso recomendado de delimitadores" tone="info">
+        <p>
+          Los delimitadores ayudan a separar la instrucción del contenido. Pueden ser títulos,
+          comillas triples, líneas divisorias o etiquetas sencillas. No se usan por estética: reducen
+          confusión entre tarea, contexto y material.
+        </p>
+
+        <p class="mt-3">
+          Para documentos largos, conviene dividir por bloques identificables: Documento 1,
+          Documento 2, Fragmento A o Lectura B.
+        </p>
+      </InfoBox>
+
+      <div class="content-card p-6">
+        <h3 class="text-lg font-bold text-slate-900">Ejemplo de estructura clara</h3>
+
+        <pre class="mt-4 overflow-x-auto rounded-2xl border border-slate-200 bg-slate-950 p-5 text-sm leading-7 text-slate-100"><code>{`INSTRUCCIÓN:
+Resume el siguiente texto para docentes de secundaria.
+
+TEXTO:
+"""
+[Pegar aquí el texto o fragmento]
+"""
+
+FORMATO:
+- Idea principal
+- 3 puntos clave
+- Riesgo de malinterpretación
+- Aplicación posible en clase
+
+VERIFICACIÓN:
+Indica qué afirmaciones deberían comprobarse con una fuente externa.`}</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="6. Plantilla base para construir prompts"
+      description="Esta plantilla no debe copiarse mecánicamente. Sirve como guía para decidir qué información necesita la IA según la tarea."
+    />
+
+    <div class="content-card p-6 md:p-8">
+      <pre class="overflow-x-auto rounded-2xl border border-slate-200 bg-slate-950 p-5 text-sm leading-7 text-slate-100"><code>{promptTemplate}</code></pre>
+
+      <div class="mt-5 rounded-2xl border border-amber-100 bg-amber-50/80 p-5 text-slate-700">
+        <p class="font-semibold text-slate-900">Uso correcto de la plantilla</p>
+        <p class="mt-2 leading-7">
+          No todos los campos son obligatorios. Una solicitud sencilla puede requerir solo tarea,
+          contexto y formato. Una tarea delicada, como una rúbrica o una síntesis con fuentes,
+          sí necesita criterios, restricciones y verificación.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="7. Errores frecuentes"
+      description="Estos errores producen respuestas genéricas, contradictorias o difíciles de usar. Identificarlos evita perder tiempo corrigiendo trabajo gris."
+    />
+
+    <HighlightMistakes
+      title="Errores al construir prompts"
+      mistakes={mistakes}
+    />
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="8. Lista rápida de revisión"
+      description="Antes de enviar un prompt importante, conviene revisar si la instrucción tiene suficientes condiciones para producir una respuesta útil."
+    />
+
+    <div class="content-card p-6 md:p-8">
+      <div class="grid gap-4 md:grid-cols-2">
+        {anatomyChecklist.map((item) => (
+          <div class="rounded-2xl border border-sky-100 bg-sky-50/70 p-4 text-slate-700">
+            <div class="flex gap-3">
+              <span class="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white text-sm font-bold text-sky-700">
+                ✓
+              </span>
+              <p class="leading-7">{item}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="9. Actividad breve"
+      description="Transforme una solicitud vaga en una instrucción profesional."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+      <div class="content-card p-6">
+        <h3 class="text-lg font-bold text-slate-900">Prompt inicial</h3>
+
+        <div class="mt-4 rounded-2xl border border-rose-100 bg-rose-50 p-5">
+          <p class="leading-7 text-slate-700">
+            “Haz una actividad para enseñar inteligencia artificial.”
+          </p>
+        </div>
+      </div>
+
+      <div class="content-card p-6">
+        <h3 class="text-lg font-bold text-slate-900">Reconstrucción sugerida</h3>
+
+        <ol class="mt-4 list-decimal space-y-3 pl-6 leading-7 text-slate-700">
+          <li>Defina el nivel educativo y duración de la actividad.</li>
+          <li>Indique si el objetivo es comprender, debatir, practicar o evaluar.</li>
+          <li>Especifique si se usará computadora, celular, internet o solo discusión guiada.</li>
+          <li>Pida un formato claro: tabla, secuencia didáctica o guía paso a paso.</li>
+          <li>Agregue restricciones: evitar tecnicismos, no promover copia automática y cerrar con reflexión.</li>
+          <li>Solicite verificación: supuestos tomados y riesgos de malinterpretación.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14 grid gap-8 lg:grid-cols-2">
+    <InfoBox title="Concepto para recordar" tone="success">
+      <p>
+        Un buen prompt no reemplaza el criterio docente. Lo organiza. La IA puede producir una
+        base útil, pero la pertinencia final depende de quien conoce al grupo, el objetivo y el
+        contexto real de aplicación.
+      </p>
+    </InfoBox>
+
+    <InfoBox title="Siguiente tema" tone="info">
+      <p>
+        En el siguiente apartado se aplicará esta estructura a tareas docentes concretas:
+        planeaciones, rúbricas, retroalimentación, adaptación de materiales, explicación de temas
+        y análisis de documentos.
+      </p>
+    </InfoBox>
+  </section>
+</BaseLayout>

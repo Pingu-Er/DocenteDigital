@@ -1,0 +1,712 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SectionTitle from '../../../components/module/SectionTitle.astro';
+import InfoBox from '../../../components/module/InfoBox.astro';
+import ExampleCard from '../../../components/module/ExampleCard.astro';
+import HighlightMistakes from '../../../components/module/HighlightMistakes.astro';
+import PromptComparisonCard from '../../../components/module/PromptComparisonCard.astro';
+import { BASE_PATH } from '../../../consts';
+
+const iterationCycle = [
+  {
+    step: 'Pedir',
+    description:
+      'Lanzar una instrucción inicial estructurada. No tiene que ser perfecta, pero sí debe tener propósito, contexto y formato mínimo.',
+  },
+  {
+    step: 'Revisar',
+    description:
+      'Leer la respuesta con criterios. No basta con que suene bien; hay que detectar si es genérica, superficial, inviable o imprecisa.',
+  },
+  {
+    step: 'Criticar',
+    description:
+      'Señalar fallas concretas. La IA responde mejor cuando se le indica exactamente qué debe corregir, no cuando se le pide “mejorarlo” sin dirección.',
+  },
+  {
+    step: 'Refinar',
+    description:
+      'Pedir ajustes de tono, profundidad, formato, audiencia, criterios, estructura o alcance.',
+  },
+  {
+    step: 'Verificar',
+    description:
+      'Auditar datos, supuestos, citas, coherencia, pertinencia pedagógica y posibles riesgos antes de usar el resultado.',
+  },
+  {
+    step: 'Adaptar',
+    description:
+      'Aplicar el criterio humano final: ajustar al grupo real, al contexto institucional, al tiempo disponible y al propósito docente.',
+  },
+];
+
+const refinementTypes = [
+  {
+    title: 'Claridad',
+    goal: 'Eliminar ambigüedad, frases largas o explicaciones confusas.',
+    prompt:
+      'Reescribe la explicación con mayor claridad. Conserva la idea central, elimina frases ambiguas y usa ejemplos concretos.',
+  },
+  {
+    title: 'Profundidad',
+    goal: 'Ampliar una sección que quedó superficial.',
+    prompt:
+      'Profundiza en el punto 3. No repitas la definición; explica el porqué, incluye un ejemplo y señala un error común.',
+  },
+  {
+    title: 'Brevedad',
+    goal: 'Convertir una respuesta larga en una versión consultable.',
+    prompt:
+      'Reduce esta respuesta a una versión de máximo 150 palabras. Conserva solo lo esencial y elimina repeticiones.',
+  },
+  {
+    title: 'Tono',
+    goal: 'Ajustar la forma de expresión sin cambiar el contenido central.',
+    prompt:
+      'Reescribe el texto con un tono más profesional, directo y menos condescendiente.',
+  },
+  {
+    title: 'Audiencia',
+    goal: 'Adaptar el contenido al nivel de quien lo va a recibir.',
+    prompt:
+      'Adapta esta explicación para docentes que ya usan herramientas digitales básicas, pero apenas comienzan con IA.',
+  },
+  {
+    title: 'Formato',
+    goal: 'Convertir la respuesta en un producto más fácil de revisar.',
+    prompt:
+      'Convierte esta respuesta en una tabla con tres columnas: problema, causa y ajuste recomendado.',
+  },
+  {
+    title: 'Criterios',
+    goal: 'Evaluar o corregir la respuesta usando parámetros explícitos.',
+    prompt:
+      'Revisa la propuesta con estos criterios: claridad, viabilidad, pertinencia pedagógica, nivel del grupo y verificabilidad.',
+  },
+];
+
+const decompositionSteps = [
+  {
+    title: 'Dividir antes de generar',
+    description:
+      'En lugar de pedir un producto completo, pide primero el índice, la estructura o el plan de trabajo.',
+  },
+  {
+    title: 'Validar por partes',
+    description:
+      'Revisa cada sección antes de avanzar. Esto evita arrastrar errores desde el inicio.',
+  },
+  {
+    title: 'Corregir con precisión',
+    description:
+      'Cuando algo falle, señala exactamente qué parte debe modificarse y bajo qué criterio.',
+  },
+  {
+    title: 'Integrar al final',
+    description:
+      'Después de revisar las partes, pide una versión integrada, coherente y lista para adaptar.',
+  },
+];
+
+const advancedStrategies = [
+  {
+    title: 'Chain-of-Thought',
+    plain: 'Pedir pasos de análisis o justificación revisable',
+    level: 'Avanzado ligero',
+    explanation:
+      'Puede ayudar cuando la tarea requiere razonamiento, pero no garantiza verdad. Sirve mejor cuando se pide explicar criterios, supuestos o pasos de revisión.',
+    use:
+      'Útil para analizar una rúbrica, revisar una planeación o explicar por qué una actividad no cumple su objetivo.',
+    risk:
+      'Si la premisa inicial está mal, la IA puede construir una explicación ordenada que conduce a un error.',
+    prompt:
+      'Antes de dar la versión final, explica qué criterios usarás para revisar esta actividad y qué supuestos estás tomando.',
+  },
+  {
+    title: 'Tree-of-Thought',
+    plain: 'Explorar varias rutas de solución',
+    level: 'Avanzado',
+    explanation:
+      'En lugar de pedir una sola solución, se piden varias rutas, se comparan y se elige la más viable.',
+    use:
+      'Útil para diseñar actividades, resolver problemas abiertos o elegir entre enfoques pedagógicos.',
+    risk:
+      'Puede generar demasiada información si no se limita el número de alternativas y criterios de comparación.',
+    prompt:
+      'Propón tres enfoques distintos para esta actividad. Evalúa ventajas, riesgos y viabilidad de cada uno. Después desarrolla el más adecuado.',
+  },
+  {
+    title: 'Self-Consistency',
+    plain: 'Comparar varias respuestas posibles',
+    level: 'Avanzado ligero',
+    explanation:
+      'Busca reducir dependencia de una sola salida. Se generan varias respuestas y se identifica el patrón más sólido.',
+    use:
+      'Útil cuando se necesita comparar opciones de explicación, evaluación o diseño de actividad.',
+    risk:
+      'No sustituye verificación. Varias respuestas parecidas pueden repetir el mismo error.',
+    prompt:
+      'Genera tres soluciones distintas al mismo problema. Después compara coincidencias, diferencias y riesgos antes de recomendar una.',
+  },
+  {
+    title: 'Reflexion',
+    plain: 'Pedir autocrítica y regeneración',
+    level: 'Avanzado',
+    explanation:
+      'La IA produce una respuesta, la evalúa con criterios y luego genera una versión corregida basada en su propia crítica.',
+    use:
+      'Útil para correos delicados, retroalimentación, rúbricas o materiales que requieren tono y precisión.',
+    risk:
+      'La autocrítica puede ser superficial si no se le dan criterios estrictos.',
+    prompt:
+      'Redacta la respuesta. Luego actúa como evaluador crítico, detecta fallas de tono, precisión y utilidad. Finalmente genera una versión corregida.',
+  },
+  {
+    title: 'ReAct',
+    plain: 'Razonar y usar herramientas',
+    level: 'Avanzado',
+    explanation:
+      'Combina razonamiento con acciones externas, como consultar una fuente, usar una calculadora o revisar un documento.',
+    use:
+      'Útil cuando la respuesta depende de información externa o datos que deben comprobarse.',
+    risk:
+      'Si la fuente externa es débil o incompleta, la respuesta también puede desviarse.',
+    prompt:
+      'Primero identifica qué información externa necesitas verificar. Después usa solo fuentes confiables y separa datos confirmados de inferencias.',
+  },
+];
+
+const commonErrors = [
+  'Volver a pedir “hazlo mejor” sin explicar qué falló.',
+  'Corregir tono, formato, contenido y fuentes al mismo tiempo sin establecer prioridad.',
+  'Aceptar la segunda versión solo porque es más larga.',
+  'Pedir profundidad cuando el problema real es falta de contexto.',
+  'Pedir brevedad y después exigir demasiados elementos obligatorios.',
+  'Usar autocrítica sin criterios claros.',
+  'Confundir una respuesta más elegante con una respuesta más correcta.',
+];
+
+const reviewChecklist = [
+  '¿La respuesta inicial cumple la tarea real?',
+  '¿El nivel de profundidad es adecuado para la audiencia?',
+  '¿Hay partes genéricas que podrían aplicarse a cualquier contexto?',
+  '¿El formato facilita revisar y usar el resultado?',
+  '¿La IA hizo supuestos sobre el grupo, recursos o nivel?',
+  '¿Hay datos, citas o afirmaciones que requieren verificación?',
+  '¿La nueva versión mejora el problema detectado o solo agrega texto?',
+  '¿El producto final todavía requiere adaptación docente?',
+];
+
+const firstPrompt = `Actúa como docente de secundaria.
+
+Haz una actividad para enseñar ciudadanía digital a estudiantes. La actividad debe durar aproximadamente una clase y debe servir para que comprendan la importancia de usar internet de manera responsable.
+
+Incluye una introducción, una actividad principal y un cierre. También agrega algunas preguntas para reflexionar al final.`;
+
+const refinedPrompt = `Actúa como diseñador instruccional especializado en ciudadanía digital.
+
+Contexto:
+Necesito una actividad de 40 minutos para docentes de secundaria que quieren trabajar el uso responsable de información en internet.
+
+Problema de la primera versión:
+La respuesta anterior fue demasiado general y no dejó evidencia clara de aprendizaje.
+
+Tarea:
+Rediseña la actividad para que tenga una secuencia más concreta.
+
+Formato:
+Entrega una tabla con las columnas: momento, duración, instrucción del docente, acción del grupo, evidencia y criterio de revisión.
+
+Criterios:
+La actividad debe ser aplicable sin cuentas de pago, debe incluir análisis de una fuente dudosa y debe cerrar con una decisión justificada.
+
+Restricciones:
+No propongas una exposición tradicional. No uses frases genéricas como “reflexionar sobre el tema” sin indicar cómo se observará esa reflexión.
+
+Verificación:
+Al final, lista los supuestos que hiciste sobre el grupo y qué tendría que ajustar el docente antes de aplicarla.`;
+
+const selfCritiquePrompt = `Redacta un correo para padres de familia avisando que varios estudiantes no entregaron una actividad importante.
+
+El correo debe ser respetuoso, claro y breve. Menciona que es necesario que apoyen desde casa para que los estudiantes se pongan al corriente. También indica que habrá una nueva fecha de entrega.`;
+
+const selfCritiqueRefinedPrompt = `Redacta un correo para padres de familia avisando que varios estudiantes no entregaron una actividad.
+
+Después de redactarlo, realiza una autocrítica usando estos criterios:
+1. ¿El tono suena acusatorio?
+2. ¿Explica la situación sin exagerar?
+3. ¿Invita a colaborar?
+4. ¿Propone una acción concreta?
+5. ¿Evita exponer o etiquetar a los estudiantes?
+
+Finalmente, reescribe una segunda versión tomando en cuenta esa autocrítica.`;
+
+const decompositionPrompt = `Actúa como experto en inteligencia artificial educativa.
+
+Diseña un curso completo de inteligencia artificial para docentes. Incluye módulos, objetivos, contenidos, actividades, recursos, evaluación y producto final. El curso debe empezar desde conceptos básicos y terminar con aplicaciones prácticas de IA en la docencia.
+
+Quiero que el curso sea claro, útil y aplicable para profesores que no son expertos en tecnología.`;
+
+const decompositionRefinedPrompt = `Necesito diseñar un curso de inteligencia artificial para docentes, pero no quiero desarrollarlo todo de una vez.
+
+Trabajemos por etapas:
+
+Etapa 1:
+Propón únicamente el índice general del curso con 4 módulos.
+
+Etapa 2:
+Espera mi aprobación antes de desarrollar contenidos.
+
+Etapa 3:
+Cuando apruebe el índice, desarrolla solo el módulo 1 con objetivo, temas, actividad y evidencia.
+
+Criterios:
+El curso debe avanzar desde comprensión básica hasta uso crítico de IA en tareas docentes.
+
+Restricciones:
+No desarrolles todos los módulos todavía. No generes actividades finales hasta que el índice esté validado.`;
+
+const practicePrompt = `Respuesta inicial de IA:
+"Para enseñar IA, puedes hacer una presentación, mostrar ejemplos, pedir una actividad y cerrar con una reflexión."
+
+Tarea:
+Refina esa respuesta.
+
+Debes pedirle a la IA que:
+1. convierta la idea en una secuencia de 50 minutos,
+2. defina evidencia de aprendizaje,
+3. elimine frases vagas,
+4. indique supuestos,
+5. proponga una versión alternativa si no hay internet.`;
+---
+
+<BaseLayout
+  title="Módulo 4 | Iteración y refinamiento"
+  description="Cómo mejorar respuestas iniciales de IA mediante revisión crítica, ajustes de tono, profundidad, formato, criterios y autocrítica."
+>
+  <div class="mb-8">
+    <a
+      href={`${BASE_PATH}/modulos/modulo-4/`}
+      class="text-sm font-semibold text-sky-700 hover:text-sky-800"
+    >
+      ← Volver al módulo 4
+    </a>
+  </div>
+
+  <SectionTitle
+    eyebrow="Tema 3"
+    title="Iteración y refinamiento"
+    description="La primera respuesta de una IA casi nunca debe tratarse como producto final. El valor aparece cuando se revisa, se critica, se ajusta y se verifica."
+  />
+
+  <section class="grid gap-8 lg:grid-cols-[1.25fr_0.85fr]">
+    <div class="content-card p-8 prose-soft text-slate-700">
+      <p>
+        Existe una idea equivocada: creer que un prompt perfecto debería producir una respuesta
+        final al primer intento. En la práctica, la primera salida suele ser un borrador: puede estar
+        bien redactada, pero aún ser genérica, incompleta, poco viable o débil frente al objetivo.
+      </p>
+
+      <p>
+        Iterar no significa pedir “otra versión” sin dirección. Significa revisar con criterios,
+        señalar fallas concretas y pedir una mejora específica. El docente no espera pasivamente
+        la respuesta correcta; conduce el proceso.
+      </p>
+    </div>
+
+    <InfoBox title="Propósito del tema" tone="info">
+      <p>
+        Aprender a transformar una respuesta inicial en una versión más clara, profunda,
+        aplicable y verificable mediante ciclos de revisión, refinamiento y autocrítica guiada.
+      </p>
+    </InfoBox>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="1. Por qué la primera respuesta suele ser insuficiente"
+      description="La IA responde a partir de lo más probable según el prompt. Si la instrucción fue amplia, el resultado también tenderá a ser amplio."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-3">
+      <ExampleCard title="Puede sonar correcta">
+        <p>
+          Una respuesta puede tener buena redacción, orden y tono profesional, pero aun así no
+          resolver el problema real. La forma no garantiza utilidad.
+        </p>
+      </ExampleCard>
+
+      <ExampleCard title="Puede ocultar supuestos">
+        <p>
+          Si no se indicó nivel, recursos o contexto, la IA completará esos vacíos. El resultado
+          puede depender de condiciones que no existen en el aula.
+        </p>
+      </ExampleCard>
+
+      <ExampleCard title="Puede quedarse en promedio">
+        <p>
+          Cuando faltan criterios, la IA tiende a producir una respuesta segura y común. Eso
+          suele generar trabajo gris: material que parece útil, pero exige demasiada corrección.
+        </p>
+      </ExampleCard>
+    </div>
+
+    <div class="mt-6">
+      <InfoBox title="Punto clave" tone="warning">
+        <p>
+          Una respuesta más larga no necesariamente es una respuesta mejor. El refinamiento debe
+          corregir un problema específico: claridad, profundidad, tono, formato, audiencia, criterios
+          o verificabilidad.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="2. Ciclo de iteración"
+      description="El prompting efectivo funciona como un proceso de trabajo, no como un comando aislado."
+    />
+
+    <div class="content-card p-6 md:p-8">
+      <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
+        {iterationCycle.map((item, index) => (
+          <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-sky-100 text-sm font-bold text-sky-700">
+              {index + 1}
+            </div>
+
+            <h3 class="mt-4 text-lg font-bold text-slate-900">{item.step}</h3>
+            <p class="mt-2 text-sm leading-6 text-slate-700">{item.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="3. Tipos de refinamiento"
+      description="Refinar no es repetir la solicitud. Es definir exactamente qué aspecto debe cambiar."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {refinementTypes.map((item) => (
+        <div class="content-card p-6">
+          <h3 class="text-lg font-bold text-slate-900">{item.title}</h3>
+
+          <p class="mt-3 leading-7 text-slate-700">
+            {item.goal}
+          </p>
+
+          <div class="mt-4 rounded-2xl border border-sky-100 bg-sky-50/70 p-4">
+            <p class="text-sm font-semibold text-slate-900">Instrucción directa</p>
+            <p class="mt-2 text-sm leading-6 text-slate-700">{item.prompt}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="4. Refinar una respuesta genérica"
+      description="El refinamiento debe nombrar el problema de la versión anterior y especificar qué debe cambiar."
+    />
+
+    <PromptComparisonCard
+      title="De actividad genérica a secuencia revisable"
+      context="El primer prompt pide una actividad, pero no controla propósito, evidencia ni condiciones de aplicación. La versión refinada corrige esa falta de dirección."
+      weakPrompt={firstPrompt}
+      improvedPrompt={refinedPrompt}
+        weakIssues={[
+        'Parece más completo que un prompt básico, pero todavía no define el tema específico de ciudadanía digital.',
+        'No indica duración exacta ni condiciones de aplicación.',
+        'Pide reflexión, pero no define evidencia observable de aprendizaje.',
+        'No establece criterios para evaluar si la actividad funcionó.',
+        'No incluye restricciones sobre recursos, internet, edad del grupo o nivel de profundidad.',
+        ]}
+      improvements={[
+        'Nombra el problema de la primera respuesta.',
+        'Agrega contexto y duración.',
+        'Solicita una estructura tabular revisable.',
+        'Exige evidencia y criterio de revisión.',
+        'Pide supuestos para ajustar al grupo real.',
+      ]}
+      verification={[
+        'Revisar si la actividad evalúa pensamiento crítico o solo participación.',
+        'Confirmar si el grupo puede analizar fuentes digitales durante la sesión.',
+        'Ajustar el ejemplo de fuente dudosa al contexto local.',
+      ]}
+    />
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="5. Descomposición de tareas"
+      description="Los problemas amplios no deben pedirse como un bloque único. Se dividen, se revisan y se integran al final."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+      <div class="content-card p-6">
+        <h3 class="text-lg font-bold text-slate-900">Proceso recomendado</h3>
+
+        <div class="mt-4 grid gap-4">
+          {decompositionSteps.map((item, index) => (
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p class="font-semibold text-slate-900">
+                {index + 1}. {item.title}
+              </p>
+              <p class="mt-2 text-sm leading-6 text-slate-700">{item.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <PromptComparisonCard
+        title="Diseño de curso por etapas"
+        context="Pedir un curso completo de una sola vez suele producir contenido superficial. Dividir el trabajo permite revisar estructura, coherencia y profundidad antes de desarrollar."
+        weakPrompt={decompositionPrompt}
+        improvedPrompt={decompositionRefinedPrompt}
+        weakIssues={[
+        'Incluye varios elementos útiles, pero solicita desarrollar demasiadas partes al mismo tiempo.',
+        'No permite revisar primero la estructura general antes de avanzar.',
+        'No define duración total, número de sesiones ni profundidad esperada.',
+        'Mezcla diseño curricular, actividades, recursos y evaluación en una sola salida.',
+        'Puede producir un curso aparentemente completo, pero superficial y difícil de ajustar.',
+        ]}
+        improvements={[
+          'Divide el trabajo en etapas.',
+          'Exige aprobación antes de avanzar.',
+          'Controla el alcance de la respuesta.',
+          'Evita desarrollar contenidos no validados.',
+        ]}
+        verification={[
+          'Revisar que el índice avance de menor a mayor complejidad.',
+          'Confirmar que cada módulo tenga un propósito distinto.',
+          'Ajustar el curso al tiempo real disponible.',
+        ]}
+      />
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="6. Comparación de versiones"
+      description="Comparar versiones ayuda a decidir, no solo a producir más texto."
+    />
+
+    <div class="content-card p-6 md:p-8">
+      <div class="grid gap-6 lg:grid-cols-3">
+        <ExampleCard title="Versión breve">
+          <p>
+            Útil para materiales consultables, instrucciones rápidas, recordatorios o cierres de
+            tema.
+          </p>
+        </ExampleCard>
+
+        <ExampleCard title="Versión profunda">
+          <p>
+            Útil cuando se necesita explicar fundamentos, causas, límites, ejemplos y errores
+            comunes.
+          </p>
+        </ExampleCard>
+
+        <ExampleCard title="Versión aplicada">
+          <p>
+            Útil cuando se quiere convertir teoría en actividades, rúbricas, guías o decisiones de
+            aula.
+          </p>
+        </ExampleCard>
+      </div>
+
+      <div class="mt-6 rounded-2xl border border-sky-100 bg-sky-50/70 p-5 text-slate-700">
+        <p class="font-semibold text-slate-900">Prompt útil</p>
+        <p class="mt-2 leading-7">
+          Genera tres versiones de esta explicación: una breve, una técnica y una aplicada al aula.
+          Después compara cuál conviene usar en una página web para docentes y justifica por qué.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="7. Autocrítica guiada"
+      description="Pedir autocrítica puede mejorar el resultado, pero solo si se dan criterios claros."
+    />
+
+    <PromptComparisonCard
+      title="Correo con revisión de tono"
+      context="La autocrítica es útil cuando el producto puede afectar la relación con estudiantes, familias o colegas."
+      weakPrompt={selfCritiquePrompt}
+      improvedPrompt={selfCritiqueRefinedPrompt}
+        weakIssues={[
+        'Tiene intención comunicativa, pero no revisa si el tono puede sonar acusatorio.',
+        'No pide distinguir entre informar, solicitar apoyo y evitar presión innecesaria.',
+        'No establece criterios para proteger la privacidad de los estudiantes.',
+        'No exige una acción concreta y medible para las familias.',
+        'Puede generar un correo correcto en forma, pero débil en cuidado comunicativo.',
+        ]}
+      improvements={[
+        'Pide una primera versión y una revisión crítica.',
+        'Establece criterios de tono y colaboración.',
+        'Obliga a detectar problemas antes de regenerar.',
+        'Produce una segunda versión basada en crítica explícita.',
+      ]}
+      verification={[
+        'Revisar que el correo no exponga a estudiantes.',
+        'Confirmar que la acción solicitada a las familias sea concreta.',
+        'Ajustar el mensaje según la política institucional.',
+      ]}
+    />
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="8. Identificación de supuestos"
+      description="La IA completa vacíos. Hacer visibles esos supuestos permite corregirlos antes de usar el resultado."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <InfoBox title="Prompt de revisión" tone="info">
+        <p>
+          Antes de mejorar tu respuesta, lista los supuestos que hiciste sobre el grupo, el nivel
+          educativo, los recursos disponibles, el tiempo de clase y el objetivo de aprendizaje.
+        </p>
+      </InfoBox>
+
+      <InfoBox title="Uso correcto" tone="warning">
+        <p>
+          No todos los supuestos son errores. Algunos son necesarios para avanzar. El problema
+          aparece cuando se usan sin declararlos y el docente los acepta como si fueran datos del
+          contexto real.
+        </p>
+      </InfoBox>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="9. Glosario técnico de estrategias avanzadas"
+      description="Estos conceptos no son obligatorios para empezar, pero ayudan a entender por qué ciertas formas de refinamiento funcionan mejor en tareas complejas."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {advancedStrategies.map((strategy) => (
+        <details class="content-card p-6">
+          <summary class="cursor-pointer">
+            <p class="text-sm font-semibold uppercase tracking-wide text-sky-700">
+              {strategy.level}
+            </p>
+            <h3 class="mt-1 text-lg font-bold text-slate-900">
+              {strategy.title}
+            </h3>
+            <p class="mt-1 text-sm font-semibold text-slate-600">
+              {strategy.plain}
+            </p>
+          </summary>
+
+          <div class="mt-4 space-y-4 text-slate-700">
+            <div>
+              <p class="text-sm font-semibold text-slate-900">Qué es</p>
+              <p class="mt-1 leading-7">{strategy.explanation}</p>
+            </div>
+
+            <div>
+              <p class="text-sm font-semibold text-slate-900">Cuándo usar</p>
+              <p class="mt-1 leading-7">{strategy.use}</p>
+            </div>
+
+            <div>
+              <p class="text-sm font-semibold text-slate-900">Riesgo</p>
+              <p class="mt-1 leading-7">{strategy.risk}</p>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p class="text-sm font-semibold text-slate-900">Prompt modelo</p>
+              <p class="mt-2 text-sm leading-6">{strategy.prompt}</p>
+            </div>
+          </div>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="10. Errores frecuentes al refinar"
+      description="La iteración mal dirigida puede producir más texto, pero no necesariamente mejor trabajo."
+    />
+
+    <HighlightMistakes
+      title="Errores que conviene evitar"
+      mistakes={commonErrors}
+    />
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="11. Lista rápida de revisión"
+      description="Use esta lista antes de aceptar una respuesta refinada como versión final."
+    />
+
+    <div class="content-card p-6 md:p-8">
+      <div class="grid gap-4 md:grid-cols-2">
+        {reviewChecklist.map((item) => (
+          <div class="rounded-2xl border border-sky-100 bg-sky-50/70 p-4 text-slate-700">
+            <div class="flex gap-3">
+              <span class="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white text-sm font-bold text-sky-700">
+                ✓
+              </span>
+              <p class="leading-7">{item}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <SectionTitle
+      title="12. Actividad breve"
+      description="Refine una respuesta inicial débil hasta convertirla en una instrucción útil."
+    />
+
+    <div class="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+      <div class="content-card p-6">
+        <h3 class="text-lg font-bold text-slate-900">Instrucción de práctica</h3>
+
+        <pre class="mt-4 whitespace-pre-wrap rounded-2xl border border-slate-200 bg-slate-950 p-5 text-sm leading-7 text-slate-100"><code>{practicePrompt}</code></pre>
+      </div>
+
+      <div class="content-card p-6">
+        <h3 class="text-lg font-bold text-slate-900">Criterios para evaluar la mejora</h3>
+
+        <ol class="mt-4 list-decimal space-y-3 pl-6 leading-7 text-slate-700">
+          <li>La versión refinada debe corregir fallas específicas, no solo ampliar la respuesta.</li>
+          <li>Debe incluir una estructura revisable.</li>
+          <li>Debe hacer visibles los supuestos.</li>
+          <li>Debe incluir una alternativa viable si cambia el contexto.</li>
+          <li>Debe cerrar con elementos que requieren verificación docente.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14 grid gap-8 lg:grid-cols-2">
+    <InfoBox title="Concepto para recordar" tone="success">
+      <p>
+        Iterar no es insistir hasta que la IA diga algo bonito. Iterar es dirigir la corrección:
+        detectar fallas, nombrarlas, exigir criterios y adaptar el resultado al contexto real.
+      </p>
+    </InfoBox>
+
+    <InfoBox title="Siguiente tema" tone="info">
+      <p>
+        En el siguiente apartado se trabajará la verificación: cómo distinguir datos, inferencias,
+        supuestos y alucinaciones, además de cómo contrastar fuentes antes de usar una respuesta.
+      </p>
+    </InfoBox>
+  </section>
+</BaseLayout>

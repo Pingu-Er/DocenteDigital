@@ -98,3 +98,35 @@ export const module3Topics = [
     status: 'Disponible',
   },
 ];
+
+// Módulo 4
+export const module4Topics = [
+  {
+    title: 'Anatomía de un buen prompt',
+    description:
+      'Comprende los elementos que hacen que una instrucción para IA sea clara, útil y revisable: propósito, contexto, tarea, formato, criterios y restricciones.',
+    href: `${BASE_PATH}/modulos/modulo-4/anatomia-prompt/`,
+    status: 'Disponible',
+  },
+  {
+    title: 'Prompting práctico',
+    description:
+      'Aplica estrategias de prompting a tareas docentes reales como planeaciones, rúbricas, retroalimentación, explicación de temas y adaptación de materiales.',
+    href: `${BASE_PATH}/modulos/modulo-4/prompting-practico/`,
+    status: 'Disponible',
+  },
+  {
+    title: 'Iteración y refinamiento',
+    description:
+      'Aprende a mejorar respuestas iniciales mediante ajustes de claridad, profundidad, tono, formato, criterios, autocrítica y comparación de versiones.',
+    href: `${BASE_PATH}/modulos/modulo-4/iteracion-refinamiento/`,
+    status: 'Disponible',
+  },
+  {
+    title: 'Verificación, contraste y corrección',
+    description:
+      'Revisa respuestas generadas por IA, distingue datos de supuestos, contrasta fuentes, corrige errores y decide qué puede usarse con responsabilidad.',
+    href: `${BASE_PATH}/modulos/modulo-4/verificacion-correccion/`,
+    status: 'Disponible',
+  },
+];

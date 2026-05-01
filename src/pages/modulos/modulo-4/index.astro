@@ -1,0 +1,146 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import TopicCard from '../../../components/module/TopicCard.astro';
+import SectionTitle from '../../../components/module/SectionTitle.astro';
+import InfoBox from '../../../components/module/InfoBox.astro';
+import { module4Topics } from '../../../consts';
+---
+
+<BaseLayout
+  title="DocenteDigital | Módulo 4"
+  description="Pedir mejor, refinar y verificar respuestas generadas con inteligencia artificial"
+>
+  <SectionTitle
+    eyebrow="Módulo 4"
+    title="Pedir mejor, refinar y verificar"
+    description="Este módulo enseña a construir instrucciones más precisas para trabajar con inteligencia artificial generativa, mejorar respuestas iniciales y verificar los resultados antes de usarlos en contextos docentes o profesionales."
+  />
+
+  <section class="grid gap-8 lg:grid-cols-[1.3fr_0.9fr]">
+    <div class="content-card p-8">
+      <h3 class="text-xl font-bold text-slate-900">¿Por qué es importante este módulo?</h3>
+
+      <div class="mt-4 prose-soft text-slate-700">
+        <p>
+          En el módulo anterior se explicó que la inteligencia artificial generativa no entrega
+          verdad automática: produce respuestas a partir de patrones, contexto e instrucciones.
+          Por eso, la calidad de una respuesta no depende solo de la herramienta utilizada, sino
+          también de cómo se formula la solicitud y de cómo se revisa el resultado.
+        </p>
+
+        <p>
+          Pedirle algo a una IA no consiste únicamente en escribir una pregunta. Un buen prompt
+          funciona como una instrucción profesional: define propósito, aporta contexto, delimita la
+          tarea, establece formato, marca criterios de calidad y anticipa qué debe verificarse antes
+          de usar la respuesta.
+        </p>
+
+        <p>
+          Este módulo no presenta el prompting como una receta mágica. Su enfoque es más técnico
+          y metodológico: aprender a pedir con precisión, corregir respuestas débiles, refinar
+          resultados y mantener la responsabilidad docente sobre el producto final.
+        </p>
+      </div>
+    </div>
+
+    <InfoBox title="Ruta sugerida" tone="info">
+      <p>
+        Se recomienda avanzar en orden, porque el módulo construye una secuencia de trabajo:
+        primero se comprende la estructura de un prompt, después se aplica, luego se refina y
+        finalmente se verifica.
+      </p>
+
+      <ol class="mt-3 list-decimal pl-6">
+        <li>Anatomía de un buen prompt</li>
+        <li>Prompting práctico</li>
+        <li>Iteración y refinamiento</li>
+        <li>Verificación, contraste y corrección</li>
+      </ol>
+    </InfoBox>
+  </section>
+
+  <section class="mt-12">
+    <SectionTitle
+      title="Temas del módulo"
+      description="Seleccione un tema para comenzar. Cada apartado desarrolla una parte del proceso para trabajar con IA de forma más precisa, crítica y verificable."
+    />
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {module4Topics.map((topic) => (
+        <TopicCard
+          title={topic.title}
+          description={topic.description}
+          href={topic.href}
+          status={topic.status}
+        />
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-12 grid gap-8 lg:grid-cols-2">
+    <InfoBox title="Enfoque del módulo" tone="success">
+      <p>
+        Este módulo entiende el prompting como una práctica de comunicación estructurada con IA.
+        No se trata de memorizar frases, sino de aprender a formular instrucciones con intención,
+        contexto, criterios y límites claros.
+      </p>
+
+      <p class="mt-3">
+        La meta es que el docente pueda usar la IA como apoyo para pensar, organizar, revisar y
+        producir mejores materiales, sin delegar por completo su juicio profesional.
+      </p>
+    </InfoBox>
+
+    <InfoBox title="Entregable del módulo" tone="warning">
+      <p>
+        Al finalizar, se recomienda construir un banco de prompts docentes verificados. Cada
+        entrada debe incluir una tarea docente, un prompt inicial, una versión refinada, criterios
+        de revisión, riesgos detectados y elementos que deben verificarse antes de usar el
+        resultado.
+      </p>
+    </InfoBox>
+  </section>
+
+  <section class="mt-12">
+    <div class="content-card p-8">
+      <h3 class="text-xl font-bold text-slate-900">Secuencia de trabajo del módulo</h3>
+
+      <div class="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+          <p class="text-sm font-semibold text-sky-700">1. Pedir</p>
+          <p class="mt-2 text-sm leading-6 text-slate-700">
+            Formular una instrucción con propósito, contexto, tarea y formato esperado.
+          </p>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+          <p class="text-sm font-semibold text-sky-700">2. Revisar</p>
+          <p class="mt-2 text-sm leading-6 text-slate-700">
+            Leer la respuesta con criterios, no solo aceptar que esté bien redactada.
+          </p>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+          <p class="text-sm font-semibold text-sky-700">3. Refinar</p>
+          <p class="mt-2 text-sm leading-6 text-slate-700">
+            Pedir ajustes de claridad, tono, profundidad, estructura o pertinencia.
+          </p>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+          <p class="text-sm font-semibold text-sky-700">4. Verificar</p>
+          <p class="mt-2 text-sm leading-6 text-slate-700">
+            Identificar datos, supuestos, fuentes, riesgos y afirmaciones que requieren contraste.
+          </p>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+          <p class="text-sm font-semibold text-sky-700">5. Adaptar</p>
+          <p class="mt-2 text-sm leading-6 text-slate-700">
+            Ajustar el resultado al grupo, materia, contexto institucional y criterio docente.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
